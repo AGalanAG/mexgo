@@ -68,29 +68,26 @@ app/
 
 ## Ramas de trabajo
 
-Nadie pushea directo a `main`. Cada feature tiene su rama.
+Nadie pushea directo a `main`. Cada integrante trabaja sobre su rama fija.
 
 ```
 main                          ← solo Fidel mergea aquí
-├── feat/equity-algorithm     ← Fidel
-├── feat/gemini-chat          ← Fidel
-├── feat/api-recommend        ← Fidel
-├── feat/api-itinerary        ← Fidel
-├── feat/tourist-onboarding   ← Emi
-├── feat/tourist-map          ← Emi
-├── feat/tourist-cards        ← Emi
-├── feat/tourist-itinerary    ← Emi
-├── feat/admin-requests       ← Farid
-├── feat/business-form        ← Farid
-├── feat/superadmin-panel     ← Farid
-├── feat/database-schema      ← Alan
-├── feat/auth-middleware      ← Alan
-├── feat/api-businesses       ← Alan
-├── feat/api-requests         ← Alan
-├── feat/api-visits           ← Alan
-├── feat/seed-data            ← Xavier
-└── feat/ui-polish            ← Xavier
+├── feat/fidel-ia             ← Fidel
+├── feat/alan-backend         ← Alan
+├── feat/emi-frontend         ← Emi
+├── feat/farid-admin          ← Farid
+└── feat/xavier-qa-ui         ← Xavier
 ```
+
+### Qué debe subir cada quien en su rama
+
+- Fidel en `feat/fidel-ia`: arquitectura, IA, algoritmo y APIs de IA (`constants/index.ts`, `lib/gemini.ts`, `lib/equity.ts`, `lib/cultural.ts`, `lib/tools/*`, `app/api/chat/route.ts`, `app/api/recommend/route.ts`, `app/api/itinerary/route.ts`, `next.config.ts`).
+- Alan en `feat/alan-backend`: auth, base de datos y endpoints de negocio (`middleware.ts`, `lib/supabase.ts`, `lib/supabase-client.ts`, `app/auth/callback/route.ts`, `app/api/businesses/*`, `app/api/requests/*`, `app/api/visits/route.ts`, `supabase/migrations/*`).
+- Emi en `feat/emi-frontend`: flujo del turista y experiencia móvil/offline (`hooks/useItinerary.ts`, `hooks/useGeolocation.ts`, `hooks/useAuth.ts`, `components/tourist/*`, `app/(tourist)/*`, `app/page.tsx`).
+- Farid en `feat/farid-admin`: login/registro, panel admin, panel de negocio y superadmin (`app/auth/login/page.tsx`, `app/auth/register/page.tsx`, `components/business/*`, `components/admin/*`, `app/(business)/*`, `app/(admin)/*`, `app/(superadmin)/*`).
+- Xavier en `feat/xavier-qa-ui`: QA, tipos compartidos, datos semilla y polish visual (`types/types.ts`, `components/ui/*`, `seed/negocios.json`, ajustes visuales acordados).
+
+Regla: cada quien sube solo cambios de su área y si necesita tocar archivos de otra persona, lo avisa antes en el equipo para evitar choques de merge.
 
 ---
 
@@ -100,7 +97,7 @@ main                          ← solo Fidel mergea aquí
 
 ```bash
 git pull origin main          # siempre primero
-git checkout feat/tu-rama     # o git checkout -b feat/nueva-rama si no existe
+git checkout feat/tu-rama     # usa siempre la rama fija de tu rol
 ```
 
 ### Antes de subir cambios — obligatorio en este orden
@@ -122,12 +119,12 @@ git push origin feat/tu-rama
 ### Flujo de merge a main
 
 ```
-1. Tú subes tu rama (feat/lo-que-sea)
+1. Tú subes tu rama fija (feat/tu-rama)
 2. Xavier revisa en la preview URL de Vercel
    → prueba el flujo completo como usuario real
    → da observaciones o da el visto bueno
    → si pule UI: corre npm run build antes de avisar
-3. Xavier le avisa a Fidel: "feat/tourist-map lista para merge"
+3. Xavier le avisa a Fidel: "feat/mi-rama lista para merge"
 4. Fidel corre npm run build local con la rama
 5. Si pasa → merge a main → Vercel despliega automático
 ```
