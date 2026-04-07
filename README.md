@@ -1,1 +1,1 @@
-# hackathonito
+# MexGo
