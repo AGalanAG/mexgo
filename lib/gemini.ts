@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai'
 import type { Content } from '@google/genai'
-import type { ChatMessage, ItineraryStop } from '@/types/types'
+import type { ChatMessagePayload, ItineraryStop } from '@/types/types'
 import { GEMINI_MODEL } from '@/constants'
 import { declarations, handlers } from '@/lib/tools'
 
@@ -15,7 +15,7 @@ type ChatResult = {
   eventoAgregado?: ItineraryStop
 }
 
-export async function chat(mensaje: string, historial: ChatMessage[] = []): Promise<ChatResult> {
+export async function chat(mensaje: string, historial: ChatMessagePayload[] = []): Promise<ChatResult> {
 
   const contents: Content[] = [
     ...historial.map(m => ({ role: m.role, parts: [{ text: m.text }] })),
