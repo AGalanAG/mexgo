@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import type { ChatMessage, ChatResponse } from '@/types/types'
+import type { ChatMessagePayload, ChatResponse } from '@/types/types'
 
 export default function ChatUI() {
-  const [historial, setHistorial] = useState<ChatMessage[]>([])
+  const [historial, setHistorial] = useState<ChatMessagePayload[]>([])
   const [input, setInput] = useState('')
   const [cargando, setCargando] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -17,7 +17,7 @@ export default function ChatUI() {
     const mensaje = input.trim()
     if (!mensaje || cargando) return
 
-    const nuevoHistorial: ChatMessage[] = [
+    const nuevoHistorial: ChatMessagePayload[] = [
       ...historial,
       { role: 'user', text: mensaje },
     ]

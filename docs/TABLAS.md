@@ -259,6 +259,27 @@ Referencia rápida para Alan, Fidel y Xavier.
 
 ---
 
+## Chat e historial
+
+### chat_sessions
+| Columna | Tipo | Notas |
+|---------|------|-------|
+| id | uuid PK | gen_random_uuid() |
+| tourist_user_id | uuid | FK → auth.users |
+| created_at | timestamptz | default now() |
+| updated_at | timestamptz | default now() |
+
+### chat_messages
+| Columna | Tipo | Notas |
+|---------|------|-------|
+| id | uuid PK | gen_random_uuid() |
+| session_id | uuid | FK → chat_sessions, on delete cascade |
+| role | text | 'user' / 'model' |
+| content | text | not null |
+| created_at | timestamptz | default now() |
+
+---
+
 ## Tickets y auditoría
 
 ### technical_tickets
@@ -314,6 +335,7 @@ Referencia rápida para Alan, Fidel y Xavier.
 | business_profiles | lectura pública | edición limitada de la suya | todas | todas |
 | itineraries / stops | CRUD solo los suyos | no | lectura soporte | lectura soporte |
 | visits | inserta solo para sí | no | lectura agregada | lectura agregada |
+| chat_sessions / messages | CRUD solo las suyas | no | no | no |
 | audit_logs | no | no | lectura | lectura |
 | technical_tickets | no | no | crear | CRUD |
 
@@ -324,3 +346,4 @@ Referencia rápida para Alan, Fidel y Xavier.
 | Fecha | Quién | Qué |
 |-------|-------|-----|
 | 2026-04-06 | Fidel | v1.0 — visualización en tablas de todo SCHEMA.md |
+| 2026-04-07 | Fidel | v1.1 — tablas chat_sessions y chat_messages |
