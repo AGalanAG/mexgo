@@ -29,7 +29,7 @@ Utilizamos una paleta basada en los colores institucionales de Coppel, complemen
 
 ## Estructura de Componentes
 
-Los componentes se organizan en `app/components/`.
+Los componentes se organizan en `components/`.
 - `tourist/`: Componentes específicos para el flujo del turista y landing page.
 - `common/`: Componentes reutilizables (Botones, Inputs, Cards genéricas).
 

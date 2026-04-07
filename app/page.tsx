@@ -1,9 +1,9 @@
 import React from 'react';
-import Navbar from './components/tourist/Navbar';
-import SearchBar from './components/tourist/SearchBar';
-import RecommendationsCarousel from './components/tourist/RecommendationsCarousel';
-import ItineraryCard from './components/tourist/ItineraryCard';
-import Footer from './components/tourist/Footer';
+import Navbar from '@/components/tourist/Navbar';
+import SearchBar from '@/components/tourist/SearchBar';
+import RecommendationsCarousel from '@/components/tourist/RecommendationsCarousel';
+import ItineraryCard from '@/components/tourist/ItineraryCard';
+import Footer from '@/components/tourist/Footer';
 
 export default function Home() {
   return (
