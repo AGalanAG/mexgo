@@ -3,6 +3,41 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /*Primary*/
+  --coppel-yellow: #F0D224;
+  --white: #FFFFFF;
+  --coppel-blue: #1C42E8;
+  --dark-blue: #081754;
+  --medium-blue: #05297A; /* BanCoppel */
+  --light-blue: #1CA8F7;
+
+  /* Secondary */
+  
+  /* Greens */
+  --lime: #88FF4D; 
+  --green: #0ABF4F;
+  --dark-green: #005E3E;
+
+  /* Pinks & Purples */
+  --pink: #FDA1FB;
+  --purple: #7D42FF;
+  --dark-purple: #4C04B2;
+
+  /* Oranges & Reds */
+  --orange: #FFAE43;
+  --red: #FF594D;
+  --crimson: #7A2627;
+
+  /* Earth Tones / Neutrals */
+  --beige: #EEE8E3;
+  --tan: #B99B7B;
+  --brown: #66451D;
+
+  /* Greys */
+  --light-grey: #C9C9C9;
+  --grey: #8C8C8C;
+  --dark-grey: #4A4A4A;
 }
 
 @theme inline {
