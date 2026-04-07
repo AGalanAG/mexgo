@@ -391,7 +391,39 @@ Mantenimiento:
 
 ---
 
-## 8. Tickets tecnicos
+## 8. Chat e historial
+
+### chat_sessions
+
+Una sesión por turista. Agrupa todos los mensajes de una conversación activa.
+
+- id uuid pk default gen_random_uuid()
+- tourist_user_id uuid not null references auth.users(id)
+- created_at timestamptz not null default now()
+- updated_at timestamptz not null default now()
+
+Indices:
+- idx_chat_sessions_user (tourist_user_id, updated_at desc)
+
+### chat_messages
+
+Mensajes individuales de una sesión de chat.
+
+- id uuid pk default gen_random_uuid()
+- session_id uuid not null references chat_sessions(id) on delete cascade
+- role text not null check (role in ('user', 'model'))
+- content text not null
+- created_at timestamptz not null default now()
+
+Indices:
+- idx_chat_messages_session (session_id, created_at asc)
+
+RLS:
+- Turista lee y escribe solo sus propias sesiones y mensajes.
+
+---
+
+## 10. Tickets tecnicos
 
 ### technical_tickets
 
@@ -412,7 +444,7 @@ Indices:
 
 ---
 
-## 9. Auditoria
+## 11. Auditoria
 
 ### audit_logs
 
@@ -432,7 +464,7 @@ Indices:
 
 ---
 
-## 10. Reglas de transicion de estado (solicitudes)
+## 12. Reglas de transicion de estado (solicitudes)
 
 Permitidas:
 - Pendiente -> En revision (claim)
@@ -452,7 +484,7 @@ Control de concurrencia:
 
 ---
 
-## 11. RLS (resumen operativo)
+## 13. RLS (resumen operativo)
 
 - users_profile: usuario ve y edita su fila.
 - business_requests:
@@ -476,7 +508,7 @@ Implementacion recomendada:
 
 ---
 
-## 12. SQL operativo minimo (pseudobase)
+## 14. SQL operativo minimo (pseudobase)
 
 1. Crear enums.
 2. Crear catalogos base.
@@ -485,14 +517,15 @@ Implementacion recomendada:
 5. Crear cuestionario/recomendaciones/itinerarios.
 6. Crear itinerary_stops + itinerary_daily_routes.
 7. Crear visits + daily_business_saturation + trigger de agregacion.
-8. Crear tickets y audit_logs.
+8. Crear chat_sessions + chat_messages.
+9. Crear tickets y audit_logs.
 9. Aplicar indices.
 10. Aplicar politicas RLS.
 11. Seed de roles y catalogos.
 
 ---
 
-## 13. Pendientes menores antes de cierre final
+## 15. Pendientes menores antes de cierre final
 
 - Confirmar si social_links sera text[] o jsonb estructurado por red.
 - Confirmar si owner_age se conservara completo o solo rango por privacidad.
@@ -508,3 +541,4 @@ Implementacion recomendada:
 |---|---|---|
 | 2026-04-06 | Alan | v1.0 — modelo de datos, estados y visitas para algoritmo de equidad. |
 | 2026-04-06 | Alan | v1.1 — soporte de coordenadas y rutas de mapa por dia de itinerario. |
+| 2026-04-07 | Fidel | v1.2 — tablas chat_sessions y chat_messages para historial de conversacion. |
