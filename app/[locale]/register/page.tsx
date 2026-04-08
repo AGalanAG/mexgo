@@ -9,12 +9,15 @@ import Footer from '@/components/tourist/Footer';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
+import { useLogin } from '@/context/LoginContext';
 
 function RegisterContent() {
   const t = useTranslations('Register');
+  const tNav = useTranslations('Navbar'); // Hook separado para el Navbar
   const router = useRouter();
   const searchParams = useSearchParams();
   const type = searchParams.get('type') as 'tourist' | 'business' | null;
+  const { openLogin } = useLogin();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -152,9 +155,13 @@ function RegisterContent() {
 
               <p className="text-center text-xs text-gray-500 mt-8">
                 {t('form.alreadyHaveAccount')}{' '}
-                <Link href="/" className="text-gray-900 hover:underline font-bold">
-                  Inicia sesión
-                </Link>
+                <button 
+                  type="button"
+                  onClick={openLogin}
+                  className="text-gray-900 hover:underline font-bold transition-all"
+                >
+                  {tNav('login')}
+                </button>
               </p>
             </form>
           </>
@@ -169,9 +176,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Contenedor Principal con Background Full */}
       <div className="relative flex-1 flex flex-col overflow-hidden">
-        {/* Background Image que abarca todo */}
         <div 
           className="absolute inset-0 z-0"
           style={{ 
@@ -186,7 +191,6 @@ export default function RegisterPage() {
         
         <HomeNavbar />
 
-        {/* Contenido Principal */}
         <main className="relative z-10 flex-1 flex flex-col items-center justify-center py-24 md:py-32">
           <div className="text-center px-4 mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
             <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 drop-shadow-2xl">
