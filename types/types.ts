@@ -3,6 +3,7 @@
 export type RoleCode =
   | 'TURISTA'
   | 'ENCARGADO_NEGOCIO'
+  | 'EMPLEADO_NEGOCIO'
   | 'ADMIN'
   | 'SUPERADMIN'
 

@@ -20,7 +20,40 @@ Contratos API para mantener turismo estable y extender negocio con cambios minim
 
 ## 2. Endpoints actuales (se mantienen)
 ### POST /api/auth/register
-Registro de turista con perfil inicial.
+Registro de usuario con perfil inicial.
+
+Body base:
+```json
+{
+  "email": "persona@correo.com",
+  "password": "secreto123",
+  "fullName": "Nombre Apellido",
+  "roleCode": "TURISTA"
+}
+```
+
+Reglas:
+- `roleCode` permitido: `TURISTA`, `ENCARGADO_NEGOCIO`, `EMPLEADO_NEGOCIO`, `ADMIN`
+- Si `roleCode = TURISTA`, tambien son obligatorios `language` y `countryOfOrigin`
+- Si `roleCode = ADMIN`, se requiere `adminRegistrationToken` y variable `AUTH_ADMIN_REGISTRATION_TOKEN`
+
+### POST /api/auth/login
+Login con email/password para todos los roles.
+
+Body:
+```json
+{
+  "email": "persona@correo.com",
+  "password": "secreto123"
+}
+```
+
+Response incluye `session.accessToken`, `roleCodes` y `primaryRole`.
+
+### GET /api/auth/me
+Devuelve usuario autenticado, perfil y roles.
+
+Auth: `Authorization: Bearer <accessToken>`
 
 ### POST /api/auth/oauth/start
 Inicio OAuth (google/apple).
