@@ -55,124 +55,124 @@ export default function PlaceDetailPage() {
       {/* Navbar fija */}
       <Navbar variant="light" />
 
-      <main className="pt-20 pb-20 px-4">
-        {/* Back Button */}
-        <div className="max-w-6xl mx-auto py-4">
+      <main className="pt-24 pb-20 px-4 bg-white">
+        {/* Back Button - Aligned to the container */}
+        <div className="max-w-6xl mx-auto mb-8">
           <button 
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-[var(--primary)] font-bold hover:opacity-70 transition-opacity"
+            className="flex items-center gap-2 text-[var(--primary)] font-bold hover:opacity-70 transition-opacity text-sm"
           >
             <ArrowBackIcon fontSize="small" /> Back to Discover
           </button>
         </div>
 
-        {/* Main Content Section */}
-        <section className="max-w-6xl mx-auto mt-4">
-          {/* Header: Title and Rating (Full Width) */}
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-5xl font-black text-[var(--primary)] mb-3" style={{ fontFamily: 'var(--font-display, inherit)' }}>
-              {place.name}
-            </h1>
-            <div className="flex items-center gap-2">
-              <div className="flex text-yellow-400">
-                {[...Array(5)].map((_, i) => (
-                  <StarIcon key={i} fontSize="small" className={i < Math.floor(place.rating) ? 'text-yellow-400' : 'text-gray-200'} />
-                ))}
-              </div>
-              <span className="font-bold text-gray-700">{place.rating}</span>
-              <span className="text-gray-400 text-sm">({place.user_ratings_total.toLocaleString()} reviews)</span>
+        {/* Symmetric Header: Centered */}
+        <section className="max-w-6xl mx-auto text-center mb-12">
+          <h1 className="text-4xl md:text-6xl font-black text-[var(--primary)] mb-4 tracking-tight" style={{ fontFamily: 'var(--font-display, inherit)' }}>
+            {place.name}
+          </h1>
+          <div className="flex items-center justify-center gap-3">
+            <div className="flex text-yellow-400">
+              {[...Array(5)].map((_, i) => (
+                <StarIcon key={i} fontSize="small" className={i < Math.floor(place.rating) ? 'text-yellow-400' : 'text-gray-200'} />
+              ))}
             </div>
+            <span className="font-bold text-gray-800 text-lg">{place.rating}</span>
+            <span className="text-gray-400 text-sm font-medium">({place.user_ratings_total.toLocaleString()} reviews)</span>
           </div>
+        </section>
 
-          {/* Symmetrical Two-Column Layout */}
-          <div className="flex flex-col lg:flex-row gap-10">
+        {/* 50/50 Symmetric Grid */}
+        <section className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             
-            {/* Left Column: Image + Description + Small Gallery */}
-            <div className="flex-1 lg:w-3/5">
-              {/* Recropped Image */}
+            {/* Left Column: Balanced Visual Block */}
+            <div className="flex flex-col gap-8">
               <div 
-                className="w-full h-[400px] rounded-[var(--radius-xl)] shadow-lg bg-cover bg-center mb-8 border border-gray-100"
+                className="w-full h-[550px] rounded-[var(--radius-xl)] shadow-xl bg-cover bg-center border border-gray-100 overflow-hidden"
                 style={{ backgroundImage: `url(${place.photos[0]})` }}
               >
-                <div className="absolute inset-0 bg-black/5 rounded-[var(--radius-xl)]"></div>
+                <div className="absolute inset-0 bg-black/5"></div>
               </div>
-
-              {/* Description */}
-              <div className="prose prose-slate max-w-none mb-10">
-                <h4 className="text-[var(--primary)] font-bold mb-3 uppercase tracking-widest text-xs">About this business</h4>
-                <p className="text-gray-600 leading-relaxed text-lg">
-                  {place.description}
+              
+              {/* Short description below the main image to maintain the column structure */}
+              <div className="p-2">
+                <h4 className="text-[var(--primary)] font-bold mb-4 uppercase tracking-widest text-xs border-b border-gray-100 pb-2">Experience Overview</h4>
+                <p className="text-gray-600 leading-relaxed text-lg italic">
+                  "{place.description}"
                 </p>
-              </div>
-
-              {/* Secondary Photos */}
-              <div className="grid grid-cols-3 gap-4">
-                {place.photos.slice(1).map((photo, idx) => (
-                  <div key={idx} className="aspect-square rounded-xl bg-gray-100 overflow-hidden shadow-sm border border-gray-50">
-                    <img src={photo} alt={`${place.name} ${idx}`} className="w-full h-full object-cover hover:scale-105 transition-transform" />
-                  </div>
-                ))}
               </div>
             </div>
 
-            {/* Right Column: Information Card + Map */}
-            <aside className="w-full lg:w-[380px] flex flex-col gap-6">
-              {/* Info Card */}
-              <div className="bg-[var(--background)] p-8 rounded-[var(--radius-xl)] border border-gray-100 shadow-sm">
-                <h4 className="font-bold text-[var(--primary)] mb-6 uppercase tracking-wider text-xs">Business Details</h4>
+            {/* Right Column: Stacked Cards (Matching the left block height) */}
+            <div className="flex flex-col gap-6 h-full">
+              {/* Business Details Card */}
+              <div className="bg-[var(--background)] p-10 rounded-[var(--radius-xl)] border border-gray-100 shadow-sm flex-1 flex flex-col justify-center">
+                <h4 className="font-bold text-[var(--primary)] mb-8 uppercase tracking-wider text-xs text-center">Business Information</h4>
                 
-                <div className="space-y-6">
-                  {/* Address */}
-                  <div className="flex gap-4">
-                    <div className="bg-white p-2 rounded-lg shadow-sm h-fit">
-                      <LocationOnIcon className="text-[var(--color-accent)]" fontSize="small" />
+                <div className="space-y-8 mb-10">
+                  <div className="flex items-center gap-6">
+                    <div className="bg-white p-3 rounded-xl shadow-md text-[var(--color-accent)]">
+                      <LocationOnIcon />
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Location</p>
-                      <p className="text-sm text-gray-700 font-semibold leading-snug">{place.address}</p>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Our Location</p>
+                      <p className="text-base text-gray-800 font-bold leading-tight">{place.address}</p>
                     </div>
                   </div>
 
-                  {/* Hours */}
-                  <div className="flex gap-4">
-                    <div className="bg-white p-2 rounded-lg shadow-sm h-fit">
-                      <AccessTimeIcon className="text-[var(--color-accent)]" fontSize="small" />
+                  <div className="flex items-center gap-6">
+                    <div className="bg-white p-3 rounded-xl shadow-md text-[var(--color-accent)]">
+                      <AccessTimeIcon />
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Opening Hours</p>
-                      <ul className="text-sm text-gray-600 space-y-1 font-medium">
+                      <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Service Hours</p>
+                      <ul className="text-sm text-gray-600 font-bold grid grid-cols-2 gap-x-4">
                         {place.opening_hours.map((hour, i) => (
-                          <li key={i}>{hour}</li>
+                          <li key={i} className="whitespace-nowrap">{hour}</li>
                         ))}
                       </ul>
                     </div>
                   </div>
                 </div>
 
-                {/* Optimized Button */}
                 <motion.button 
-                  whileHover={{ scale: 1.02, brightness: 1.1 }}
+                  whileHover={{ scale: 1.02, elevation: 5 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full mt-10 bg-[var(--color-accent)] text-white font-black py-3 px-6 rounded-xl shadow-lg transition-all text-xs uppercase tracking-widest"
+                  className="w-full bg-[var(--color-accent)] text-white font-black py-4 px-8 rounded-2xl shadow-xl transition-all text-sm uppercase tracking-[0.2em]"
                 >
                   Add to Itinerary
                 </motion.button>
               </div>
 
-              {/* Map Card */}
-              <div className="w-full h-[300px] bg-gray-100 rounded-[var(--radius-xl)] overflow-hidden relative shadow-md border border-gray-100 group">
-                <div className="absolute inset-0 bg-[url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/-99.1620,19.4194,14,0/400x300?access_token=none')] bg-cover transition-transform duration-700 group-hover:scale-105">
-                  {/* Visual Pin */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--primary)] drop-shadow-xl">
-                    <LocationOnIcon fontSize="large" />
+              {/* Map Card - Balanced height */}
+              <div className="w-full h-[280px] bg-gray-100 rounded-[var(--radius-xl)] overflow-hidden relative shadow-lg border border-gray-100 group">
+                <div className="absolute inset-0 bg-[url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/-99.1620,19.4194,14,0/500x300?access_token=none')] bg-cover transition-transform duration-1000 group-hover:scale-110">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--primary)] drop-shadow-2xl">
+                    <LocationOnIcon sx={{ fontSize: 50 }} />
                   </div>
                 </div>
-                {/* Overlay label */}
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm border border-gray-100">
-                  <p className="text-[10px] font-black text-[var(--primary)] uppercase tracking-tighter">View on Maps</p>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                  <span className="text-white font-bold text-xs uppercase tracking-widest">Open in Google Maps</span>
                 </div>
               </div>
-            </aside>
+            </div>
+          </div>
+        </section>
+
+        {/* Symmetrical Bottom Gallery */}
+        <section className="max-w-6xl mx-auto mt-20">
+          <h4 className="text-center text-[var(--primary)] font-black uppercase tracking-widest text-xs mb-10">Gallery</h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {place.photos.map((photo, idx) => (
+              <motion.div 
+                key={idx} 
+                whileHover={{ y: -10 }}
+                className="aspect-square rounded-2xl bg-gray-100 overflow-hidden shadow-md border border-gray-100"
+              >
+                <img src={photo} alt={`${place.name} ${idx}`} className="w-full h-full object-cover" />
+              </motion.div>
+            ))}
           </div>
         </section>
       </main>
