@@ -1,4 +1,8 @@
+
 import HomeNavbar from '@/components/tourist/HomeNavbar';
+import Footer from '@/components/tourist/Footer';
+import PlaceCard from '@/components/tourist/PlaceCard';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -47,9 +51,9 @@ export default function Home() {
             Every street in Mexico City has a story to tell.
           </p>
 
-          <button className="bg-[var(--green)] hover:bg-[var(--dark-green)] text-white px-8 py-3 rounded-md font-bold transition-colors">
+          <Link href="/discover" className="inline-block bg-[var(--green)] hover:bg-[var(--dark-green)] text-white px-8 py-3 rounded-md font-bold transition-colors">
             Discover more
-          </button>
+          </Link>
         </div>
       </section>
 
@@ -58,19 +62,19 @@ export default function Home() {
         <h2 className="text-3xl font-bold text-gray-900 mb-12">Our Service</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-4 mb-16">
-          <div className="card-base p-10 flex flex-col items-center shadow-sm border border-gray-100">
+          <div className="card-base p-10 flex flex-col items-center shadow-sm border border-gray-100 bg-white">
             <span className="text-4xl mb-4 text-gray-400">✈️</span>
             <h3 className="font-bold text-lg mb-2 text-gray-900">Personalized Travel<br/>Recommendations</h3>
             <p className="text-sm text-gray-500">AI-powered recommendations tailored just for you!</p>
           </div>
           
-          <div className="card-base p-10 flex flex-col items-center shadow-sm border border-gray-100">
+          <div className="card-base p-10 flex flex-col items-center shadow-sm border border-gray-100 bg-white">
             <span className="text-4xl mb-4 text-[var(--light-blue)]">🏨</span>
             <h3 className="font-bold text-lg mb-2 text-gray-900">Hotel Booking</h3>
             <p className="text-sm text-gray-500">You can easily book according to your budget.</p>
           </div>
           
-          <div className="card-base p-10 flex flex-col items-center shadow-sm border border-gray-100">
+          <div className="card-base p-10 flex flex-col items-center shadow-sm border border-gray-100 bg-white">
             <span className="text-4xl mb-4 text-[var(--red)]">🧭</span>
             <h3 className="font-bold text-lg mb-2 text-gray-900">Tour Plan</h3>
             <p className="text-sm text-gray-500">We provide you the best plan within a short time.</p>
@@ -90,13 +94,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SECCIÓN BEST TOURS */}
-      <section className="py-20 bg-[#F4F6F5]">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">Best Tours For You</h2>
-          {/* Aquí irían las tarjetas de tours que definimos antes */}
-        </div>
-      </section>
+      <Footer />
     </div>
   );
 }
