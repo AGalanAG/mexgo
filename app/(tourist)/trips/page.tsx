@@ -19,6 +19,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
+import type { ItineraryStop } from '@/types/types';
+
 interface Stop {
   id: string;
   name: string;
@@ -27,16 +29,25 @@ interface Stop {
 
 type TransportMode = 'walking' | 'bicycle' | 'car' | 'transit';
 
+function toStop(s: ItineraryStop): Stop {
+  const time = s.startTime ? ` · ${s.startTime}` : '';
+  return { id: s.id, name: s.label, addr: `${s.routeDate}${time}` };
+}
+
 export default function TripsPage() {
   const [transportMode, setTransportMode] = useState<TransportMode>('walking');
-  const [stops, setStops] = useState<Stop[]>([
-    { id: '1', name: "National Museum of Anthropology", addr: "Av. Paseo de la Reforma, CDMX" },
-    { id: '2', name: "Chapultepec Castle", addr: "Bosque de Chapultepec, CDMX" },
-    { id: '3', name: "Palace of Bellas Artes", addr: "Centro Histórico, CDMX" },
-  ]);
+  const [stops, setStops] = useState<Stop[]>([]);
   
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
+
+  // Load stops from API
+  useEffect(() => {
+    fetch('/api/itinerary')
+      .then(r => r.json())
+      .then((data: ItineraryStop[]) => setStops(data.map(toStop)))
+      .catch(console.error);
+  }, []);
 
   // Initialize Mapbox
   useEffect(() => {
@@ -71,7 +82,8 @@ export default function TripsPage() {
   };
 
   const removeStop = (id: string) => {
-    setStops(stops.filter(s => s.id !== id));
+    setStops(prev => prev.filter(s => s.id !== id));
+    fetch(`/api/itinerary/${id}`, { method: 'DELETE' }).catch(console.error);
   };
 
   const transportButtons = [

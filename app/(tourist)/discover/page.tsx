@@ -1,16 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/tourist/Navbar';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import type { NegocioConScore } from '@/types/types';
 
-/**
- * Interface for static place data
- */
-interface StaticPlace {
+interface DisplayPlace {
   id: string;
   name: string;
   imageUrl: string;
@@ -18,43 +16,51 @@ interface StaticPlace {
   location: string;
 }
 
-/**
- * Static data for recommendations
- */
-const RECOMMENDED_PLACES: StaticPlace[] = [
-  {
-    id: '1',
-    name: 'Sabores de Antaño',
-    imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80',
-    description: 'Authentic traditional cuisine with recipes passed down through generations.',
-    location: 'Colonia Roma, CDMX'
-  },
-  {
-    id: '2',
-    name: 'El Rincón del Arte',
-    imageUrl: 'https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=600&q=80',
-    description: 'A cozy gallery showcasing local contemporary artists and handmade crafts.',
-    location: 'Coyoacán, CDMX'
-  },
-  {
-    id: '3',
-    name: 'Café Luna Nueva',
-    imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&q=80',
-    description: 'Specialty coffee from organic beans harvested in Veracruz and Oaxaca.',
-    location: 'Condesa, CDMX'
-  },
-  {
-    id: '4',
-    name: 'Textiles del Sur',
-    imageUrl: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&q=80',
-    description: 'Hand-woven garments and accessories using ancient natural dyeing techniques.',
-    location: 'San Ángel, CDMX'
-  },
-];
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80';
+
+function toDisplay(n: NegocioConScore): DisplayPlace {
+  return {
+    id: n.id,
+    name: n.businessName,
+    imageUrl: n.coverImageUrl || FALLBACK_IMAGE,
+    description: n.businessDescription,
+    location: `${n.neighborhood}, ${n.boroughCode}`,
+  };
+}
 
 export default function DiscoverPage() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [flippedId, setFlippedId] = useState<string | null>(null);
+  const [places, setPlaces] = useState<DisplayPlace[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('mexgo_recommendations');
+    if (stored) {
+      const data: NegocioConScore[] = JSON.parse(stored);
+      setPlaces(data.map(toDisplay));
+      setLoading(false);
+    } else {
+      fetch('/api/recommend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lat: 19.4326, lng: -99.1332 }),
+      })
+        .then(r => r.json())
+        .then((data: NegocioConScore[]) => {
+          localStorage.setItem('mexgo_recommendations', JSON.stringify(data));
+          setPlaces(data.map(toDisplay));
+        })
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    }
+  }, []);
+
+  const filtered = places.filter(p =>
+    !searchValue ||
+    p.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+    p.description.toLowerCase().includes(searchValue.toLowerCase())
+  );
 
   const clearSearch = (): void => setSearchValue('');
 
@@ -93,9 +99,13 @@ export default function DiscoverPage() {
           <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 text-[var(--primary)]" style={{ fontFamily: 'var(--font-display, inherit)' }}>
             Recommendations
           </h2>
-          
+
+          {loading && (
+            <p className="text-center text-gray-400 text-sm py-10">Cargando recomendaciones...</p>
+          )}
+
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
-            {RECOMMENDED_PLACES.map((place) => (
+            {filtered.map((place) => (
               <div 
                 key={place.id} 
                 className="perspective-1000 cursor-pointer aspect-square"
