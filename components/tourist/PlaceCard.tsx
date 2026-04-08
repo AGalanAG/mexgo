@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import { Heart, Plus, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';

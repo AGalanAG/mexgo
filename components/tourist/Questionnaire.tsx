@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/routing";
 
 const CITIES_DATA: Record<string, string[]> = {
   CDMX: [
@@ -29,6 +31,8 @@ interface QuestionnaireState {
 }
 
 const Questionnaire: React.FC = () => {
+  const t = useTranslations("Questionnaire");
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<QuestionnaireState>({
     country: "",
@@ -60,6 +64,13 @@ const Questionnaire: React.FC = () => {
         : [...prev.trip_motives, motive];
       return { ...prev, trip_motives: motives };
     });
+  };
+
+  const handleFinish = () => {
+    // Simular guardado de datos
+    console.log("Final Data:", formData);
+    // Redirigir al chat/itinerario
+    router.push('/chat');
   };
 
   const boroughs = useMemo(() => {
@@ -294,7 +305,7 @@ const Questionnaire: React.FC = () => {
         )}
         <button
           type="button"
-          onClick={step === totalSteps ? () => console.log("Final Data:", formData) : nextStep}
+          onClick={step === totalSteps ? handleFinish : nextStep}
           disabled={isNextDisabled()}
           className={`flex-[2] p-4 rounded-2xl font-bold text-white transition-all cursor-pointer touch-manipulation ${
             isNextDisabled() ? "bg-gray-300 cursor-not-allowed" : "bg-[#1C42E8] hover:shadow-lg active:scale-95 shadow-md shadow-[#1C42E8]/20"

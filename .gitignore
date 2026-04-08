@@ -1,48 +1,3 @@
-<<<<<<< HEAD
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-.yarn/install-state.gz
-/mock-server
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# local env files
-.env*.local
-.env
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# Supabase
-supabase/.temp/
-supabase/functions/.env
-/tmp
-/disenio
-=======
 # Dependencias
 node_modules/
 npm-debug.log*
@@ -61,4 +16,3 @@ out/
 
 # Variables de entorno
 .env*.local
->>>>>>> origin/feat/alan-backend

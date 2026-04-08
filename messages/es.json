@@ -164,9 +164,40 @@
       "comingSoon": "Próximamente: Las mejores rutas personalizadas aparecerán aquí."
     }
   },
+  "Register": {
+    "title": "Únete a MexGo",
+    "subtitle": "Elige el tipo de cuenta que mejor se adapte a ti",
+    "tourist": {
+      "title": "Soy Turista",
+      "description": "Descubre rutas auténticas, vive experiencias únicas y apoya el comercio local.",
+      "cta": "Registrarme como Turista"
+    },
+    "business": {
+      "title": "Soy un Negocio",
+      "description": "Forma parte de la red Ola México, aumenta tu visibilidad y prepárate para el Mundial 2026.",
+      "cta": "Registrar mi Negocio"
+    },
+    "form": {
+      "name": "Nombre completo",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "businessName": "Nombre del negocio",
+      "category": "Categoría",
+      "back": "Volver",
+      "submit": "Crear cuenta",
+      "google": "Continuar con Google",
+      "alreadyHaveAccount": "¿Ya tienes cuenta?",
+      "success": "¡Registro exitoso!",
+      "redirecting": "Redirigiendo a tu panel..."
+    }
+  },
   "Navbar": {
     "discover": "Descubrir",
     "trips": "Viajes",
+    "more": "Más",
+    "login": "Inicio de sesión",
+    "register": "Registro",
     "more": "Más"
   },
   "Discover": {

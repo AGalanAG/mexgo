@@ -1,26 +1,21 @@
 "use client";
-
 import React, { useState } from 'react';
-import { Link, useRouter, usePathname } from '@/i18n/routing';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ModeNightIcon from '@mui/icons-material/ModeNight';
 import LanguageIcon from '@mui/icons-material/Language';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useTheme } from 'next-themes';
+import { useLogin } from '@/context/LoginContext';
 import { useTranslations, useLocale } from 'next-intl';
+import { useRouter, usePathname, Link } from '@/i18n/routing';
 
-interface NavbarProps {
-  variant?: 'dark' | 'light';
-}
-
-export default function Navbar({ variant = 'dark' }: NavbarProps) {
-  const isLight = variant === 'light';
+export default function HomeNavbar() {
   const t = useTranslations('Navbar');
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const { setTheme } = useTheme();
+  const { openLogin, openRegister } = useLogin();
 
   const [langAnchor, setLangAnchor] = useState<null | HTMLElement>(null);
   const [themeAnchor, setThemeAnchor] = useState<null | HTMLElement>(null);
@@ -44,39 +39,42 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
   };
 
   const toggleLocale = (nextLocale: string) => {
-    router.replace(pathname, { locale: nextLocale });
+    router.replace(pathname, {locale: nextLocale});
     handleClose();
   };
 
   return (
-    <nav
-      className={`${
-        isLight
-          ? 'fixed top-0 left-0 bg-white text-[var(--text-primary)] shadow-sm'
-          : 'absolute top-0 left-1/2 -translate-x-1/2 text-white'
-      } w-full p-4 md:p-6 flex justify-between items-center z-50 transition-all ${!isLight ? 'max-w-7xl' : ''}`}
-    >
+    <nav className="absolute top-0 left-1/2 -translate-x-1/2 w-full p-6 flex justify-between items-center text-white z-50 max-w-7xl mx-auto">
       {/* Logo */}
-      <Link
-        href="/"
-        className="font-bold text-2xl leading-tight cursor-pointer"
-        style={{ fontFamily: 'var(--font-display, inherit)' }}
-      >
-        {isLight ? 'MexGo' : <>Mex<br />GO</>}
+      <Link href="/" className="font-bold text-2xl leading-tight cursor-pointer">
+        Mex<br />GO
       </Link>
 
       {/* Menú Central */}
       <div className="hidden md:flex gap-8 font-medium">
-        <Link href="/discover" className="hover:opacity-70 transition-opacity">{t('discover')}</Link>
-        <Link href="/trips" className="hover:opacity-70 transition-opacity">{t('trips')}</Link>
-        <Link href="#" className="hover:opacity-70 transition-opacity">{t('more')}</Link>
+        <Link href="/discover" className="hover:text-gray-300 transition-colors">{t('discover')}</Link>
+        <Link href="/trips" className="hover:text-gray-300 transition-colors">{t('trips')}</Link>
+        <Link href="#" className="hover:text-gray-300 transition-colors">{t('more')}</Link>
       </div>
 
-      {/* Iconos */}
+      {/* Iconos y Botones */}
       <div className="flex gap-5 items-center">
+        <button 
+          onClick={openLogin}
+          className="text-sm font-medium hover:text-gray-300 transition-colors"
+        >
+          {t('login')}
+        </button>
+        <button 
+          onClick={openRegister}
+          className="text-sm font-medium hover:text-gray-300 transition-colors hidden sm:block"
+        >
+          {t('register')}
+        </button>
+
         {/* Idioma */}
-        <button
-          className="hover:opacity-70 transition-opacity flex items-center gap-1 uppercase text-sm font-bold"
+        <button 
+          className="hover:text-gray-300 transition-colors flex items-center gap-1 uppercase text-sm font-bold"
           onClick={handleLangClick}
         >
           <LanguageIcon fontSize="small" />
@@ -92,14 +90,9 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
           <MenuItem onClick={() => toggleLocale('en')}>English</MenuItem>
         </Menu>
 
-        {/* Perfil */}
-        <button className="hover:opacity-70 transition-opacity">
-          <AccountCircleIcon fontSize="medium" />
-        </button>
-
         {/* Dark Mode */}
-        <button
-          className="hover:opacity-70 transition-opacity"
+        <button 
+          className="hover:text-gray-300 transition-colors"
           onClick={handleThemeClick}
         >
           <ModeNightIcon fontSize="medium" />
