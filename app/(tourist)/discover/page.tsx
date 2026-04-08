@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import Navbar from '@/components/tourist/Navbar';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 /**
  * Interface for static place data
@@ -57,7 +58,9 @@ export default function DiscoverPage() {
 
   const clearSearch = (): void => setSearchValue('');
 
-  const handleCardClick = (id: string) => {
+  const handleCardClick = (e: React.MouseEvent, id: string) => {
+    // If clicking a link/button, don't flip
+    if ((e.target as HTMLElement).closest('a, button')) return;
     setFlippedId(flippedId === id ? null : id);
   };
 
@@ -66,22 +69,17 @@ export default function DiscoverPage() {
       {/* 1. Navbar fija arriba */}
       <Navbar variant="light" />
 
-      {/* Padding-top to avoid content being hidden under fixed navbar */}
-      <main className="pt-24 pb-16 px-4 flex flex-col items-center w-full max-w-7xl mx-auto">
+      <main className="pt-24 pb-16 px-4 flex flex-col items-center w-full max-w-5xl mx-auto">
         
         {/* 2. Barra de búsqueda */}
         <div className="w-full mb-10">
           <div className="relative flex items-center bg-gray-100 rounded-full border border-gray-200 overflow-hidden px-4 py-3 shadow-sm transition-all focus-within:ring-2 focus-within:ring-[var(--primary)] focus-within:bg-white">
-            <button 
-              onClick={clearSearch}
-              className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-              aria-label="Clear search"
-            >
+            <button onClick={clearSearch} className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
               <CloseIcon fontSize="small" />
             </button>
             <input
               type="text"
-              placeholder="Search places, activities..."
+              placeholder="Search places..."
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               className="flex-1 bg-transparent border-none outline-none px-3 text-[var(--text-primary)] font-medium placeholder-gray-400"
@@ -96,12 +94,12 @@ export default function DiscoverPage() {
             Recommendations
           </h2>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
             {RECOMMENDED_PLACES.map((place) => (
               <div 
                 key={place.id} 
-                className="perspective-1000 cursor-pointer h-[220px]"
-                onClick={() => handleCardClick(place.id)}
+                className="perspective-1000 cursor-pointer aspect-square"
+                onClick={(e) => handleCardClick(e, place.id)}
               >
                 <motion.div 
                   className="relative w-full h-full transition-all duration-500 preserve-3d"
@@ -110,7 +108,7 @@ export default function DiscoverPage() {
                 >
                   {/* Front Side */}
                   <div 
-                    className="absolute inset-0 backface-hidden shadow-[var(--shadow-md)] flex flex-col justify-end p-4"
+                    className="absolute inset-0 backface-hidden shadow-[var(--shadow-md)] flex flex-col justify-end p-3"
                     style={{ 
                       borderRadius: 'var(--radius-xl, 1.5rem)',
                       backgroundImage: `url(${place.imageUrl})`,
@@ -118,44 +116,32 @@ export default function DiscoverPage() {
                       backgroundPosition: 'center'
                     }}
                   >
-                    <div className="absolute inset-0 bg-black/10 rounded-[var(--radius-xl)]"></div>
+                    <div className="absolute inset-0 bg-black/20 rounded-[var(--radius-xl)]"></div>
                     
-                    <div className="relative z-10 flex justify-between items-end w-full">
-                      <span 
-                        className="inline-block text-white px-5 py-1.5 rounded-full text-sm font-bold shadow-sm"
+                    <div className="relative z-10 flex flex-col items-start w-full">
+                      <Link 
+                        href={`/discover/${place.id}`}
+                        className="inline-block text-white px-3 py-1 rounded-full text-[10px] md:text-xs font-bold shadow-md hover:scale-105 transition-transform active:scale-95"
                         style={{ backgroundColor: 'var(--color-accent, var(--accent, #006341))' }}
                       >
                         {place.name}
-                      </span>
-                      
-                      {/* Botón ">>>" con animación de deslizamiento al hover */}
-                      <motion.button 
-                        whileHover={{ x: 5 }}
-                        className="bg-white/90 hover:bg-white text-[var(--primary)] w-12 h-10 rounded-xl flex items-center justify-center font-black transition-all shadow-md overflow-hidden"
-                      >
-                        <motion.span
-                          initial={{ x: -2 }}
-                          whileHover={{ x: 2 }}
-                        >
-                          &gt;&gt;&gt;
-                        </motion.span>
-                      </motion.button>
+                      </Link>
                     </div>
                   </div>
 
                   {/* Back Side (Info) */}
                   <div 
-                    className="absolute inset-0 backface-hidden bg-white shadow-[var(--shadow-md)] flex flex-col p-6 rotate-y-180"
+                    className="absolute inset-0 backface-hidden bg-white shadow-[var(--shadow-md)] flex flex-col p-4 rotate-y-180 text-center"
                     style={{ borderRadius: 'var(--radius-xl, 1.5rem)' }}
                   >
-                    <h3 className="text-xl font-bold text-[var(--primary)] mb-2">{place.name}</h3>
-                    <p className="text-sm text-gray-500 mb-4 flex-1">{place.description}</p>
-                    <div className="flex items-center gap-2 text-xs text-gray-400 font-medium">
-                      <span className="bg-gray-100 px-2 py-1 rounded">📍 {place.location}</span>
-                    </div>
-                    <div className="mt-4 flex justify-end">
-                      <span className="text-[var(--color-accent)] font-bold text-xs uppercase tracking-widest">Click to flip back</span>
-                    </div>
+                    <h3 className="text-sm font-bold text-[var(--primary)] mb-1 truncate w-full">{place.name}</h3>
+                    <p className="text-[10px] text-gray-500 mb-2 flex-1 overflow-hidden leading-tight">{place.description}</p>
+                    <Link 
+                      href={`/discover/${place.id}`}
+                      className="mt-auto text-[10px] font-bold py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110"
+                    >
+                      View Details
+                    </Link>
                   </div>
                 </motion.div>
               </div>
@@ -163,13 +149,12 @@ export default function DiscoverPage() {
           </div>
         </section>
 
-        {/* 4. Botón "See more" centrado al final */}
+        {/* 4. Botón "See more" */}
         <div className="mt-14 w-full flex justify-center">
           <motion.button 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="btn-primary" 
-            style={{ paddingLeft: '3rem', paddingRight: '3rem' }}
+            className="btn-primary text-sm px-10" 
           >
             See more
           </motion.button>
@@ -177,19 +162,10 @@ export default function DiscoverPage() {
       </main>
 
       <style jsx global>{`
-        .perspective-1000 {
-          perspective: 1000px;
-        }
-        .preserve-3d {
-          transform-style: preserve-3d;
-        }
-        .backface-hidden {
-          backface-visibility: hidden;
-          -webkit-backface-visibility: hidden;
-        }
-        .rotate-y-180 {
-          transform: rotateY(180deg);
-        }
+        .perspective-1000 { perspective: 1000px; }
+        .preserve-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
       `}</style>
     </div>
   );
