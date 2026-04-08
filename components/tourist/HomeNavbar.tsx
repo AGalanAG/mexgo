@@ -5,14 +5,20 @@ import LanguageIcon from '@mui/icons-material/Language';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useTheme } from 'next-themes';
-import { useLogin } from '@/context/LoginContext'; // <-- Importamos el contexto
+import { useLogin } from '@/context/LoginContext';
+import { useTranslations, useLocale } from 'next-intl';
+import { useRouter, usePathname, Link } from '@/i18n/routing';
 
 export default function HomeNavbar() {
+  const t = useTranslations('Navbar');
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { setTheme } = useTheme();
+  const { openLogin, openRegister } = useLogin();
+
   const [langAnchor, setLangAnchor] = useState<null | HTMLElement>(null);
   const [themeAnchor, setThemeAnchor] = useState<null | HTMLElement>(null);
-  
-  const { setTheme } = useTheme();
-  const { openLogin } = useLogin(); // <-- Extraemos la función para abrir el modal
 
   const handleLangClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setLangAnchor(event.currentTarget);
@@ -32,39 +38,47 @@ export default function HomeNavbar() {
     handleClose();
   };
 
+  const toggleLocale = (nextLocale: string) => {
+    router.replace(pathname, {locale: nextLocale});
+    handleClose();
+  };
+
   return (
-    <nav className="absolute top-0 left-0 w-full p-6 flex justify-between items-center text-white z-50 max-w-7xl mx-auto left-1/2 -translate-x-1/2">
+    <nav className="absolute top-0 left-1/2 -translate-x-1/2 w-full p-6 flex justify-between items-center text-white z-50 max-w-7xl mx-auto">
       {/* Logo */}
-      <div className="font-bold text-2xl leading-tight cursor-pointer">
+      <Link href="/" className="font-bold text-2xl leading-tight cursor-pointer">
         Mex<br />GO
-      </div>
+      </Link>
 
       {/* Menú Central */}
       <div className="hidden md:flex gap-8 font-medium">
-        <a href="#" className="hover:text-gray-300 transition-colors">Discover</a>
-        <a href="#" className="hover:text-gray-300 transition-colors">Trips</a>
-        <a href="#" className="hover:text-gray-300 transition-colors">More</a>
+        <Link href="/discover" className="hover:text-gray-300 transition-colors">{t('discover')}</Link>
+        <Link href="/trips" className="hover:text-gray-300 transition-colors">{t('trips')}</Link>
+        <Link href="#" className="hover:text-gray-300 transition-colors">{t('more')}</Link>
       </div>
 
       {/* Iconos y Botones */}
       <div className="flex gap-5 items-center">
-        {/* Aquí conectamos el onClick al contexto */}
         <button 
           onClick={openLogin}
           className="text-sm font-medium hover:text-gray-300 transition-colors"
         >
-          Inicio de sesión
+          {t('login')}
         </button>
-        <button className="text-sm font-medium hover:text-gray-300 transition-colors">
-          Registro
+        <button 
+          onClick={openRegister}
+          className="text-sm font-medium hover:text-gray-300 transition-colors hidden sm:block"
+        >
+          {t('register')}
         </button>
 
         {/* Idioma */}
         <button 
-          className="hover:text-gray-300 transition-colors"
+          className="hover:text-gray-300 transition-colors flex items-center gap-1 uppercase text-sm font-bold"
           onClick={handleLangClick}
         >
-          <LanguageIcon fontSize="medium" />
+          <LanguageIcon fontSize="small" />
+          {locale}
         </button>
         <Menu
           anchorEl={langAnchor}
@@ -72,8 +86,8 @@ export default function HomeNavbar() {
           onClose={handleClose}
           className="mt-2"
         >
-          <MenuItem onClick={handleClose}>Español</MenuItem>
-          <MenuItem onClick={handleClose}>Inglés</MenuItem>
+          <MenuItem onClick={() => toggleLocale('es')}>Español</MenuItem>
+          <MenuItem onClick={() => toggleLocale('en')}>English</MenuItem>
         </Menu>
 
         {/* Dark Mode */}

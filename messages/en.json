@@ -164,6 +164,34 @@
       "comingSoon": "Coming soon: The best personalized routes will appear here."
     }
   },
+  "Register": {
+    "title": "Join MexGo",
+    "subtitle": "Choose the account type that best suits you",
+    "tourist": {
+      "title": "I am a Tourist",
+      "description": "Discover authentic routes, live unique experiences and support local businesses.",
+      "cta": "Sign up as Tourist"
+    },
+    "business": {
+      "title": "I am a Business",
+      "description": "Be part of the Ola México network, increase your visibility and prepare for the 2026 World Cup.",
+      "cta": "Register my Business"
+    },
+    "form": {
+      "name": "Full Name",
+      "email": "Email Address",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "businessName": "Business Name",
+      "category": "Category",
+      "back": "Back",
+      "submit": "Create Account",
+      "google": "Continue with Google",
+      "alreadyHaveAccount": "Already have an account? Log in",
+      "success": "Registration successful!",
+      "redirecting": "Redirecting to your dashboard..."
+    }
+  },
   "Navbar": {
     "discover": "Discover",
     "trips": "Trips",

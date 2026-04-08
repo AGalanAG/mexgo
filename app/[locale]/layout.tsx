@@ -9,9 +9,10 @@ import {routing} from '@/i18n/routing';
 // Importamos tus Providers existentes
 import { Providers } from "@/components/Providers";
 
-// Importamos el nuevo Provider del Login y el Modal Global
+// Importamos el nuevo Provider del Login y los Modales Globales
 import { LoginProvider } from "@/context/LoginContext";
 import GlobalLoginModal from "@/components/tourist/GlobalLoginModal";
+import GlobalRegisterModal from "@/components/tourist/GlobalRegisterModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -58,6 +59,7 @@ export default async function RootLayout({
             <LoginProvider>
               {children}
               <GlobalLoginModal />
+              <GlobalRegisterModal />
             </LoginProvider>
           </Providers>
         </NextIntlClientProvider>

@@ -1,4 +1,4 @@
-import Navbar from '@/components/tourist/Navbar';
+import HomeNavbar from '@/components/tourist/HomeNavbar';
 import Footer from '@/components/tourist/Footer';
 import PlaceCard from '@/components/tourist/PlaceCard';
 import {getTranslations} from 'next-intl/server';
@@ -28,7 +28,7 @@ export default async function Home() {
         ></div>
 
         {/* Componente Navbar Separado */}
-        <Navbar />
+        <HomeNavbar />
 
         {/* Hero Content */}
         <div className="text-center text-white z-10 px-4 w-full max-w-4xl mt-16">

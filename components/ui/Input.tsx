@@ -10,7 +10,7 @@ export const Input: React.FC<InputProps> = ({ label, error, className = "", ...p
     <div className="flex flex-col gap-1 w-full">
       {label && <label className="text-sm font-medium text-[var(--dark-grey)]">{label}</label>}
       <input
-        className={`px-4 py-2 rounded-lg border-2 border-[var(--light-grey)] focus:border-[var(--coppel-blue)] outline-none transition-colors disabled:bg-gray-100 ${
+        className={`px-4 py-2 rounded-lg border-2 border-[var(--light-grey)] focus:border-[var(--coppel-blue)] outline-none transition-colors disabled:bg-gray-100 text-black ${
           error ? "border-[var(--red)]" : ""
         } ${className}`}
         {...props}
@@ -30,7 +30,7 @@ export const TextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement
     <div className="flex flex-col gap-1 w-full">
       {label && <label className="text-sm font-medium text-[var(--dark-grey)]">{label}</label>}
       <textarea
-        className={`px-4 py-2 rounded-lg border-2 border-[var(--light-grey)] focus:border-[var(--coppel-blue)] outline-none transition-colors disabled:bg-gray-100 ${
+        className={`px-4 py-2 rounded-lg border-2 border-[var(--light-grey)] focus:border-[var(--coppel-blue)] outline-none transition-colors disabled:bg-gray-100 text-black ${
           error ? "border-[var(--red)]" : ""
         } ${className}`}
         {...props}

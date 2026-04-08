@@ -10,7 +10,6 @@ import MenuItem from '@mui/material/MenuItem';
 import { useTheme } from 'next-themes';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/routing';
-import { useLogin } from '@/context/LoginContext';
 
 interface NavbarProps {
   variant?: 'dark' | 'light';
@@ -23,7 +22,6 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { setTheme } = useTheme();
-  const { openLogin } = useLogin();
 
   const [langAnchor, setLangAnchor] = useState<null | HTMLElement>(null);
   const [themeAnchor, setThemeAnchor] = useState<null | HTMLElement>(null);
@@ -75,18 +73,8 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
         <Link href="#" className="hover:opacity-70 transition-opacity">{t('more')}</Link>
       </div>
 
-      {/* Iconos y Botones */}
+      {/* Iconos */}
       <div className="flex gap-5 items-center">
-        <button 
-          onClick={openLogin}
-          className="text-sm font-medium hover:opacity-70 transition-opacity"
-        >
-          {t('login')}
-        </button>
-        <button className="text-sm font-medium hover:opacity-70 transition-opacity hidden sm:block">
-          {t('register')}
-        </button>
-
         {/* Idioma */}
         <button 
           className="hover:opacity-70 transition-opacity flex items-center gap-1 uppercase text-sm font-bold"
