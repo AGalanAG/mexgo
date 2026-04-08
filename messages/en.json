@@ -1,0 +1,172 @@
+{
+  "Questionnaire": {
+    "steps": "Step {step} of {total}",
+    "next": "Next",
+    "back": "Back",
+    "createItinerary": "Create Itinerary",
+    "tourist": {
+      "step1": {
+        "title": "Profile and Origin",
+        "countryLabel": "Which country are you visiting from?",
+        "countryPlaceholder": "e.g. Spain, Brazil...",
+        "companionsLabel": "Number of companions",
+        "companionsOptions": {
+          "solo": "Traveling solo",
+          "small": "2 to 4 people",
+          "large": "More than 4 people"
+        },
+        "isAdultSolo": "Are you of legal age?",
+        "isAdultGroup": "Is everyone of legal age?",
+        "ageOptions": {
+          "yes": "Yes",
+          "no": "No"
+        }
+      },
+      "step2": {
+        "title": "Logistics",
+        "durationLabel": "Length of stay",
+        "durationOptions": {
+          "1-3": "1 to 3 days",
+          "4-7": "4 to 7 days",
+          "8-14": "8 to 14 days",
+          "15+": "More than 15 days"
+        },
+        "cityLabel": "Lodging city",
+        "cityPlaceholder": "Select a city",
+        "boroughLabel": "Borough / Municipality",
+        "boroughPlaceholder": "Select zone"
+      },
+      "step3": {
+        "title": "Travel reasons",
+        "description": "Select between 2 and 3 options that define your trip.",
+        "motives": {
+          "cultural": "Cultural Tourism & Heritage",
+          "historical": "Historical Tourism",
+          "sports": "Sports Events (World Cup)",
+          "relaxation": "Relaxation and Rest",
+          "gastronomy": "Gastronomy",
+          "nightlife": "Nightlife & Entertainment"
+        }
+      },
+      "step4": {
+        "title": "Choice factors",
+        "description": "This helps us prioritize your routes on the map.",
+        "factors": {
+          "proximity": {
+            "label": "Proximity",
+            "desc": "Closeness to the stadium or event venues."
+          },
+          "preference": {
+            "label": "Activity Preference",
+            "desc": "Sacrifice proximity for an activity more in line with your tastes."
+          }
+        },
+        "olaMexicoTip": "The Ola México seal highlights local businesses promoted by Fundación Coppel."
+      }
+    },
+    "business": {
+      "title": "Business Registration",
+      "subtitle": "Ola México Seal",
+      "sendRequest": "Send Request",
+      "step1": {
+        "title": "Owner Data",
+        "nameLabel": "Full name",
+        "ageLabel": "Age",
+        "genderLabel": "Gender",
+        "genderOptions": {
+          "placeholder": "Select",
+          "female": "Female",
+          "male": "Male",
+          "other": "Other"
+        },
+        "whatsappLabel": "WhatsApp"
+      },
+      "step2": {
+        "title": "Location and Hours",
+        "boroughLabel": "Borough (CDMX)",
+        "boroughPlaceholder": "Select borough",
+        "neighborhoodLabel": "Neighborhood",
+        "mapsLabel": "Google Maps URL",
+        "hoursLabel": "Operating days and hours",
+        "hoursPlaceholder": "e.g. Monday to Friday 9:00 - 18:00"
+      },
+      "step3": {
+        "title": "Business Profile",
+        "nameLabel": "Business Name",
+        "descLabel": "Short description (Max. 150 chars.)",
+        "timeLabel": "How long has it been operating?",
+        "timeOptions": {
+          "placeholder": "Select range",
+          "less1": "Less than 1 year",
+          "1-3": "1 to 3 years",
+          "3-5": "3 to 5 years",
+          "more5": "More than 5 years"
+        }
+      },
+      "step4": {
+        "title": "Social Impact and World Cup 2026",
+        "satLabel": "SAT Status",
+        "satOptions": {
+          "formal": "Formal / Registered",
+          "process": "In process",
+          "interested": "No, but interested",
+          "notInterested": "Not interested"
+        },
+        "adaptationLabel": "How will you adapt for the 2026 World Cup?",
+        "adaptationPlaceholder": "e.g. Menu in English, card payment, etc.",
+        "supportLabel": "What would you invest the Fundación Coppel support in?",
+        "supportPlaceholder": "e.g. Remodeling, marketing, inventory..."
+      },
+      "step5": {
+        "title": "Training Preference",
+        "campuses": {
+          "hub": {
+            "label": "Hub Azteca",
+            "desc": "Strategic proximity to the Azteca Stadium."
+          },
+          "mide": {
+            "label": "MIDE",
+            "desc": "Historic Center, financial and cultural heart."
+          }
+        },
+        "footerTip": "By completing this registration, your business will be evaluated to receive the Ola México quality seal."
+      }
+    }
+  },
+  "Home": {
+    "hero": {
+      "title": "Find Your <br /> Next Adventure",
+      "searchPlaceholder": "Places to go, things to do, hotels...",
+      "subtitle": "Every street in Mexico City has a story to tell.",
+      "cta": "Discover more"
+    },
+    "services": {
+      "title": "Our Service",
+      "item1": {
+        "title": "Personalized Travel Recommendations",
+        "desc": "AI-powered recommendations tailored just for you!"
+      },
+      "item2": {
+        "title": "Hotel Booking",
+        "desc": "You can easily book according to your budget."
+      },
+      "item3": {
+        "title": "Tour Plan",
+        "desc": "We provide you the best plan within a short time."
+      }
+    },
+    "bestService": {
+      "title": "We always try to give you<br/>the best service",
+      "subtitle": "Your Satisfaction is our main priority."
+    },
+    "bestTours": {
+      "title": "Best Tours For You",
+      "comingSoon": "Coming soon: The best personalized routes will appear here."
+    }
+  },
+  "Navbar": {
+    "discover": "Discover",
+    "trips": "Trips",
+    "more": "More"
+  }
+}
