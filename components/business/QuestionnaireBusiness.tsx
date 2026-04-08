@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { getStoredAccessToken } from "@/lib/client-auth";
 
 const BOROUGHS = [
   "Álvaro Obregón", "Azcapotzalco", "Benito Juárez", "Coyoacán", "Cuajimalpa",
@@ -22,6 +23,7 @@ const SAT_STATUS = [
 
 const QuestionnaireBusiness: React.FC = () => {
   const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     // Step 1: Propietario
     owner_full_name: "",
@@ -38,6 +40,7 @@ const QuestionnaireBusiness: React.FC = () => {
     business_name: "",
     business_description: "",
     business_start_range: "",
+    continuous_operation_time: "",
     operation_modes: [] as string[],
     employees_women_count: "0",
     employees_men_count: "0",
@@ -63,13 +66,13 @@ const QuestionnaireBusiness: React.FC = () => {
 
   const isNextDisabled = () => {
     if (step === 1) {
-      return !formData.owner_full_name || !formData.owner_age || !formData.owner_gender || !formData.owner_whatsapp;
+      return !formData.owner_full_name || !formData.owner_age || !formData.owner_gender || !formData.owner_email || !formData.owner_whatsapp;
     }
     if (step === 2) {
       return !formData.borough_code || !formData.neighborhood || !formData.google_maps_url || !formData.operation_days_hours;
     }
     if (step === 3) {
-      return !formData.business_name || !formData.business_description || !formData.business_start_range;
+      return !formData.business_name || !formData.business_description || !formData.business_start_range || !formData.continuous_operation_time;
     }
     if (step === 4) {
       return !formData.sat_status || !formData.adaptation_for_world_cup || !formData.support_usage;
@@ -124,6 +127,8 @@ const QuestionnaireBusiness: React.FC = () => {
                 <label className="block text-sm font-semibold mb-2 text-gray-900">Edad</label>
                 <input
                   type="number"
+                  min={18}
+                  max={120}
                   className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30"
                   value={formData.owner_age}
                   onChange={(e) => setFormData({...formData, owner_age: e.target.value})}
@@ -151,6 +156,16 @@ const QuestionnaireBusiness: React.FC = () => {
                 className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30"
                 value={formData.owner_whatsapp}
                 onChange={(e) => setFormData({...formData, owner_whatsapp: e.target.value})}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-gray-900">Correo electrónico</label>
+              <input
+                type="email"
+                placeholder="ejemplo@correo.com"
+                className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30"
+                value={formData.owner_email}
+                onChange={(e) => setFormData({...formData, owner_email: e.target.value})}
               />
             </div>
           </div>
@@ -237,6 +252,16 @@ const QuestionnaireBusiness: React.FC = () => {
                 <option value="A3_A5">3 a 5 años</option>
                 <option value="MAS_5">Más de 5 años</option>
               </select>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-gray-900">Tiempo operando continuamente</label>
+              <input
+                type="text"
+                placeholder="Ej. 2 años 6 meses"
+                className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30"
+                value={formData.continuous_operation_time}
+                onChange={(e) => setFormData({...formData, continuous_operation_time: e.target.value})}
+              />
             </div>
           </div>
         )}
@@ -338,13 +363,72 @@ const QuestionnaireBusiness: React.FC = () => {
           )}
           <button
             type="button"
-            onClick={step === totalSteps ? () => console.log("Final Data:", formData) : nextStep}
-            disabled={isNextDisabled()}
+            onClick={
+              step === totalSteps
+                ? async () => {
+                    const accessToken = getStoredAccessToken();
+                    if (!accessToken) {
+                      alert("Inicia sesion para enviar tu solicitud.");
+                      return;
+                    }
+
+                    const payload = {
+                      owner_full_name: formData.owner_full_name,
+                      owner_age: Number(formData.owner_age),
+                      owner_gender: formData.owner_gender,
+                      owner_email: formData.owner_email,
+                      owner_whatsapp: formData.owner_whatsapp,
+                      borough_code: formData.borough_code,
+                      neighborhood: formData.neighborhood,
+                      google_maps_url: formData.google_maps_url || null,
+                      operation_days_hours: formData.operation_days_hours,
+                      business_name: formData.business_name,
+                      business_description: formData.business_description,
+                      business_start_range: formData.business_start_range,
+                      continuous_operation_time: formData.continuous_operation_time,
+                      operation_modes: formData.operation_modes,
+                      employees_women_count: Number(formData.employees_women_count),
+                      employees_men_count: Number(formData.employees_men_count),
+                      sat_status: formData.sat_status,
+                      adaptation_for_world_cup: formData.adaptation_for_world_cup,
+                      support_usage: formData.support_usage,
+                      training_campus_preference: formData.training_campus_preference,
+                    };
+
+                    try {
+                      setIsSubmitting(true);
+
+                      const response = await fetch('/api/requests', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          Authorization: `Bearer ${accessToken}`,
+                        },
+                        body: JSON.stringify(payload),
+                      });
+
+                      const result = await response.json();
+                      if (!response.ok || !result?.ok) {
+                        const errorMessage = result?.error?.message || 'No fue posible enviar la solicitud';
+                        throw new Error(errorMessage);
+                      }
+
+                      alert('Solicitud enviada correctamente.');
+                    } catch (error) {
+                      const message = error instanceof Error ? error.message : 'Error inesperado al enviar solicitud';
+                      alert(message);
+                    } finally {
+                      setIsSubmitting(false);
+                    }
+                  }
+                : nextStep
+            }
+            disabled={isNextDisabled() || isSubmitting}
             className={`flex-[2] p-4 rounded-2xl font-bold text-white transition-all active:scale-95 shadow-md shadow-[#1C42E8]/20 cursor-pointer touch-manipulation ${
-              isNextDisabled() ? "bg-gray-300 cursor-not-allowed" : "bg-[#1C42E8] hover:shadow-lg"
+              isNextDisabled() || isSubmitting ? "bg-gray-300 cursor-not-allowed" : "bg-[#1C42E8] hover:shadow-lg"
             }`}
           >
-            {step === totalSteps ? "Enviar Solicitud" : "Siguiente"}
+            {step === totalSteps ? (isSubmitting ? "Enviando..." : "Enviar Solicitud") : "Siguiente"}
           </button>
         </div>
       </form>

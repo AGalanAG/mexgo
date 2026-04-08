@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { useLogin } from '@/context/LoginContext';
+import { saveSession } from '@/lib/client-auth';
 
 function RegisterContent() {
   const t = useTranslations('Register');
@@ -21,6 +22,7 @@ function RegisterContent() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -32,18 +34,73 @@ function RegisterContent() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleFakeRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.email || !formData.password || !formData.name) return;
 
     setIsLoading(true);
-    setTimeout(() => {
+    setErrorMessage('');
+
+    try {
+      const roleCode = type === 'business' ? 'ENCARGADO_NEGOCIO' : 'TURISTA';
+
+      const registerResponse = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          fullName: formData.name,
+          roleCode,
+          language: 'es',
+          countryOfOrigin: 'MX',
+        }),
+      });
+
+      const registerResult = await registerResponse.json();
+      if (!registerResponse.ok || !registerResult?.ok) {
+        throw new Error(registerResult?.error?.message || 'No fue posible completar el registro');
+      }
+
+      const loginResponse = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const loginResult = await loginResponse.json();
+      if (!loginResponse.ok || !loginResult?.ok) {
+        throw new Error(loginResult?.error?.message || 'Registro correcto, pero fallo el inicio de sesion automatico');
+      }
+
+      const session = loginResult.data?.session;
+      saveSession({
+        accessToken: session.accessToken,
+        refreshToken: session.refreshToken,
+        expiresAt: session.expiresAt,
+        tokenType: session.tokenType,
+        user: loginResult.data?.user,
+        roleCodes: loginResult.data?.roleCodes,
+        primaryRole: loginResult.data?.primaryRole,
+      });
+
       setIsLoading(false);
       setIsSuccess(true);
       setTimeout(() => {
-        router.push(type === 'business' ? '/profile' : '/onboarding');
+        if (type === 'business') {
+          window.location.assign('/profile');
+          return;
+        }
+
+        router.push('/onboarding');
       }, 2000);
-    }, 1500);
+    } catch (error) {
+      setIsLoading(false);
+      setErrorMessage(error instanceof Error ? error.message : 'No fue posible crear la cuenta');
+    }
   };
 
   const colorClass = type === 'business' ? 'bg-[var(--coppel-blue)]' : 'bg-[var(--green)]';
@@ -69,7 +126,7 @@ function RegisterContent() {
               <p className="text-gray-500 text-sm">{t('subtitle')}</p>
             </div>
 
-            <form onSubmit={handleFakeRegister} className="space-y-4">
+            <form onSubmit={handleRegister} className="space-y-4">
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider pl-1">{t('form.name')}</label>
                 <Input 
@@ -121,6 +178,12 @@ function RegisterContent() {
                   </span>
                 ) : t('form.submit')}
               </Button>
+
+              {errorMessage && (
+                <p className="text-sm text-red-500 font-medium">
+                  {errorMessage}
+                </p>
+              )}
 
               <div className="relative my-8">
                 <div className="absolute inset-0 flex items-center">

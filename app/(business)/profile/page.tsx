@@ -1,17 +1,77 @@
+"use client";
+
 import React from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { clearSession, getStoredAccessToken } from "@/lib/client-auth";
 
 export default function BusinessProfilePage() {
-  const business = {
-    nombre_negocio: "Tacos El Pastorcito",
-    status: "Aprobado",
-    visitas_totales: 450,
-    saturacion_actual: "45%",
-    redes_sociales: "@tacoselpastorcito_cdmx",
-    horarios: "Lunes a Sábado 14:00 - 02:00",
-  };
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [business, setBusiness] = React.useState({
+    nombre_negocio: "Mi Negocio",
+    status: "DRAFT",
+    visitas_totales: 0,
+    saturacion_actual: "0%",
+    redes_sociales: "No configuradas",
+    horarios: "No configurado",
+    descripcion: "",
+    categoria: "",
+    ubicacion: "",
+    contacto: "",
+  });
+
+  React.useEffect(() => {
+    const accessToken = getStoredAccessToken();
+    if (!accessToken) {
+      window.location.assign('/es');
+      return;
+    }
+
+    const loadBusiness = async () => {
+      try {
+        const response = await fetch('/api/businesses/me', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        const result = await response.json();
+        if (!response.ok || !result?.ok) {
+          throw new Error(result?.error?.message || 'No fue posible cargar negocio');
+        }
+
+        const item = result.data;
+        setBusiness({
+          nombre_negocio: item.businessName,
+          status: item.status,
+          visitas_totales: 0,
+          saturacion_actual: "0%",
+          redes_sociales: "No configuradas",
+          horarios: "No configurado",
+          descripcion: item.businessDescription || "",
+          categoria: item.categoryCode || "",
+          ubicacion: `${item.neighborhood || ''} ${item.borough || ''}`.trim() || "Sin ubicación",
+          contacto: item.phone || item.email || "No configurado",
+        });
+      } catch {
+        clearSession();
+        window.location.assign('/es');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadBusiness();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+        <p className="text-[var(--dark-blue)] font-bold">Cargando perfil de negocio...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -62,6 +122,22 @@ export default function BusinessProfilePage() {
               <div>
                 <span className="text-sm font-bold text-[var(--grey)] block">Redes Sociales:</span>
                 <p>{business.redes_sociales}</p>
+              </div>
+              <div>
+                <span className="text-sm font-bold text-[var(--grey)] block">Descripción:</span>
+                <p>{business.descripcion || "Sin descripción"}</p>
+              </div>
+              <div>
+                <span className="text-sm font-bold text-[var(--grey)] block">Categoría:</span>
+                <p>{business.categoria || "Sin categoría"}</p>
+              </div>
+              <div>
+                <span className="text-sm font-bold text-[var(--grey)] block">Ubicación:</span>
+                <p>{business.ubicacion}</p>
+              </div>
+              <div>
+                <span className="text-sm font-bold text-[var(--grey)] block">Contacto:</span>
+                <p>{business.contacto}</p>
               </div>
               <Button variant="outline" className="w-full">Editar Información</Button>
             </CardContent>

@@ -9,6 +9,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useTheme } from 'next-themes';
 import { useTranslations, useLocale } from 'next-intl';
+import { clearSession, getStoredSession } from '@/lib/client-auth';
 
 interface NavbarProps {
   variant?: 'dark' | 'light';
@@ -21,6 +22,12 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { setTheme } = useTheme();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  React.useEffect(() => {
+    const session = getStoredSession();
+    setIsAuthenticated(Boolean(session?.accessToken));
+  }, []);
 
   const [langAnchor, setLangAnchor] = useState<null | HTMLElement>(null);
   const [themeAnchor, setThemeAnchor] = useState<null | HTMLElement>(null);
@@ -93,9 +100,27 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
         </Menu>
 
         {/* Perfil */}
-        <Link href="/profile" className="hover:opacity-70 transition-opacity">
-          <AccountCircleIcon fontSize="medium" />
-        </Link>
+        {isAuthenticated ? (
+          <>
+            <Link href="/profile" className="hover:opacity-70 transition-opacity">
+              <AccountCircleIcon fontSize="medium" />
+            </Link>
+            <button
+              onClick={() => {
+                clearSession();
+                setIsAuthenticated(false);
+                router.push('/');
+              }}
+              className="text-xs font-bold uppercase tracking-wider hover:opacity-70 transition-opacity"
+            >
+              Salir
+            </button>
+          </>
+        ) : (
+          <Link href="/" className="hover:opacity-70 transition-opacity">
+            <AccountCircleIcon fontSize="medium" />
+          </Link>
+        )}
 
         {/* Dark Mode */}
         <button

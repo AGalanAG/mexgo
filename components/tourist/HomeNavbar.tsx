@@ -8,14 +8,29 @@ import { useTheme } from 'next-themes';
 import { useLogin } from '@/context/LoginContext';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter, usePathname, Link } from '@/i18n/routing';
+import { clearSession, getStoredSession } from '@/lib/client-auth';
+import { useSearchParams } from 'next/navigation';
 
 export default function HomeNavbar() {
   const t = useTranslations('Navbar');
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { setTheme } = useTheme();
   const { openLogin, openRegister } = useLogin();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  React.useEffect(() => {
+    const session = getStoredSession();
+    setIsAuthenticated(Boolean(session?.accessToken));
+  }, []);
+
+  React.useEffect(() => {
+    if (searchParams.get('login') === '1') {
+      openLogin();
+    }
+  }, [openLogin, searchParams]);
 
   const [langAnchor, setLangAnchor] = useState<null | HTMLElement>(null);
   const [themeAnchor, setThemeAnchor] = useState<null | HTMLElement>(null);
@@ -59,18 +74,38 @@ export default function HomeNavbar() {
 
       {/* Iconos y Botones */}
       <div className="flex gap-5 items-center">
-        <button 
-          onClick={openLogin}
-          className="text-sm font-medium hover:text-gray-300 transition-colors"
-        >
-          {t('login')}
-        </button>
-        <button 
-          onClick={openRegister}
-          className="text-sm font-medium hover:text-gray-300 transition-colors hidden sm:block"
-        >
-          {t('register')}
-        </button>
+        {!isAuthenticated ? (
+          <>
+            <button 
+              onClick={openLogin}
+              className="text-sm font-medium hover:text-gray-300 transition-colors"
+            >
+              {t('login')}
+            </button>
+            <button 
+              onClick={openRegister}
+              className="text-sm font-medium hover:text-gray-300 transition-colors hidden sm:block"
+            >
+              {t('register')}
+            </button>
+          </>
+        ) : (
+          <>
+            <Link href="/profile" className="text-sm font-medium hover:text-gray-300 transition-colors">
+              Perfil
+            </Link>
+            <button
+              onClick={() => {
+                clearSession();
+                setIsAuthenticated(false);
+                router.push('/');
+              }}
+              className="text-sm font-medium hover:text-gray-300 transition-colors hidden sm:block"
+            >
+              Salir
+            </button>
+          </>
+        )}
 
         {/* Idioma */}
         <button 

@@ -12,6 +12,7 @@ import {
   Star as StarIcon,
   CameraAlt as CameraAltIcon,
 } from '@mui/icons-material';
+import { clearSession, getStoredAccessToken } from '@/lib/client-auth';
 
 const MOCK_TRIPS = [
   {
@@ -52,9 +53,89 @@ const STATS = [
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [name, setName] = useState('Viajero MexGO');
-  const [origin, setOrigin] = useState('España 🇪🇸');
-  const [bio, setBio] = useState('Amante de la cultura mexicana y la gastronomía. Aquí para vivir el Mundial 2026 al máximo.');
+  const [origin, setOrigin] = useState('MX');
+  const [bio, setBio] = useState('Perfil de viajero en MexGo.');
+
+  React.useEffect(() => {
+    const accessToken = getStoredAccessToken();
+    if (!accessToken) {
+      window.location.assign('/es');
+      return;
+    }
+
+    const loadProfile = async () => {
+      try {
+        const response = await fetch('/api/tourist/profile', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        const result = await response.json();
+        if (!response.ok || !result?.ok) {
+          throw new Error(result?.error?.message || 'No fue posible cargar perfil');
+        }
+
+        setName(result.data.fullName || 'Viajero MexGO');
+        setOrigin(result.data.countryOfOrigin || 'MX');
+        setBio('Perfil de viajero en MexGo.');
+      } catch {
+        clearSession();
+        window.location.assign('/es');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProfile();
+  }, []);
+
+  const handleEditClick = async () => {
+    if (!isEditing) {
+      setIsEditing(true);
+      return;
+    }
+
+    const accessToken = getStoredAccessToken();
+    if (!accessToken) {
+      clearSession();
+      window.location.assign('/es');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/tourist/profile', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          fullName: name,
+          countryOfOrigin: origin,
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result?.ok) {
+        throw new Error(result?.error?.message || 'No fue posible guardar cambios');
+      }
+
+      setIsEditing(false);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Error al guardar perfil');
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-[var(--primary)] font-bold">
+        Cargando perfil...
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-[var(--background)]">
@@ -93,7 +174,7 @@ export default function ProfilePage() {
                 </div>
 
                 <button
-                  onClick={() => setIsEditing(!isEditing)}
+                  onClick={handleEditClick}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
                     isEditing
                       ? 'bg-[var(--green)] text-white shadow-lg shadow-[var(--green)]/30'

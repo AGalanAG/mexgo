@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
+import { getStoredAccessToken } from "@/lib/client-auth";
 
 const CITIES_DATA: Record<string, string[]> = {
   CDMX: [
@@ -44,6 +45,7 @@ const Questionnaire: React.FC = () => {
     trip_motives: [],
     priority_factor: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const totalSteps = 4;
 
@@ -66,11 +68,53 @@ const Questionnaire: React.FC = () => {
     });
   };
 
-  const handleFinish = () => {
-    // Simular guardado de datos
-    console.log("Final Data:", formData);
-    // Redirigir al chat/itinerario
-    router.push('/trips');
+  const handleFinish = async () => {
+    const accessToken = getStoredAccessToken();
+    if (!accessToken) {
+      alert("Inicia sesion para guardar tu cuestionario.");
+      return;
+    }
+
+    const questionnairePayload = {
+      country: formData.country,
+      companions_count: formData.companions_count,
+      is_adult: formData.is_adult,
+      stay_duration: formData.stay_duration,
+      city: formData.city,
+      borough: formData.borough,
+      trip_motives: formData.trip_motives,
+      // priority_factor no tiene columna dedicada y se persiste en payload JSON.
+      payload: {
+        priority_factor: formData.priority_factor,
+      },
+    };
+
+    try {
+      setIsSubmitting(true);
+
+      const response = await fetch('/api/tourist/questionnaire', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(questionnairePayload),
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result?.ok) {
+        const errorMessage = result?.error?.message || 'No fue posible guardar tu cuestionario';
+        throw new Error(errorMessage);
+      }
+
+      localStorage.setItem('mexgo_tourist_profile', JSON.stringify(formData));
+      router.push('/trips');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error inesperado al guardar cuestionario';
+      alert(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const boroughs = useMemo(() => {
@@ -306,12 +350,12 @@ const Questionnaire: React.FC = () => {
         <button
           type="button"
           onClick={step === totalSteps ? handleFinish : nextStep}
-          disabled={isNextDisabled()}
+          disabled={isNextDisabled() || isSubmitting}
           className={`flex-[2] p-4 rounded-2xl font-bold text-white transition-all cursor-pointer touch-manipulation ${
-            isNextDisabled() ? "bg-gray-300 cursor-not-allowed" : "bg-[#1C42E8] hover:shadow-lg active:scale-95 shadow-md shadow-[#1C42E8]/20"
+            isNextDisabled() || isSubmitting ? "bg-gray-300 cursor-not-allowed" : "bg-[#1C42E8] hover:shadow-lg active:scale-95 shadow-md shadow-[#1C42E8]/20"
           }`}
         >
-          {step === totalSteps ? "Crear Itinerario" : "Siguiente"}
+          {step === totalSteps ? (isSubmitting ? "Guardando..." : "Crear Itinerario") : "Siguiente"}
         </button>
       </div>
     </div>
