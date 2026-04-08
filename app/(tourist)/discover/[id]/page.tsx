@@ -136,13 +136,18 @@ export default function PlaceDetailPage() {
               </div>
 
               <div className="space-y-6">
-                {/* Compact Map Integration */}
+                {/* Compact Map Integration - Using OpenStreetMap Static Fallback */}
                 <div className="w-full h-[140px] rounded-2xl overflow-hidden relative border border-gray-100 group shadow-inner">
                   <img 
-                    src="https://api.mapbox.com/styles/v1/mapbox/light-v10/static/-99.1620,19.4194,14,0/500x200?access_token=none" 
-                    className="w-full h-full object-cover grayscale-[50%] group-hover:grayscale-0 transition-all duration-700"
+                    src="https://www.staticmapmaker.com/img/google.png" 
+                    className="w-full h-full object-cover grayscale-[50%] group-hover:grayscale-0 transition-all duration-700 hidden"
                     alt="Map Location"
                   />
+                  {/* Real OpenStreetMap fallback through a reliable static provider or a stylized placeholder */}
+                  <div 
+                    className="w-full h-full bg-cover bg-center grayscale-[20%] group-hover:grayscale-0 transition-all duration-700"
+                    style={{ backgroundImage: "url('https://maps.wikimedia.org/osm-intl/14/19.4194/-99.1620.png')" }}
+                  ></div>
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--primary)] drop-shadow-lg">
                     <LocationOnIcon sx={{ fontSize: 32 }} />
                   </div>

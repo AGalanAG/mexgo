@@ -218,18 +218,12 @@ export default function TripsPage() {
             ref={mapContainer}
             className="w-full h-full bg-gray-100 rounded-[var(--radius-xl)] relative overflow-hidden border border-gray-100 shadow-inner flex items-center justify-center"
           >
-            {/* Fallback to OpenStreetMap if no Mapbox Token */}
+            {/* Fallback to OpenStreetMap Background if no Mapbox Token */}
             {!process.env.NEXT_PUBLIC_MAPBOX_TOKEN && (
-              <iframe 
-                width="100%" 
-                height="100%" 
-                frameBorder="0" 
-                scrolling="no" 
-                marginHeight={0} 
-                marginWidth={0} 
-                src="https://www.openstreetmap.org/export/embed.html?bbox=-99.2155%2C19.3905%2C-99.1085%2C19.4484&amp;layer=mapnik&amp;marker=19.4326%2C-99.1332"
-                className="absolute inset-0 grayscale-[20%] opacity-80"
-              ></iframe>
+              <div 
+                className="absolute inset-0 bg-cover bg-center grayscale-[20%] opacity-80"
+                style={{ backgroundImage: "url('https://maps.wikimedia.org/osm-intl/13/19.4194/-99.1620.png')" }}
+              ></div>
             )}
 
             {/* Popup Preview - Adjusted z-index and clickability */}
