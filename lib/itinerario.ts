@@ -52,15 +52,15 @@ export function editarEvento(args: EditarEventoArgs): ItineraryStop | { error: s
   return paradas[idx]
 }
 
-export function eliminarEvento(args: EliminarEventoArgs): { eliminado: boolean; id: string } {
+export function eliminarEvento(args: EliminarEventoArgs): { eliminado: boolean; id: string; label?: string } {
   const idx = paradas.findIndex(p => p.id === args.id)
   if (idx === -1) return { eliminado: false, id: args.id }
 
+  const label = paradas[idx].label
   paradas.splice(idx, 1)
-  // Recalcula stopOrder
   paradas.forEach((p, i) => { p.stopOrder = i + 1 })
 
-  return { eliminado: true, id: args.id }
+  return { eliminado: true, id: args.id, label }
 }
 
 export function leerItinerario(): ItineraryStop[] {

@@ -9,7 +9,7 @@ import type { ChatRequest, ChatResponse } from '@/types/types'
 export async function POST(req: NextRequest) {
   const body = await req.json() as ChatRequest
 
-  const { respuesta, eventoAgregado } = await chat(body.mensaje, body.historial ?? [])
+  const { respuesta, eventoAgregado, eventoEditado, eventoEliminado, negociosRecomendados } = await chat(body.mensaje, body.historial ?? [], body.perfil)
 
-  return NextResponse.json<ChatResponse>({ respuesta, eventoAgregado })
+  return NextResponse.json<ChatResponse>({ respuesta, eventoAgregado, eventoEditado, eventoEliminado, negociosRecomendados })
 }

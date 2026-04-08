@@ -210,12 +210,27 @@ export interface ChatMessagePayload {
   text: string
 }
 
+export interface TouristProfile {
+  country: string
+  companions_count: string
+  is_adult: string
+  stay_duration: string
+  city: string
+  borough: string
+  trip_motives: string[]
+  priority_factor: string
+}
+
 export interface ChatRequest {
   mensaje: string
   historial?: ChatMessagePayload[]
+  perfil?: TouristProfile
 }
 
 export interface ChatResponse {
   respuesta: string
   eventoAgregado?: ItineraryStop
+  eventoEditado?: ItineraryStop
+  eventoEliminado?: { id: string; label?: string; eliminado: boolean }
+  negociosRecomendados?: NegocioConScore[]
 }

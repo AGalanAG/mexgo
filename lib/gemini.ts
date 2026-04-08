@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai'
 import type { Content } from '@google/genai'
-import type { ChatMessagePayload, ItineraryStop } from '@/types/types'
-import { GEMINI_MODEL, SYSTEM_PROMPT } from '@/constants'
+import type { ChatMessagePayload, ItineraryStop, NegocioConScore, TouristProfile } from '@/types/types'
+import { GEMINI_MODEL, buildSystemPrompt } from '@/constants'
 import { declarations, handlers } from '@/lib/tools'
 
 // ─── CLIENTE ──────────────────────────────────────────────────────────────────
@@ -13,9 +13,12 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
 type ChatResult = {
   respuesta: string
   eventoAgregado?: ItineraryStop
+  eventoEditado?: ItineraryStop
+  eventoEliminado?: { id: string; label?: string; eliminado: boolean }
+  negociosRecomendados?: NegocioConScore[]
 }
 
-export async function chat(mensaje: string, historial: ChatMessagePayload[] = []): Promise<ChatResult> {
+export async function chat(mensaje: string, historial: ChatMessagePayload[] = [], perfil?: TouristProfile): Promise<ChatResult> {
 
   const contents: Content[] = [
     ...historial.map(m => ({ role: m.role, parts: [{ text: m.text }] })),
@@ -24,10 +27,13 @@ export async function chat(mensaje: string, historial: ChatMessagePayload[] = []
 
   const config = {
     tools: [{ functionDeclarations: declarations }],
-    systemInstruction: SYSTEM_PROMPT,
+    systemInstruction: buildSystemPrompt(perfil),
   }
 
   let eventoAgregado: ItineraryStop | undefined
+  let eventoEditado: ItineraryStop | undefined
+  let eventoEliminado: { id: string; label?: string; eliminado: boolean } | undefined
+  let negociosRecomendados: NegocioConScore[] | undefined
 
   while (true) {
     const respuesta = await ai.models.generateContent({ model: GEMINI_MODEL, contents, config })
@@ -43,6 +49,11 @@ export async function chat(mensaje: string, historial: ChatMessagePayload[] = []
         const resultado = fn ? fn(fc.args as never) : { error: `Función ${name} no existe` }
 
         if (name === 'agregar_evento') eventoAgregado = resultado as ItineraryStop
+        if (name === 'editar_evento' && (resultado as ItineraryStop).id) eventoEditado = resultado as ItineraryStop
+        if (name === 'eliminar_evento') eventoEliminado = resultado as { id: string; label?: string; eliminado: boolean }
+        if (name === 'buscar_negocios' || name === 'recomendar_negocios') {
+          negociosRecomendados = resultado as NegocioConScore[]
+        }
 
         return { id: fc.id, name, response: { result: resultado } }
       })
@@ -53,7 +64,7 @@ export async function chat(mensaje: string, historial: ChatMessagePayload[] = []
       })
 
     } else {
-      return { respuesta: respuesta.text ?? '', eventoAgregado }
+      return { respuesta: respuesta.text ?? '', eventoAgregado, eventoEditado, eventoEliminado, negociosRecomendados }
     }
   }
 }
