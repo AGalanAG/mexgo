@@ -44,22 +44,51 @@ function toStop(s: ItineraryStop): Stop {
   };
 }
 
+const MOCK_STOPS: Stop[] = [
+  {
+    id: 'm1',
+    name: 'Ángel de la Independencia',
+    addr: 'Av. Paseo de la Reforma · 09:00 AM',
+    lng: -99.1677,
+    lat: 19.4270,
+  },
+  {
+    id: 'm2',
+    name: 'Museo Nacional de Antropología',
+    addr: 'Bosque de Chapultepec · 11:30 AM',
+    lng: -99.1863,
+    lat: 19.4260,
+  },
+  {
+    id: 'm3',
+    name: 'Palacio de Bellas Artes',
+    addr: 'Av. Juárez, Centro Histórico · 02:00 PM',
+    lng: -99.1412,
+    lat: 19.4352,
+  },
+  {
+    id: 'm4',
+    name: 'Zócalo de la CDMX',
+    addr: 'Plaza de la Constitución · 04:30 PM',
+    lng: -99.1332,
+    lat: 19.4326,
+  }
+];
+
 export default function TripsPage() {
   const t = useTranslations('Trips');
   const [transportMode, setTransportMode] = useState<TransportMode>('walking');
-  const [stops, setStops] = useState<Stop[]>([]);
+  const [stops, setStops] = useState<Stop[]>(MOCK_STOPS);
 
   useEffect(() => {
     fetch('/api/itinerary')
       .then(r => r.json())
       .then(res => {
-        if (res.ok && Array.isArray(res.data)) {
+        if (res.ok && Array.isArray(res.data) && res.data.length > 0) {
           setStops(res.data.map(toStop));
-        } else {
-          setStops([]);
         }
       })
-      .catch(() => setStops([]));
+      .catch(console.error);
   }, []);
 
   const moveStop = (index: number, direction: 'up' | 'down') => {
@@ -89,168 +118,170 @@ export default function TripsPage() {
     }));
 
   return (
-    <div className="flex flex-col min-h-screen bg-[var(--background)]">
+    <div className="flex flex-col h-screen bg-white overflow-hidden">
       <Navbar variant="light" />
 
-      <main className="pt-20 pb-24 flex-1 flex flex-col lg:flex-row max-w-[1600px] mx-auto w-full overflow-hidden">
+      <main className="pt-16 flex-1 flex flex-col lg:flex-row w-full overflow-hidden">
 
         {/* Left Sidebar */}
-        <section className="flex-1 lg:max-w-md w-full p-4 md:p-6 overflow-y-auto no-scrollbar">
+        <section className="w-full lg:w-[450px] flex flex-col border-r border-gray-100 bg-white shadow-xl z-10 overflow-hidden">
+          <div className="flex-1 overflow-y-auto no-scrollbar p-6">
+            <div className="mb-8">
+              <h1 className="text-3xl font-black text-[var(--primary)] mb-1 uppercase tracking-tight">
+                {t('title')}
+              </h1>
+              <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">
+                {t('subtitle')}
+              </p>
+            </div>
 
-          <div className="mb-6">
-            <h1 className="text-2xl md:text-3xl font-black text-[var(--primary)] mb-1 uppercase tracking-tight">
-              {t('title')}
-            </h1>
-            <p className="text-xs text-gray-500 font-medium">
-              {t('subtitle')}
-            </p>
-          </div>
+            {/* Search Bar */}
+            <div className="mb-8">
+              <div className="relative flex items-center bg-gray-50 rounded-2xl border border-gray-200 px-4 py-3 focus-within:ring-2 focus-within:ring-[var(--primary)] transition-all group">
+                <SearchIcon className="text-gray-300 group-focus-within:text-[var(--primary)] mr-3 transition-colors" fontSize="small" />
+                <input
+                  type="text"
+                  placeholder={t('searchPlaceholder')}
+                  className="flex-1 bg-transparent border-none outline-none text-sm text-[var(--text-primary)] placeholder-gray-400 font-bold"
+                />
+              </div>
+            </div>
 
-          {/* Search Bar */}
-          <div className="mb-6">
-            <div className="relative flex items-center bg-gray-100 rounded-full border border-gray-200 px-4 py-2.5 shadow-sm focus-within:ring-2 focus-within:ring-[var(--primary)] transition-all">
-              <SearchIcon className="text-gray-400 mr-2" fontSize="small" />
-              <input
-                type="text"
-                placeholder={t('searchPlaceholder')}
-                className="flex-1 bg-transparent border-none outline-none text-sm text-[var(--text-primary)] placeholder-gray-400 font-medium"
-              />
-              <div className="flex items-center gap-2 border-l border-gray-300 ml-2 pl-2">
-                <LayersIcon className="text-gray-400 cursor-pointer hover:text-gray-600" fontSize="small" />
-                <SettingsIcon className="text-gray-400 cursor-pointer hover:text-gray-600" fontSize="small" />
+            {/* Transport Mode Selector */}
+            <div className="mb-8">
+              <div className="flex bg-gray-50 p-1.5 rounded-2xl gap-1.5">
+                {[
+                  { mode: 'walking', icon: <DirectionsWalkIcon fontSize="small" />, label: t('transport.walking') },
+                  { mode: 'bicycle', icon: <DirectionsBikeIcon fontSize="small" />, label: t('transport.bicycle') },
+                  { mode: 'car', icon: <DirectionsCarIcon fontSize="small" />, label: t('transport.car') },
+                  { mode: 'transit', icon: <DirectionsBusIcon fontSize="small" />, label: t('transport.transit') },
+                ].map((btn) => (
+                  <button
+                    key={btn.mode}
+                    onClick={() => setTransportMode(btn.mode as TransportMode)}
+                    className={`flex-1 flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl transition-all text-[9px] font-black uppercase tracking-widest ${
+                      transportMode === btn.mode
+                        ? 'bg-white text-[var(--primary)] shadow-md border border-gray-100'
+                        : 'text-gray-400 hover:bg-gray-100'
+                    }`}
+                  >
+                    {btn.icon} <span>{btn.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Date Selector */}
+            <div className="mb-10">
+              <label className="block text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] mb-3">{t('dateLabel')}</label>
+              <div className="relative flex items-center bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 focus-within:border-[var(--primary)] focus-within:bg-white transition-all shadow-sm">
+                <input
+                  type="date"
+                  defaultValue="2026-08-17"
+                  className="flex-1 bg-transparent border-none outline-none text-sm text-[var(--primary)] font-black uppercase tracking-tight"
+                />
+                <CalendarTodayIcon className="text-gray-300" fontSize="small" />
+              </div>
+            </div>
+
+            {/* Selected Stops */}
+            <div>
+              <h4 className="text-[10px] font-black text-gray-300 uppercase tracking-[0.3em] mb-6 flex items-center gap-4">
+                {t('selectedStops')}
+                <span className="flex-1 h-[1px] bg-gray-100"></span>
+              </h4>
+
+              <div className="space-y-4 pb-20">
+                <AnimatePresence mode="popLayout">
+                  {stops.map((stop, index) => (
+                    <motion.div
+                      layout
+                      key={stop.id}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      className="flex items-center gap-4 bg-white p-5 rounded-[1.5rem] shadow-sm border border-gray-100 hover:border-[var(--primary)] transition-all group"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-[var(--primary)] flex items-center justify-center text-white font-black text-sm shadow-lg shadow-[var(--primary)]/20 flex-shrink-0">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-black text-sm text-[var(--primary)] truncate leading-tight mb-1">{stop.name}</p>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest truncate">{stop.addr}</p>
+                      </div>
+
+                      <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => moveStop(index, 'up')}
+                          disabled={index === 0}
+                          className="text-gray-300 hover:text-[var(--primary)] disabled:opacity-10"
+                        >
+                          <ArrowUpwardIcon sx={{ fontSize: 16 }} />
+                        </button>
+                        <button
+                          onClick={() => moveStop(index, 'down')}
+                          disabled={index === stops.length - 1}
+                          className="text-gray-300 hover:text-[var(--primary)] disabled:opacity-10"
+                        >
+                          <ArrowDownwardIcon sx={{ fontSize: 16 }} />
+                        </button>
+                      </div>
+                      <button
+                        onClick={() => removeStop(stop.id)}
+                        className="text-gray-200 hover:text-red-500 transition-colors ml-2"
+                      >
+                        <CloseIcon sx={{ fontSize: 20 }} />
+                      </button>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+
+                {stops.length === 0 && (
+                  <div className="text-center py-20 bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-200">
+                    <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">{t('noStops')}</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Transport Mode Selector */}
-          <div className="mb-6">
-            <div className="flex bg-gray-100 p-1 rounded-xl gap-1">
-              {[
-                { mode: 'walking', icon: <DirectionsWalkIcon fontSize="small" />, label: t('transport.walking') },
-                { mode: 'bicycle', icon: <DirectionsBikeIcon fontSize="small" />, label: t('transport.bicycle') },
-                { mode: 'car', icon: <DirectionsCarIcon fontSize="small" />, label: t('transport.car') },
-                { mode: 'transit', icon: <DirectionsBusIcon fontSize="small" />, label: t('transport.transit') },
-              ].map((btn) => (
-                <button
-                  key={btn.mode}
-                  onClick={() => setTransportMode(btn.mode as TransportMode)}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all text-[10px] font-black uppercase tracking-wider ${
-                    transportMode === btn.mode
-                      ? 'bg-[var(--accent)] text-white shadow-md'
-                      : 'text-gray-400 hover:bg-gray-200'
-                  }`}
-                >
-                  {btn.icon} <span className="hidden sm:inline">{btn.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Date Selector */}
-          <div className="mb-8">
-            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">{t('dateLabel')}</label>
-            <div className="relative flex items-center bg-white border border-gray-300 rounded-xl px-4 py-3 focus-within:border-[var(--primary)] transition-all">
-              <input
-                type="date"
-                defaultValue="2026-08-17"
-                className="flex-1 bg-transparent border-none outline-none text-sm text-[var(--text-primary)] font-bold uppercase"
-              />
-              <CalendarTodayIcon className="text-gray-400 ml-2" fontSize="small" />
-            </div>
-          </div>
-
-          {/* Selected Stops */}
-          <div className="mb-6">
-            <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 border-b border-gray-100 pb-2">{t('selectedStops')}</h4>
-
-            <div className="space-y-4">
-              <AnimatePresence>
-                {stops.map((stop, index) => (
-                  <motion.div
-                    layout
-                    key={stop.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                    className="flex items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 hover:border-[var(--primary)] transition-all group"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-[var(--accent)] flex items-center justify-center text-white font-bold text-sm shadow-sm flex-shrink-0">
-                      {index + 1}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-black text-sm text-[var(--primary)] truncate">{stop.name}</p>
-                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter truncate">{stop.addr}</p>
-                    </div>
-
-                    <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => moveStop(index, 'up')}
-                        disabled={index === 0}
-                        className="text-gray-400 hover:text-[var(--primary)] disabled:opacity-20"
-                      >
-                        <ArrowUpwardIcon sx={{ fontSize: 16 }} />
-                      </button>
-                      <button
-                        onClick={() => moveStop(index, 'down')}
-                        disabled={index === stops.length - 1}
-                        className="text-gray-400 hover:text-[var(--primary)] disabled:opacity-20"
-                      >
-                        <ArrowDownwardIcon sx={{ fontSize: 16 }} />
-                      </button>
-                    </div>
-                    <button
-                      onClick={() => removeStop(stop.id)}
-                      className="text-gray-300 hover:text-red-500 transition-colors ml-1"
-                    >
-                      <CloseIcon sx={{ fontSize: 20 }} />
-                    </button>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-
-              {stops.length === 0 && (
-                <p className="text-center text-gray-400 text-sm italic py-10">{t('noStops')}</p>
-              )}
-            </div>
+          {/* Sidebar Action Button */}
+          <div className="p-6 bg-white border-t border-gray-100 shadow-[0_-10px_30px_rgba(0,0,0,0.03)]">
+            <button className="w-full bg-[var(--primary)] text-white font-black py-5 rounded-[1.5rem] shadow-xl shadow-[var(--primary)]/20 text-xs uppercase tracking-[0.3em] hover:brightness-110 hover:translate-y-[-2px] transition-all active:scale-[0.98]">
+              {t('finalizeRoute')}
+            </button>
           </div>
         </section>
 
-        {/* Right Section: Map */}
-        <section className="flex-1 h-[400px] lg:h-full p-4 lg:p-6 lg:pl-0">
-          <div className="w-full h-full rounded-[var(--radius-xl)] overflow-hidden border border-gray-100 shadow-inner">
-            <MapboxMap
-              center={[-99.1620, 19.4280]}
-              zoom={12.5}
-              markers={markers}
-              className="w-full h-full"
-            />
+        {/* Right Section: Map - FILLS FULL SPACE */}
+        <section className="flex-1 relative">
+          <MapboxMap
+            center={[-99.1620, 19.4280]}
+            zoom={12.5}
+            markers={markers}
+            className="w-full h-full"
+          />
+          
+          {/* Floating Stats */}
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md px-10 py-6 rounded-[2rem] shadow-2xl border border-white/50 flex gap-12 z-20">
+            <div>
+              <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">{t('totalDistance')}</p>
+              <p className="text-2xl font-black text-[var(--primary)]">{stops.length > 1 ? '7.2 km' : '0.0 km'}</p>
+            </div>
+            <div className="w-[1px] bg-gray-200 self-stretch"></div>
+            <div>
+              <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">{t('estimatedTime')}</p>
+              <p className="text-2xl font-black text-[var(--primary)]">{stops.length > 1 ? '1h 45m' : '0m'}</p>
+            </div>
           </div>
         </section>
       </main>
 
-      {/* Summary Footer */}
-      <footer className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-100 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] p-4 md:p-6 z-40">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-4 md:gap-10">
-          <div className="flex gap-10">
-            <div>
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('totalDistance')}</p>
-              <p className="text-xl font-black text-[var(--primary)]">{stops.length > 1 ? '7.2 km' : '0.0 km'}</p>
-            </div>
-            <div>
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('estimatedTime')}</p>
-              <p className="text-xl font-black text-[var(--primary)]">{stops.length > 1 ? '1h 45min' : '0 min'}</p>
-            </div>
-          </div>
-          <button className="flex-1 w-full bg-[var(--accent)] text-white font-black py-4 rounded-2xl shadow-lg shadow-[var(--accent)]/20 text-sm uppercase tracking-[0.2em] hover:brightness-110 transition-all active:scale-[0.98]">
-            {t('finalizeRoute')}
-          </button>
-        </div>
-      </footer>
-
+      {/* Floating Chat Button */}
       <motion.button
-        whileHover={{ scale: 1.1, rotate: -10 }}
+        whileHover={{ scale: 1.1, y: -5 }}
         whileTap={{ scale: 0.9 }}
-        className="fixed bottom-28 right-6 w-14 h-14 bg-[var(--accent)] text-white rounded-full flex items-center justify-center shadow-xl z-50 transition-all"
+        className="fixed bottom-10 right-10 w-16 h-16 bg-[var(--accent)] text-white rounded-full flex items-center justify-center shadow-2xl z-50 transition-all border-4 border-white"
       >
         <ChatBubbleIcon />
       </motion.button>
