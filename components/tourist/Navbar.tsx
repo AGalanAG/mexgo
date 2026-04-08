@@ -31,7 +31,7 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
       {/* Menú Central */}
       <div className="hidden md:flex gap-8 font-medium">
         <Link href="/discover" className="hover:opacity-70 transition-opacity">Discover</Link>
-        <Link href="#" className="hover:opacity-70 transition-opacity">Trips</Link>
+        <Link href="/trips" className="hover:opacity-70 transition-opacity">Trips</Link>
         <Link href="#" className="hover:opacity-70 transition-opacity">More</Link>
       </div>
 
