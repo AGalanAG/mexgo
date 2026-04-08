@@ -17,6 +17,14 @@ const ROLE_PRIORITY: Record<PlatformRoleCode, number> = {
   TURISTA: 4,
 };
 
+const ROLE_DESCRIPTIONS: Record<PlatformRoleCode, string> = {
+  TURISTA: 'Usuario turista de la plataforma',
+  ENCARGADO_NEGOCIO: 'Encargado de negocio registrado',
+  EMPLEADO_NEGOCIO: 'Empleado operativo de negocio',
+  ADMIN: 'Administrador funcional',
+  SUPERADMIN: 'Administrador tecnico',
+};
+
 export function normalizeRoleCode(value: unknown): PlatformRoleCode | null {
   if (typeof value !== 'string') {
     return null;
@@ -130,14 +138,44 @@ export async function assignRoleToUser(
   roleCode: PlatformRoleCode,
   createdBy?: string,
 ) {
-  const { data: roleRows, error: roleError } = await getSupabaseAdmin()
+  let { data: roleRows, error: roleError } = await getSupabaseAdmin()
     .from('roles')
     .select('id')
     .eq('code', roleCode)
     .limit(1);
 
-  if (roleError || !roleRows || roleRows.length === 0) {
-    return { ok: false as const, error: roleError?.message || `No se encontro rol ${roleCode}` };
+  if (roleError) {
+    return { ok: false as const, error: roleError.message };
+  }
+
+  if (!roleRows || roleRows.length === 0) {
+    const { error: seedRoleError } = await getSupabaseAdmin().from('roles').insert({
+      code: roleCode,
+      description: ROLE_DESCRIPTIONS[roleCode],
+    });
+
+    if (seedRoleError) {
+      return {
+        ok: false as const,
+        error: `No se encontro rol ${roleCode} y no fue posible sembrarlo: ${seedRoleError.message}`,
+      };
+    }
+
+    const seededRoleResult = await getSupabaseAdmin()
+      .from('roles')
+      .select('id')
+      .eq('code', roleCode)
+      .limit(1);
+
+    roleRows = seededRoleResult.data;
+    roleError = seededRoleResult.error;
+
+    if (roleError || !roleRows || roleRows.length === 0) {
+      return {
+        ok: false as const,
+        error: roleError?.message || `No se encontro rol ${roleCode} despues de sembrarlo`,
+      };
+    }
   }
 
   const roleId = roleRows[0].id;

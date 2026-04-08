@@ -30,6 +30,11 @@ function getAnonClient() {
   return createClient(supabaseUrl, supabaseAnonKey);
 }
 
+async function cleanupAuthUser(userId: string) {
+  const { error } = await getSupabaseAdmin().auth.admin.deleteUser(userId);
+  return { ok: !error, error };
+}
+
 export async function POST(request: NextRequest) {
   let body: RegisterBody;
 
@@ -123,6 +128,7 @@ export async function POST(request: NextRequest) {
     await getSupabaseAdmin().auth.admin.getUserById(userId);
 
   if (adminUserError || !adminUserData.user) {
+    await cleanupAuthUser(userId);
     return apiError(
       'INTERNAL_ERROR',
       'El usuario no existe en auth.users del proyecto configurado en service role. Revisa que NEXT_PUBLIC_SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY pertenezcan al mismo proyecto.',
@@ -139,11 +145,13 @@ export async function POST(request: NextRequest) {
   });
 
   if (profileError) {
+    await cleanupAuthUser(userId);
     return apiError('INTERNAL_ERROR', profileError.message, 500);
   }
 
   const roleAssignment = await assignRoleToUser(userId, normalizedRoleCode, userId);
   if (!roleAssignment.ok) {
+    await cleanupAuthUser(userId);
     return apiError('INTERNAL_ERROR', roleAssignment.error, 500);
   }
 
