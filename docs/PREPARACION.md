@@ -1,50 +1,53 @@
-### 1. Fidel (Arquitecto / Algoritmo / IA)
-Fidel es el responsable de la arquitectura, el algoritmo de equidad (`lib/equity.ts`), la integración con Gemini y el despliegue en AWS[cite: 4]. También maneja las API Routes (BFF)[cite: 2].
+# MexGo - Preparacion por rol (v2)
+**Los Mossitos · Genius Arena 2026**
 
-*   **Tecnologías a aprender:** 
-    *   Next.js 15 API Routes para el patrón BFF[cite: 1, 2].
-    *   Gemini API (Flash) para la personalización cultural y la generación de itinerarios[cite: 1, 2].
-    *   Despliegue en AWS (evaluando Amplify, EC2+Nginx o App Runner)[cite: 2, 4].
-*   **Mini-proyecto preparatorio:** Crear un repositorio en Next.js con una ruta de API (`/api/recomendar`) que reciba un perfil cultural falso (mock). La API debe conectarse a Gemini Flash para devolver un JSON estructurado con un itinerario básico. Finalmente, desplegar esta pequeña API funcional en AWS usando el nivel gratuito.
+Objetivo de preparacion: acelerar implementacion del modulo negocio sin tocar flujo turista actual.
 
-### 2. Emi (Frontend Turista)
-Emi tiene a su cargo el flujo del turista, la integración de mapas, la interfaz de tarjetas y el funcionamiento sin conexión[cite: 4].
+## Fidel (arquitectura e IA)
+- Mantener patron BFF en API Routes.
+- Definir estrategia de recalc de insignias.
+- Revisar integraciones externas para aprendizaje (fuentes de contenido).
 
-*   **Tecnologías a aprender:** 
-    *   Next.js 15 y Tailwind CSS para las vistas del turista[cite: 1, 4].
-    *   Mapbox GL JS para renderizar los pines de los negocios[cite: 1, 4].
-    *   PWA Cache API y `localStorage` para guardar el itinerario y permitir el acceso offline[cite: 1, 3].
-*   **Mini-proyecto preparatorio:** Construir una vista móvil (Mobile-First) en Tailwind que muestre un mapa de Mapbox en la mitad superior y una pila de "tarjetas deslizables" en la mitad inferior. Implementar lógica en JavaScript para que la información de esas tarjetas se guarde en `localStorage` y siga siendo visible al recargar la página sin conexión a internet.
+Mini proyecto:
+- Servicio interno que reciba completitud de modulo y devuelva estado de insignias candidatas.
 
-* Tecnologia recomendada: Stitch de Google
+## Alan (backend y datos)
+- Diseñar migraciones aditivas para schema v2.
+- Implementar endpoints de negocio, learning, badges y directory.
+- Garantizar RBAC por rol y auditoria de eventos de insignias.
 
-### 3. Farid (Frontend Admin)
-Farid se encarga del panel de administración, la autenticación y la subida de fotografías[cite: 4].
+Mini proyecto:
+- Pipeline funcional: crear negocio -> registrar completitud -> recalcular insignia -> exponer en directorio.
 
-*   **Tecnologías a aprender:** 
-    *   Next.js 15 y Tailwind CSS para el dashboard administrativo[cite: 1, 4].
-    *   Supabase Auth para el inicio de sesión de los administradores/negocios[cite: 3].
-    *   Cloudinary para la carga y optimización automática de imágenes[cite: 1, 4].
-*   **Mini-proyecto preparatorio:** Crear una pantalla de inicio de sesión (`/login`) protegida con Supabase Auth. Una vez autenticado, redirigir a un dashboard protegido donde el usuario pueda seleccionar una foto de su computadora, subirla exitosamente a Cloudinary mediante su API, y mostrar la imagen renderizada en la pantalla.
+## Emi (frontend turista + futura integracion)
+- Mantener estable experiencia turista actual.
+- Preparar componentes reutilizables para mostrar insignias cuando se habilite UI de negocio/directorio.
 
-* Tecnologia recomendada: Stitch de Google
+Mini proyecto:
+- Card reutilizable de insignias publicas consumiendo un endpoint mock.
 
-### 4. Alan (Backend / Base de Datos)
-Alan es el dueño de la infraestructura de datos, el esquema SQL, los endpoints principales y el manejo en tiempo real[cite: 4].
+## Farid (frontend negocio/admin)
+- Preparar vistas de gestion de equipo y progreso de modulos.
+- Construir panel de insignias por negocio para usuario encargado.
 
-*   **Tecnologías a aprender:** 
-    *   Supabase (PostgreSQL) para la base de datos[cite: 4].
-    *   Supabase Realtime para detectar la saturación de los negocios al momento[cite: 1, 3].
-    *   TypeScript estricto para definir los contratos de las API (`/api/negocios`, etc.)[cite: 2, 4].
-*   **Mini-proyecto preparatorio:** Configurar un proyecto en Supabase y escribir un esquema SQL básico con dos tablas relacionadas (ej. `negocios` y `visitas`). Construir una API Route en Next.js que realice operaciones CRUD (Crear, Leer, Actualizar, Borrar) sobre la tabla `negocios` e implementar una suscripción de Supabase Realtime que imprima en consola cada vez que se agregue una nueva "visita".
+Mini proyecto:
+- Dashboard basico con tres tabs: equipo, aprendizaje, insignias.
 
-### 5. Xavier (Apoyo Backend / QA)
-Xavier es el responsable de los datos de prueba, la documentación y el testing del proyecto[cite: 4].
+## Xavier (QA)
+- Validar contratos `API.md` vs implementacion real.
+- Probar reglas de autorizacion por rol.
+- Verificar consistencia de insignias en directorio.
 
-*   **Tecnologías a aprender:** 
-    *   Generación de datos estructurados (Mocking)[cite: 4].
-    *   Fundamentos de bases de datos relacionales para entender el esquema de Supabase[cite: 4].
-    *   Herramientas de pruebas para API (como Postman, Insomnia o Jest/Playwright).
-*   **Mini-proyecto preparatorio:** Escribir un script en TypeScript o Node.js que genere un archivo JSON con 50 micronegocios falsos (con coordenadas, nombres, y estado de verificación "Ola México"). Luego, configurar una colección en Postman para probar que los endpoints que Alan desarrolle respondan correctamente con estos datos.
+Mini proyecto:
+- Suite Postman de flujo extremo a extremo de negocio.
 
----
+## Checklist comun
+- `npm run dev`
+- `npx tsc --noEmit`
+- `npm run build`
+- Sin romper endpoints de turista existentes.
+
+## Cambios
+| Fecha | Quien | Que |
+|---|---|---|
+| 2026-04-07 | Alan | v2.0 - Preparacion enfocada a modulo negocio con continuidad turista. |

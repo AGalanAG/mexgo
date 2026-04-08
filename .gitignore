@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # dependencies
 /node_modules
 /.pnp
@@ -41,3 +42,23 @@ supabase/.temp/
 supabase/functions/.env
 /tmp
 /disenio
+=======
+# Dependencias
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Next.js
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+
+# Binarios
+*.node
+*.sst
+
+# Variables de entorno
+.env*.local
+>>>>>>> origin/feat/alan-backend

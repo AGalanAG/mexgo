@@ -1,22 +1,23 @@
-# MexGo — Roles y Preparación
+# MexGo - Roles
 **Los Mossitos · Genius Arena 2026**
 
-Responsabilidades estrictas y mini-proyectos de preparación pre-hackathon.
-
----
-
-## Roles de plataforma (usuarios finales)
-
-> Estos roles son del producto, no del equipo de desarrollo.
-
-| Rol | Objetivo | Acciones permitidas |
+## 1. Roles de producto (plataforma)
+| Rol | Objetivo | Permisos clave |
 |---|---|---|
-| Turista | Descubrir y planear su viaje con IA | Registro/login, verificación por correo, cuestionario, itinerario autogenerado, guardar/regenerar/editar, descargar PDF, editar perfil |
-| EncargadoDelNegocio | Registrar su negocio para validación | Enviar solicitud de alta, atender observaciones, reenviar, acceder a perfil de negocio tras aprobación |
-| Admin | Revisar solicitudes de negocio | Tomar solicitud, bloquear por revisión, aprobar/rechazar, devolver retroalimentación |
-| SuperAdmin | Operación técnica del sistema | Atender tickets técnicos, monitoreo y soporte de incidencias |
+| Turista | Consumir experiencia turistica | Perfil y acciones turisticas ya existentes |
+| EncargadoDelNegocio | Profesionalizar su negocio | Gestion de perfil, equipo, seguimiento de modulos |
+| EmpleadoDelNegocio | Capacitarse operativamente | Completar modulos asignados y evidencias |
+| Admin | Gobernanza del sistema | Catalogos, validaciones, auditoria |
+| SuperAdmin | Operacion tecnica | Soporte, monitoreo, remediacion |
 
-### Estados de solicitud de negocio
+## 2. Responsabilidades del equipo de desarrollo
+| Quien | Responsabilidad principal |
+|---|---|
+| Fidel | Arquitectura, IA, integracion de dominios y estrategia de despliegue |
+| Alan | Backend, schema SQL, RBAC y endpoints de negocio |
+| Emi | Frontend turista (se mantiene), futura integracion visual de directorio |
+| Farid | Frontend negocio/admin cuando se active en UI |
+| Xavier | QA de contratos, pruebas end-to-end y validacion funcional |
 
 `Pendiente` -> `En revision` -> (`Aprobado` o `Rechazado`)
 
@@ -175,9 +176,13 @@ Sede de capacitacion presencial (campo 20):
     - Si es un botón secundario o un margen mal alineado: Se anota en la lista de "Deuda Técnica / Post-Hackathon" y el desarrollo sigue.
 
 ---
+## 3. Reglas de coordinacion
+- No romper endpoints de turista ya integrados.
+- Cualquier cambio de contrato requiere actualizar `API.md`.
+- Cualquier cambio de datos requiere actualizar `SCHEMA.md` y `TABLAS.md`.
+- QA valida primero flujo de negocio antes de habilitar UI adicional.
 
 ## Cambios
-| Fecha | Quién | Qué |
+| Fecha | Quien | Que |
 |---|---|---|
-| 2026-03-31 | IA | v1.1 — Expansión de Xavier a QA Global e Integrador. |
-| 2026-04-06 | Alan | v1.2 — Se agregan roles de plataforma y alcance backend de auth, RBAC y solicitudes. |
+| 2026-04-07 | Alan | v2.0 - Se incorpora rol EmpleadoDelNegocio y enfoque operativo de profesionalizacion. |
