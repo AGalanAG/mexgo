@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { getStoredAccessToken } from "@/lib/client-auth";
+import { useRouter } from "@/i18n/routing";
 
 const ALCALDIAS = [
   "Álvaro Obregón", "Azcapotzalco", "Benito Juárez", "Coyoacán", "Cuajimalpa",
@@ -26,36 +27,22 @@ const SAT_STATUS = [
   { id: "no_no_interesa", label: "No y no me interesa" },
 ];
 
-const QuestionnaireBusiness: React.FC = () => {
-  const [step, setStep] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    // Step 1: Propietario
-    owner_full_name: "",
-    owner_age: "",
-    owner_gender: "",
-    owner_email: "",
-    owner_whatsapp: "",
-    // Step 2: Ubicación
-    borough_code: "",
-    neighborhood: "",
-    google_maps_url: "",
-    operation_days_hours: "",
-    // Step 3: El Negocio
-    business_name: "",
-    business_description: "",
-    business_start_range: "",
-    continuous_operation_time: "",
-    operation_modes: [] as string[],
-    employees_women_count: "0",
-    employees_men_count: "0",
-    // Step 4: Impacto y Mundial
-    sat_status: "",
-    adaptation_for_world_cup: "",
-    support_usage: "",
-    // Step 5: Capacitación
-    training_campus_preference: ""
-  });
+const SEDES_CAPACITACION = [
+  {
+    id: "HUB_AZTECA",
+    label: "HUB AZTECA",
+    sublabel: "A un costado del Estadio Azteca",
+    desc: "C. San Julio 6 Circuito Estadio Azteca, Santa Úrsula, Coyoacán 04600",
+    icon: "Sede 1",
+  },
+  {
+    id: "MIDE",
+    label: "MIDE",
+    sublabel: "Museo Interactivo de Economía",
+    desc: "C. de Tacuba 17, Centro, Cuauhtémoc, 06000 Ciudad de México, CDMX",
+    icon: "Sede 2",
+  },
+];
 
 interface FormState {
   // Step 1
@@ -83,6 +70,8 @@ interface FormState {
   adaptacion_mundial: string;
   uso_apoyo: string;
   sede_presencial: string;
+  correo_electronico: string;
+  whatsapp: string;
 }
 
 // Reusable styled input
@@ -99,9 +88,9 @@ const inputCls = "w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[
 const selectCls = "w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#004891] text-gray-900 bg-gray-50/50 cursor-pointer text-sm";
 
 const QuestionnaireBusiness: React.FC = () => {
-  const t = useTranslations("Questionnaire");
   const router = useRouter();
   const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const totalSteps = 5;
 
   const [formData, setFormData] = useState<FormState>({
@@ -111,6 +100,7 @@ const QuestionnaireBusiness: React.FC = () => {
     nombre_negocio: "", descripcion_negocio: "", antiguedad: "", tiempo_continuo: "", horarios: "",
     formas_operacion: [], otra_forma_venta: "", sat_status: "", redes_sociales: "",
     adaptacion_mundial: "", uso_apoyo: "", sede_presencial: "",
+    correo_electronico: "", whatsapp: "",
   });
 
   const set = (field: keyof FormState, value: string) =>
@@ -129,26 +119,21 @@ const QuestionnaireBusiness: React.FC = () => {
 
   const isNextDisabled = () => {
     if (step === 1) {
-      return !formData.owner_full_name || !formData.owner_age || !formData.owner_gender || !formData.owner_email || !formData.owner_whatsapp;
+      return !formData.nombre_completo || !formData.edad || !formData.genero || !formData.correo_electronico || !formData.whatsapp;
     }
     if (step === 2) {
-      return !formData.borough_code || !formData.neighborhood || !formData.google_maps_url || !formData.operation_days_hours;
+      return !formData.alcaldia || !formData.colonia_y_maps || !formData.sede_previa;
     }
     if (step === 3) {
-      return !formData.business_name || !formData.business_description || !formData.business_start_range || !formData.continuous_operation_time;
+      return !formData.mujeres_empleadas || !formData.hombres_empleados || !formData.nombre_negocio || !formData.descripcion_negocio || !formData.antiguedad || !formData.tiempo_continuo || !formData.horarios;
     }
     if (step === 4) {
-      return !formData.sat_status || !formData.adaptation_for_world_cup || !formData.support_usage;
+      return formData.formas_operacion.length === 0 || !formData.sat_status || !formData.redes_sociales;
     }
     if (step === 5) {
-      return !formData.training_campus_preference;
+      return !formData.adaptacion_mundial || !formData.uso_apoyo || !formData.sede_presencial;
     }
     return false;
-  };
-
-  const handleFinish = () => {
-    console.log("Business Form Data:", formData);
-    router.push("/business/dashboard");
   };
 
   const STEP_LABELS = [
@@ -159,6 +144,77 @@ const QuestionnaireBusiness: React.FC = () => {
     "Proyección",
   ];
 
+  const parseGoogleMapsUrl = (raw: string) => {
+    const match = raw.match(/https?:\/\/\S+/i);
+    return match ? match[0] : null;
+  };
+
+  const handleSubmit = async () => {
+    const accessToken = getStoredAccessToken();
+    if (!accessToken) {
+      alert("Inicia sesion para enviar tu solicitud.");
+      return;
+    }
+
+    const socialLinks = formData.redes_sociales
+      .split(/[,\n]/)
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
+
+    const payload = {
+      owner_full_name: formData.nombre_completo,
+      owner_age: Number(formData.edad),
+      owner_gender: formData.genero,
+      owner_email: formData.correo_electronico,
+      owner_whatsapp: formData.whatsapp,
+      borough_code: formData.alcaldia,
+      neighborhood: formData.colonia_y_maps,
+      google_maps_url: parseGoogleMapsUrl(formData.colonia_y_maps),
+      operation_days_hours: formData.horarios,
+      business_name: formData.nombre_negocio,
+      business_description: formData.descripcion_negocio,
+      business_start_range: formData.antiguedad,
+      continuous_operation_time: formData.tiempo_continuo,
+      operation_modes: formData.formas_operacion,
+      operation_modes_other: formData.otra_forma_venta || null,
+      employees_women_count: Number(formData.mujeres_empleadas),
+      employees_men_count: Number(formData.hombres_empleados),
+      sat_status: formData.sat_status,
+      social_links: socialLinks,
+      adaptation_for_world_cup: formData.adaptacion_mundial,
+      support_usage: formData.uso_apoyo,
+      training_campus_preference: formData.sede_presencial,
+      additional_comments: `Sede previa sugerida: ${formData.sede_previa}`,
+    };
+
+    try {
+      setIsSubmitting(true);
+
+      const response = await fetch("/api/requests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result?.ok) {
+        const errorMessage = result?.error?.message || "No fue posible enviar la solicitud";
+        throw new Error(errorMessage);
+      }
+
+      alert("Solicitud enviada correctamente.");
+      router.push("/business/dashboard");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Error inesperado al enviar solicitud";
+      alert(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="mx-auto max-w-2xl w-full bg-white p-6 md:p-10 font-sans shadow-xl rounded-3xl relative border border-gray-100 mb-10 text-black">
       {/* ── Header / Progress ── */}
@@ -166,10 +222,10 @@ const QuestionnaireBusiness: React.FC = () => {
         <div className="flex justify-between items-center mb-4">
           <div className="space-y-0.5">
             <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-              {t("business.title")}
+              Registro de Negocio
             </span>
             <h1 className="text-lg font-black text-[#004891] leading-tight">
-              {t("business.subtitle")}
+              Cuestionario de Solicitud
             </h1>
             <p className="text-xs text-gray-400 font-medium">{STEP_LABELS[step - 1]}</p>
           </div>
@@ -182,7 +238,7 @@ const QuestionnaireBusiness: React.FC = () => {
               Saltar (demo) →
             </button>
             <span className="text-sm font-bold text-[#004891]">
-              {t('steps', { step, total: totalSteps })}
+              Paso {step} de {totalSteps}
             </span>
           </div>
         </div>
@@ -224,8 +280,8 @@ const QuestionnaireBusiness: React.FC = () => {
                   min={18}
                   max={120}
                   className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30"
-                  value={formData.owner_age}
-                  onChange={(e) => setFormData({...formData, owner_age: e.target.value})}
+                  value={formData.edad}
+                  onChange={(e) => set("edad", e.target.value)}
                 />
               </Field>
               <Field label="3. Género" required>
@@ -247,10 +303,20 @@ const QuestionnaireBusiness: React.FC = () => {
                 type="email"
                 placeholder="ejemplo@correo.com"
                 className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30"
-                value={formData.owner_email}
-                onChange={(e) => setFormData({...formData, owner_email: e.target.value})}
+                value={formData.correo_electronico}
+                onChange={(e) => set("correo_electronico", e.target.value)}
               />
             </div>
+
+            <Field label="4. WhatsApp" required>
+              <input
+                type="tel"
+                className={inputCls}
+                placeholder="55 1234 5678"
+                value={formData.whatsapp}
+                onChange={(e) => set("whatsapp", e.target.value)}
+              />
+            </Field>
           </div>
         )}
 
@@ -384,31 +450,7 @@ const QuestionnaireBusiness: React.FC = () => {
                 value={formData.horarios}
                 onChange={(e) => set("horarios", e.target.value)}
               />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">¿Cuánto tiempo lleva operando?</label>
-              <select
-                className="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#1C42E8] text-gray-900 bg-gray-50/30 cursor-pointer"
-                value={formData.business_start_range}
-                onChange={(e) => setFormData({...formData, business_start_range: e.target.value})}
-              >
-                <option value="">Selecciona rango</option>
-                <option value="MENOS_1_ANO">Menos de 1 año</option>
-                <option value="A1_A3">1 a 3 años</option>
-                <option value="A3_A5">3 a 5 años</option>
-                <option value="MAS_5">Más de 5 años</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">Tiempo operando continuamente</label>
-              <input
-                type="text"
-                placeholder="Ej. 2 años 6 meses"
-                className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30"
-                value={formData.continuous_operation_time}
-                onChange={(e) => setFormData({...formData, continuous_operation_time: e.target.value})}
-              />
-            </div>
+            </Field>
           </div>
         )}
 
@@ -552,69 +594,14 @@ const QuestionnaireBusiness: React.FC = () => {
               onClick={prevStep}
               className="flex-1 p-4 rounded-2xl border-2 border-[#004891] text-[#004891] font-bold transition-all active:scale-95 cursor-pointer touch-manipulation hover:bg-[#004891]/5"
             >
-              {t("back")}
+              Atrás
             </button>
           )}
           <button
             type="button"
             onClick={
               step === totalSteps
-                ? async () => {
-                    const accessToken = getStoredAccessToken();
-                    if (!accessToken) {
-                      alert("Inicia sesion para enviar tu solicitud.");
-                      return;
-                    }
-
-                    const payload = {
-                      owner_full_name: formData.owner_full_name,
-                      owner_age: Number(formData.owner_age),
-                      owner_gender: formData.owner_gender,
-                      owner_email: formData.owner_email,
-                      owner_whatsapp: formData.owner_whatsapp,
-                      borough_code: formData.borough_code,
-                      neighborhood: formData.neighborhood,
-                      google_maps_url: formData.google_maps_url || null,
-                      operation_days_hours: formData.operation_days_hours,
-                      business_name: formData.business_name,
-                      business_description: formData.business_description,
-                      business_start_range: formData.business_start_range,
-                      continuous_operation_time: formData.continuous_operation_time,
-                      operation_modes: formData.operation_modes,
-                      employees_women_count: Number(formData.employees_women_count),
-                      employees_men_count: Number(formData.employees_men_count),
-                      sat_status: formData.sat_status,
-                      adaptation_for_world_cup: formData.adaptation_for_world_cup,
-                      support_usage: formData.support_usage,
-                      training_campus_preference: formData.training_campus_preference,
-                    };
-
-                    try {
-                      setIsSubmitting(true);
-
-                      const response = await fetch('/api/requests', {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                          Authorization: `Bearer ${accessToken}`,
-                        },
-                        body: JSON.stringify(payload),
-                      });
-
-                      const result = await response.json();
-                      if (!response.ok || !result?.ok) {
-                        const errorMessage = result?.error?.message || 'No fue posible enviar la solicitud';
-                        throw new Error(errorMessage);
-                      }
-
-                      alert('Solicitud enviada correctamente.');
-                    } catch (error) {
-                      const message = error instanceof Error ? error.message : 'Error inesperado al enviar solicitud';
-                      alert(message);
-                    } finally {
-                      setIsSubmitting(false);
-                    }
-                  }
+                ? handleSubmit
                 : nextStep
             }
             disabled={isNextDisabled() || isSubmitting}
@@ -626,6 +613,7 @@ const QuestionnaireBusiness: React.FC = () => {
           </button>
         </div>
       </form>
+      
     </div>
   );
 };
