@@ -11,12 +11,12 @@
         "countryPlaceholder": "e.g. Spain, Brazil...",
         "companionsLabel": "Number of companions",
         "companionsOptions": {
-          "solo": "I'm traveling solo",
+          "solo": "Traveling solo",
           "small": "2 to 4 people",
           "large": "More than 4 people"
         },
         "isAdultSolo": "Are you of legal age?",
-        "isAdultGroup": "Are all of you of legal age?",
+        "isAdultGroup": "Is everyone of legal age?",
         "ageOptions": {
           "yes": "Yes",
           "no": "No"
@@ -40,12 +40,12 @@
         "title": "Travel reasons",
         "description": "Select between 2 and 3 options that define your trip.",
         "motives": {
-          "cultural": "Cultural Tourism and Heritage",
+          "cultural": "Cultural Tourism & Heritage",
           "historical": "Historical Tourism",
-          "sports": "Sports Events Attendance (World Cup)",
+          "sports": "Sports Events (World Cup)",
           "relaxation": "Relaxation and Rest",
           "gastronomy": "Gastronomy",
-          "nightlife": "Nightlife and Entertainment"
+          "nightlife": "Nightlife & Entertainment"
         }
       },
       "step4": {
@@ -160,7 +160,8 @@
       "subtitle": "Your Satisfaction is our main priority."
     },
     "bestTours": {
-      "title": "Best Tours For You"
+      "title": "Best Tours For You",
+      "comingSoon": "Coming soon: The best personalized routes will appear here."
     }
   },
   "Navbar": {

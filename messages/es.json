@@ -160,7 +160,8 @@
       "subtitle": "Tu satisfacción es nuestra principal prioridad."
     },
     "bestTours": {
-      "title": "Los mejores tours para ti"
+      "title": "Los mejores tours para ti",
+      "comingSoon": "Próximamente: Las mejores rutas personalizadas aparecerán aquí."
     }
   },
   "Navbar": {
