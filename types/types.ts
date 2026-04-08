@@ -139,6 +139,14 @@ export interface ItineraryStop {
   createdAt: string
 }
 
+// ─── EQUITY ───────────────────────────────────────────────────────────────────
+
+export interface NegocioConScore extends BusinessProfile {
+  score: number
+  reasons: string[]
+  estimatedWalkMinutes: number
+}
+
 // ─── RECOMENDACIONES ──────────────────────────────────────────────────────────
 
 export interface Recommendation {

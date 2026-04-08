@@ -76,7 +76,7 @@ Módulo: app/(admin)/ + components/admin/
 Responsable: Farid
 Flujo: login → dashboard → alta/edición de negocio.
 Auth: Supabase Auth.
-Subida de fotos: Cloudinary.
+Subida de fotos: Supabase Storage.
 Ver FRONTEND_ADMIN.md.
 ```
 

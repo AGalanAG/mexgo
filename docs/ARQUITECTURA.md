@@ -27,7 +27,7 @@ Un servicio por dominio, cada uno con su BD. Escalable y tolerante a fallos, per
 La lógica de negocio no conoce a Supabase ni a Gemini. Elegante y testeable, pero el boilerplate de interfaces y capas formales no cabe en 2 días. → El algoritmo y el perfil cultural son funciones puras en `lib/` sin imports de proveedores.
 
 **Arquitectura hexagonal — ~ principio adoptado**
-Puertos y adaptadores. Cambiar Gemini por OpenAI no toca la lógica de negocio. Misma ventaja que Clean, mismo problema de boilerplate. → Gemini, Mapbox y Cloudinary solo se acceden desde `lib/`. Si cambia un proveedor, solo cambia ese archivo.
+Puertos y adaptadores. Cambiar Gemini por OpenAI no toca la lógica de negocio. Misma ventaja que Clean, mismo problema de boilerplate. → Gemini, Mapbox y Supabase solo se acceden desde `lib/`. Si cambia un proveedor, solo cambia ese archivo.
 
 ---
 

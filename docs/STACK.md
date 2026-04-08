@@ -14,7 +14,7 @@ Guía visual de referencia rápida para todo el equipo.
 | IA | Gemini 2.5 Flash | Fidel |
 | Mapas | Mapbox GL JS | Emi |
 | Traducciones | i18next + DeepL | Emi |
-| Imágenes | Cloudinary | Farid |
+| Imágenes | Supabase Storage | Farid |
 | Estilos | Tailwind CSS v4 | Emi, Farid, Xavier |
 | Lenguaje | TypeScript estricto | Todos |
 | Offline | localStorage + PWA manifest | Emi |

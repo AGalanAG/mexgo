@@ -10,7 +10,7 @@
 | Fidel | Arquitecto, IA, algoritmo, deploy | Gemini API, `lib/equity.ts`, Next.js API Routes, Vercel |
 | Alan | Auth, base de datos, backend | Supabase, PostgreSQL, middleware, RBAC |
 | Emi | Frontend turista | Tailwind, Mapbox, PWA, localStorage |
-| Farid | Frontend admin y negocio | Tailwind, Supabase Auth, Cloudinary |
+| Farid | Frontend admin y negocio | Tailwind, Supabase Auth, Supabase Storage |
 | Xavier | QA, datos semilla, polish UI | Postman, Tailwind, datos JSON |
 
 ---
