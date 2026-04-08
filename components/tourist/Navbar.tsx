@@ -5,8 +5,11 @@ import { Link, useRouter, usePathname } from '@/i18n/routing';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ModeNightIcon from '@mui/icons-material/ModeNight';
 import LanguageIcon from '@mui/icons-material/Language';
+import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Divider from '@mui/material/Divider';
 import { useTheme } from 'next-themes';
 import { useTranslations, useLocale } from 'next-intl';
 
@@ -24,6 +27,7 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
 
   const [langAnchor, setLangAnchor] = useState<null | HTMLElement>(null);
   const [themeAnchor, setThemeAnchor] = useState<null | HTMLElement>(null);
+  const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
 
   const handleLangClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setLangAnchor(event.currentTarget);
@@ -36,6 +40,7 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
   const handleClose = () => {
     setLangAnchor(null);
     setThemeAnchor(null);
+    setProfileAnchor(null);
   };
 
   const handleThemeSelect = (theme: string) => {
@@ -93,9 +98,34 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
         </Menu>
 
         {/* Perfil */}
-        <Link href="/profile" className="hover:opacity-70 transition-opacity">
+        <button
+          onClick={(e) => setProfileAnchor(e.currentTarget)}
+          className="hover:opacity-70 transition-opacity"
+        >
           <AccountCircleIcon fontSize="medium" />
-        </Link>
+        </button>
+        <Menu
+          anchorEl={profileAnchor}
+          open={Boolean(profileAnchor)}
+          onClose={handleClose}
+          slotProps={{ paper: { sx: { mt: 1, borderRadius: 2, minWidth: 180 } } }}
+        >
+          <MenuItem
+            onClick={handleClose}
+            component={Link}
+            href="/profile"
+            sx={{ fontSize: 14, fontWeight: 700, gap: 1.5 }}
+          >
+            <PersonIcon fontSize="small" /> Mi perfil
+          </MenuItem>
+          <Divider />
+          <MenuItem
+            onClick={() => { handleClose(); router.push('/'); }}
+            sx={{ fontSize: 14, fontWeight: 700, color: 'error.main', gap: 1.5 }}
+          >
+            <LogoutIcon fontSize="small" /> Cerrar sesión
+          </MenuItem>
+        </Menu>
 
         {/* Dark Mode */}
         <button

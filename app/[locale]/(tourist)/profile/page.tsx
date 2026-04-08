@@ -13,6 +13,7 @@ import {
   CalendarToday as CalendarTodayIcon,
   Star as StarIcon,
   CameraAlt as CameraAltIcon,
+  EmojiEvents as TrophyIcon,
 } from '@mui/icons-material';
 
 const MOCK_TRIPS = [
@@ -46,9 +47,9 @@ export default function ProfilePage() {
   const t = useTranslations('Profile');
 
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState(t('defaultName'));
+  const [name, setName]     = useState(t('defaultName'));
   const [origin, setOrigin] = useState(t('defaultOrigin'));
-  const [bio, setBio] = useState(t('defaultBio'));
+  const [bio, setBio]       = useState(t('defaultBio'));
 
   const preferences = t.raw('preferences.items') as string[];
 
@@ -63,33 +64,34 @@ export default function ProfilePage() {
       <Navbar variant="light" />
 
       <main className="flex-1 pt-20 pb-20 px-4">
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-4xl mx-auto space-y-5">
 
           {/* ── Hero Card ── */}
-          <div className="relative bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-100">
-            {/* Banner */}
+          <div className="relative bg-white rounded-3xl shadow-sm overflow-hidden border border-gray-100">
+            {/* Banner — usa --primary del sistema */}
             <div
-              className="h-40 w-full relative"
-              style={{
-                background: 'linear-gradient(135deg, var(--coppel-blue) 0%, var(--primary) 50%, var(--dark-blue) 100%)',
-              }}
+              className="h-36 w-full relative"
+              style={{ background: 'linear-gradient(135deg, var(--primary) 0%, var(--dark-blue) 100%)' }}
             >
-              <div className="absolute top-4 right-6 w-24 h-24 rounded-full bg-[var(--secondary)]/20 blur-2xl" />
-              <div className="absolute top-10 right-20 w-12 h-12 rounded-full bg-white/10" />
+              {/* Subtle geometric accent */}
+              <div className="absolute right-0 top-0 w-48 h-48 rounded-full bg-white/5 -translate-y-1/3 translate-x-1/3" />
+              <div className="absolute left-8 bottom-0 w-24 h-24 rounded-full bg-[var(--secondary)]/15 blur-xl" />
             </div>
 
-            {/* Content below banner */}
             <div className="px-6 pb-6">
-              {/* Avatar + Edit */}
-              <div className="flex items-end justify-between -mt-14 mb-4">
+              {/* Avatar + edit row */}
+              <div className="flex items-end justify-between -mt-12 mb-4">
                 <div className="relative">
-                  <div className="w-24 h-24 rounded-full border-4 border-white bg-gradient-to-br from-[var(--coppel-yellow)] to-[var(--secondary)] flex items-center justify-center shadow-xl">
-                    <span className="text-4xl font-black text-[var(--dark-blue)]">
+                  <div
+                    className="w-24 h-24 rounded-full border-4 border-white flex items-center justify-center shadow-lg"
+                    style={{ background: 'linear-gradient(135deg, var(--secondary), var(--coppel-yellow))' }}
+                  >
+                    <span className="text-4xl font-black text-[var(--primary)]">
                       {name.charAt(0)}
                     </span>
                   </div>
-                  <button className="absolute bottom-0 right-0 w-7 h-7 bg-[var(--coppel-blue)] text-white rounded-full flex items-center justify-center shadow-md hover:brightness-110 transition-all">
-                    <CameraAltIcon sx={{ fontSize: 14 }} />
+                  <button className="absolute bottom-0 right-0 w-7 h-7 bg-[var(--primary)] text-white rounded-full flex items-center justify-center shadow-md hover:brightness-110 transition-all">
+                    <CameraAltIcon sx={{ fontSize: 13 }} />
                   </button>
                 </div>
 
@@ -97,41 +99,41 @@ export default function ProfilePage() {
                   onClick={() => setIsEditing(!isEditing)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
                     isEditing
-                      ? 'bg-[var(--green)] text-white shadow-lg shadow-[var(--green)]/30'
-                      : 'border-2 border-[var(--coppel-blue)] text-[var(--coppel-blue)] hover:bg-[var(--coppel-blue)]/5'
+                      ? 'bg-[var(--accent)] text-white'
+                      : 'border-2 border-[var(--primary)]/30 text-[var(--primary)] hover:bg-[var(--primary)]/5'
                   }`}
                 >
-                  <EditIcon sx={{ fontSize: 16 }} />
+                  <EditIcon sx={{ fontSize: 15 }} />
                   {isEditing ? t('save') : t('edit')}
                 </button>
               </div>
 
-              {/* Name & Origin */}
+              {/* Name / Origin / Bio */}
               {isEditing ? (
                 <div className="space-y-3">
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full text-xl font-black text-[var(--primary)] border-2 border-[var(--coppel-blue)]/30 rounded-xl px-3 py-2 outline-none focus:border-[var(--coppel-blue)] bg-gray-50"
+                    className="w-full text-xl font-black text-[var(--primary)] border-2 border-gray-100 rounded-xl px-3 py-2 outline-none focus:border-[var(--primary)] bg-gray-50"
                   />
                   <input
                     value={origin}
                     onChange={(e) => setOrigin(e.target.value)}
-                    className="w-full text-sm font-semibold text-gray-500 border-2 border-gray-100 rounded-xl px-3 py-2 outline-none focus:border-[var(--coppel-blue)] bg-gray-50"
+                    className="w-full text-sm font-semibold text-gray-500 border-2 border-gray-100 rounded-xl px-3 py-2 outline-none focus:border-[var(--primary)] bg-gray-50"
                     placeholder={t('originPlaceholder')}
                   />
                   <textarea
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     rows={2}
-                    className="w-full text-sm text-gray-600 border-2 border-gray-100 rounded-xl px-3 py-2 outline-none focus:border-[var(--coppel-blue)] bg-gray-50 resize-none"
+                    className="w-full text-sm text-gray-600 border-2 border-gray-100 rounded-xl px-3 py-2 outline-none focus:border-[var(--primary)] bg-gray-50 resize-none"
                   />
                 </div>
               ) : (
                 <>
                   <h1 className="text-2xl font-black text-[var(--primary)] leading-tight">{name}</h1>
                   <p className="flex items-center gap-1 text-sm text-gray-400 font-semibold mt-1">
-                    <LocationOnIcon sx={{ fontSize: 16 }} />
+                    <LocationOnIcon sx={{ fontSize: 15 }} />
                     {origin}
                   </p>
                   <p className="text-sm text-gray-500 mt-3 leading-relaxed">{bio}</p>
@@ -147,7 +149,7 @@ export default function ProfilePage() {
                 key={s.labelKey}
                 className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col items-center gap-2 hover:shadow-md hover:-translate-y-0.5 transition-all"
               >
-                <div className="w-10 h-10 rounded-full bg-[var(--coppel-blue)]/10 text-[var(--coppel-blue)] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/8 text-[var(--primary)] flex items-center justify-center">
                   {s.icon}
                 </div>
                 <span className="text-2xl font-black text-[var(--primary)]">{s.value}</span>
@@ -159,32 +161,32 @@ export default function ProfilePage() {
           </div>
 
           {/* ── Preferences ── */}
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-            <h2 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-4">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">
               {t('preferences.title')}
             </h2>
             <div className="flex flex-wrap gap-2">
               {preferences.map((pref) => (
                 <span
                   key={pref}
-                  className="px-4 py-2 rounded-full text-sm font-bold bg-[var(--coppel-blue)]/8 text-[var(--coppel-blue)] border border-[var(--coppel-blue)]/20 hover:bg-[var(--coppel-blue)] hover:text-white transition-all cursor-default"
+                  className="px-4 py-2 rounded-full text-sm font-bold bg-[var(--primary)]/6 text-[var(--primary)] border border-[var(--primary)]/15 hover:bg-[var(--primary)] hover:text-white transition-all cursor-default"
                 >
                   {pref}
                 </span>
               ))}
-              <span className="px-4 py-2 rounded-full text-sm font-bold border-2 border-dashed border-gray-200 text-gray-400 hover:border-[var(--coppel-blue)] hover:text-[var(--coppel-blue)] transition-all cursor-pointer">
+              <span className="px-4 py-2 rounded-full text-sm font-bold border-2 border-dashed border-gray-200 text-gray-400 hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all cursor-pointer">
                 {t('preferences.add')}
               </span>
             </div>
           </div>
 
           {/* ── Recent Trips ── */}
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-sm font-black text-gray-400 uppercase tracking-widest">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest">
                 {t('itineraries.title')}
               </h2>
-              <Link href="/trips" className="text-xs font-bold text-[var(--coppel-blue)] hover:underline">
+              <Link href="/trips" className="text-xs font-bold text-[var(--primary)] hover:underline">
                 {t('itineraries.viewAll')}
               </Link>
             </div>
@@ -193,7 +195,7 @@ export default function ProfilePage() {
               {MOCK_TRIPS.map((trip) => (
                 <div
                   key={trip.id}
-                  className="group rounded-2xl overflow-hidden border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer"
+                  className="group rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer"
                 >
                   <div className="relative h-32 overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -210,7 +212,7 @@ export default function ProfilePage() {
                       </p>
                     </div>
                   </div>
-                  <div className="px-3 py-2 flex items-center gap-1">
+                  <div className="px-3 py-2 flex items-center gap-0.5">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <StarIcon
                         key={i}
@@ -218,7 +220,7 @@ export default function ProfilePage() {
                         className={i < trip.rating ? 'text-[var(--secondary)]' : 'text-gray-200'}
                       />
                     ))}
-                    <span className="ml-auto text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                    <span className="ml-auto text-[10px] font-bold text-gray-300 uppercase tracking-widest">
                       {trip.rating}/5
                     </span>
                   </div>
@@ -227,17 +229,19 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* ── Mundial 2026 Badge ── */}
+          {/* ── Mundial 2026 ── */}
           <div
-            className="rounded-3xl p-6 flex items-center gap-5 shadow-lg"
-            style={{ background: 'linear-gradient(135deg, var(--coppel-blue), var(--dark-blue))' }}
+            className="rounded-2xl p-6 flex items-center gap-5"
+            style={{ background: 'linear-gradient(130deg, var(--primary), var(--dark-blue))' }}
           >
-            <div className="text-5xl">⚽</div>
-            <div className="flex-1">
-              <p className="text-white font-black text-lg leading-tight">{t('mundial.title')}</p>
-              <p className="text-white/60 text-sm mt-1">{t('mundial.subtitle')}</p>
+            <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0">
+              <TrophyIcon sx={{ fontSize: 26 }} />
             </div>
-            <div className="bg-[var(--secondary)] text-[var(--dark-blue)] font-black text-xs px-4 py-2 rounded-xl shadow-lg whitespace-nowrap">
+            <div className="flex-1">
+              <p className="text-white font-black text-base leading-snug">{t('mundial.title')}</p>
+              <p className="text-white/55 text-sm mt-0.5">{t('mundial.subtitle')}</p>
+            </div>
+            <div className="bg-[var(--secondary)] text-[var(--primary)] font-black text-xs px-4 py-2 rounded-xl whitespace-nowrap shadow-md">
               {t('mundial.badge')}
             </div>
           </div>
@@ -249,4 +253,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-

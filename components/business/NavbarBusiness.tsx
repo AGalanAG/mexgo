@@ -5,13 +5,14 @@ import { Link, useRouter, usePathname } from "@/i18n/routing";
 import { useLocale } from "next-intl";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Divider from "@mui/material/Divider";
 import {
   Dashboard as DashboardIcon,
   School as SchoolIcon,
   SupportAgent as SupportAgentIcon,
   LanguageOutlined as LanguageIcon,
   KeyboardArrowDown as ArrowIcon,
-  Verified as VerifiedIcon,
+  Logout as LogoutIcon,
 } from "@mui/icons-material";
 
 const NAV_LINKS = [
@@ -26,6 +27,7 @@ export default function NavbarBusiness() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [langAnchor, setLangAnchor] = useState<null | HTMLElement>(null);
+  const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -109,9 +111,9 @@ export default function NavbarBusiness() {
           {/* Separator */}
           <div className="h-5 w-px bg-white/15" />
 
-          {/* Profile / Dashboard avatar */}
-          <Link
-            href="/business/dashboard"
+          {/* Profile dropdown */}
+          <button
+            onClick={(e) => setProfileAnchor(e.currentTarget)}
             className="flex items-center gap-2 bg-white/10 hover:bg-white/18 border border-white/15 hover:border-white/30 px-3 py-1.5 rounded-xl transition-all group"
           >
             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[var(--secondary)] to-[var(--coppel-yellow)] flex items-center justify-center">
@@ -120,7 +122,28 @@ export default function NavbarBusiness() {
             <span className="text-xs font-bold text-white/80 group-hover:text-white transition-colors hidden sm:block">
               Mi negocio
             </span>
-          </Link>
+            <ArrowIcon sx={{ fontSize: 15 }} className="text-white/50" />
+          </button>
+          <Menu
+            anchorEl={profileAnchor}
+            open={Boolean(profileAnchor)}
+            onClose={() => setProfileAnchor(null)}
+            slotProps={{ paper: { sx: { mt: 1, borderRadius: 2, minWidth: 190 } } }}
+          >
+            <MenuItem
+              onClick={() => { setProfileAnchor(null); router.push('/business/dashboard'); }}
+              sx={{ fontSize: 14, fontWeight: 700, gap: 1.5 }}
+            >
+              <DashboardIcon fontSize="small" /> Mi dashboard
+            </MenuItem>
+            <Divider />
+            <MenuItem
+              onClick={() => { setProfileAnchor(null); router.push('/'); }}
+              sx={{ fontSize: 14, fontWeight: 700, color: 'error.main', gap: 1.5 }}
+            >
+              <LogoutIcon fontSize="small" /> Cerrar sesión
+            </MenuItem>
+          </Menu>
         </div>
       </div>
 
