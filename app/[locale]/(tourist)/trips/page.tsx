@@ -239,20 +239,6 @@ export default function TripsPage() {
             markers={markers}
             className="w-full h-full"
           />
-          
-          {hasLocationPermission && (
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md px-10 py-6 rounded-[2rem] shadow-2xl border border-white/50 flex gap-12 z-20">
-              <div>
-                <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">{t('totalDistance')}</p>
-                <p className="text-2xl font-black text-[var(--primary)]">{stops.length > 1 ? '7.2 km' : '0.0 km'}</p>
-              </div>
-              <div className="w-[1px] bg-gray-200 self-stretch"></div>
-              <div>
-                <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">{t('estimatedTime')}</p>
-                <p className="text-2xl font-black text-[var(--primary)]">{stops.length > 1 ? '1h 45m' : '0m'}</p>
-              </div>
-            </div>
-          )}
         </section>
       </main>
 

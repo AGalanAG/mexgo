@@ -169,6 +169,90 @@
   "Navbar": {
     "discover": "Découvrir",
     "trips": "Voyages",
-    "more": "Plus"
+    "more": "Plus",
+    "chat": "Chat",
+    "login": "Connexion",
+    "register": "S'inscrire"
+  },
+  "Register": {
+    "title": "Rejoindre MexGo",
+    "subtitle": "Choisissez le type de compte qui vous convient",
+    "tourist": {
+      "title": "Je suis Touriste",
+      "description": "Découvrez des itinéraires authentiques, vivez des expériences uniques et soutenez le commerce local.",
+      "cta": "M'inscrire en tant que Touriste"
+    },
+    "business": {
+      "title": "Je suis un Commerce",
+      "description": "Rejoignez le réseau Ola México, augmentez votre visibilité et préparez-vous pour la Coupe du Monde 2026.",
+      "cta": "Enregistrer mon Commerce"
+    },
+    "form": {
+      "name": "Nom complet",
+      "email": "Adresse e-mail",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "businessName": "Nom du commerce",
+      "category": "Catégorie",
+      "back": "Retour",
+      "submit": "Créer un compte",
+      "google": "Continuer avec Google",
+      "alreadyHaveAccount": "Vous avez déjà un compte ?",
+      "success": "Inscription réussie !",
+      "redirecting": "Redirection vers votre tableau de bord..."
+    }
+  },
+  "Profile": {
+    "edit": "Modifier",
+    "save": "Enregistrer",
+    "originPlaceholder": "Pays d'origine",
+    "stats": {
+      "trips": "Voyages",
+      "favorites": "Favoris",
+      "days": "Jours"
+    },
+    "preferences": {
+      "title": "Préférences de voyage",
+      "add": "+ Ajouter",
+      "items": ["Tourisme Culturel", "Gastronomie", "Vie nocturne", "Musées"]
+    },
+    "itineraries": {
+      "title": "Mes Itinéraires",
+      "viewAll": "Voir tout →",
+      "stops": "arrêts"
+    },
+    "mundial": {
+      "title": "Coupe du Monde 2026",
+      "subtitle": "Prêt pour l'expérience de l'année. Que le match commence !",
+      "badge": "MexGO Ready"
+    },
+    "defaultName": "Voyageur MexGO",
+    "defaultOrigin": "France 🇫🇷",
+    "defaultBio": "Amoureux de la culture mexicaine et de la gastronomie. Ici pour vivre la Coupe du Monde 2026 à fond."
+  },
+  "Discover": {
+    "title": "Découvrir",
+    "recommendations": "Recommandations",
+    "searchPlaceholder": "Rechercher des lieux...",
+    "seeMore": "Voir plus",
+    "viewDetails": "Voir les détails"
+  },
+  "Trips": {
+    "title": "Mon Itinéraire Personnalisé",
+    "subtitle": "Sélectionnez des lieux sur la carte pour créer votre itinéraire",
+    "searchPlaceholder": "Rechercher des lieux...",
+    "transport": {
+      "walking": "À pied",
+      "bicycle": "Vélo",
+      "car": "Voiture",
+      "transit": "Transport"
+    },
+    "dateLabel": "Date",
+    "selectedStops": "Arrêts Sélectionnés",
+    "noStops": "Aucun arrêt sélectionné. Ajoutez des lieux depuis la carte !",
+    "addToRoute": "+ Ajouter à mon itinéraire",
+    "totalDistance": "Distance Totale",
+    "estimatedTime": "Temps Estimé",
+    "finalizeRoute": "✓ Finaliser et Enregistrer l'Itinéraire"
   }
 }

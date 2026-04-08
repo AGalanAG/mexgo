@@ -136,49 +136,49 @@ const Questionnaire: React.FC = () => {
       {/* Step 1: Perfil y Origen */}
       {step === 1 && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <h2 className="text-2xl font-bold text-[#1C42E8]">Perfil y Origen</h2>
+          <h2 className="text-2xl font-bold text-[#1C42E8]">{t('tourist.step1.title')}</h2>
           <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-900">¿De qué país nos visitas?</label>
+            <label className="block text-sm font-semibold mb-2 text-gray-900">{t('tourist.step1.countryLabel')}</label>
             <input
               type="text"
               className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none transition-all text-gray-900 bg-gray-50/30"
-              placeholder="Ej. España, Brasil..."
+              placeholder={t('tourist.step1.countryPlaceholder')}
               value={formData.country}
               onChange={(e) => setFormData({ ...formData, country: e.target.value })}
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-900">Número de acompañantes</label>
+            <label className="block text-sm font-semibold mb-2 text-gray-900">{t('tourist.step1.companionsLabel')}</label>
             <div className="grid gap-3">
-              {["Viajo solo(a)", "2 a 4 personas", "Más de 4 personas"].map((opt) => (
+              {(['solo', 'small', 'large'] as const).map((key) => (
                 <button
-                  key={opt}
+                  key={key}
                   type="button"
-                  onClick={() => setFormData({ ...formData, companions_count: opt })}
+                  onClick={() => setFormData({ ...formData, companions_count: key })}
                   className={`p-4 rounded-2xl border-2 transition-all text-left font-medium cursor-pointer touch-manipulation ${
-                    formData.companions_count === opt ? "border-[#1C42E8] bg-[#1C42E8]/5 text-[#1C42E8]" : "border-gray-100 text-gray-700 hover:border-gray-200"
+                    formData.companions_count === key ? "border-[#1C42E8] bg-[#1C42E8]/5 text-[#1C42E8]" : "border-gray-100 text-gray-700 hover:border-gray-200"
                   }`}
                 >
-                  {opt}
+                  {t(`tourist.step1.companionsOptions.${key}`)}
                 </button>
               ))}
             </div>
           </div>
           <div>
             <label className="block text-sm font-semibold mb-2 text-gray-900">
-              {formData.companions_count === "Viajo solo(a)" ? "¿Eres mayor de edad?" : "¿Todos son mayores de edad?"}
+              {formData.companions_count === 'solo' ? t('tourist.step1.isAdultSolo') : t('tourist.step1.isAdultGroup')}
             </label>
             <div className="flex gap-3">
-              {["Si", "No"].map((opt) => (
+              {(['yes', 'no'] as const).map((key) => (
                 <button
-                  key={opt}
+                  key={key}
                   type="button"
-                  onClick={() => setFormData({ ...formData, is_adult: opt })}
+                  onClick={() => setFormData({ ...formData, is_adult: key })}
                   className={`flex-1 p-4 rounded-2xl border-2 transition-all font-medium cursor-pointer touch-manipulation ${
-                    formData.is_adult === opt ? "border-[#1C42E8] bg-[#1C42E8]/5 text-[#1C42E8]" : "border-gray-100 text-gray-700"
+                    formData.is_adult === key ? "border-[#1C42E8] bg-[#1C42E8]/5 text-[#1C42E8]" : "border-gray-100 text-gray-700"
                   }`}
                 >
-                  {opt}
+                  {t(`tourist.step1.ageOptions.${key}`)}
                 </button>
               ))}
             </div>
@@ -189,34 +189,34 @@ const Questionnaire: React.FC = () => {
       {/* Step 2: Logística */}
       {step === 2 && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <h2 className="text-2xl font-bold text-[#1C42E8]">Logística</h2>
+          <h2 className="text-2xl font-bold text-[#1C42E8]">{t('tourist.step2.title')}</h2>
           <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-900">Duración de la estancia</label>
+            <label className="block text-sm font-semibold mb-2 text-gray-900">{t('tourist.step2.durationLabel')}</label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {["1 a 3 días", "4 a 7 días", "8 a 14 días", "Más de 15 días"].map((opt) => (
+              {(['1-3', '4-7', '8-14', '15+'] as const).map((key) => (
                 <button
-                  key={opt}
+                  key={key}
                   type="button"
-                  onClick={() => setFormData({ ...formData, stay_duration: opt })}
+                  onClick={() => setFormData({ ...formData, stay_duration: key })}
                   className={`p-4 rounded-2xl border-2 transition-all text-left font-medium cursor-pointer touch-manipulation ${
-                    formData.stay_duration === opt ? "border-[#1C42E8] bg-[#1C42E8]/5 text-[#1C42E8]" : "border-gray-100 text-gray-700"
+                    formData.stay_duration === key ? "border-[#1C42E8] bg-[#1C42E8]/5 text-[#1C42E8]" : "border-gray-100 text-gray-700"
                   }`}
                 >
-                  {opt}
+                  {t(`tourist.step2.durationOptions.${key}`)}
                 </button>
               ))}
             </div>
           </div>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">Ciudad de hospedaje</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-900">{t('tourist.step2.cityLabel')}</label>
               <select
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value, borough: "" })}
                 className="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#1C42E8] text-gray-900 bg-gray-50/30 cursor-pointer appearance-none"
                 style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%231C42E8\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\' /%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.5rem' }}
               >
-                <option value="">Selecciona una ciudad</option>
+                <option value="">{t('tourist.step2.cityPlaceholder')}</option>
                 {Object.keys(CITIES_DATA).map(city => (
                   <option key={city} value={city}>{city}</option>
                 ))}
@@ -224,14 +224,14 @@ const Questionnaire: React.FC = () => {
             </div>
             {formData.city && (
               <div className="animate-in fade-in duration-300">
-                <label className="block text-sm font-semibold mb-2 text-gray-900">Alcaldía / Municipio</label>
+                <label className="block text-sm font-semibold mb-2 text-gray-900">{t('tourist.step2.boroughLabel')}</label>
                 <select
                   value={formData.borough}
                   onChange={(e) => setFormData({ ...formData, borough: e.target.value })}
                   className="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#1C42E8] text-gray-900 bg-gray-50/30 cursor-pointer appearance-none"
                   style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%231C42E8\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\' /%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.5rem' }}
                 >
-                  <option value="">Selecciona zona</option>
+                  <option value="">{t('tourist.step2.boroughPlaceholder')}</option>
                   {boroughs.map(b => (
                     <option key={b} value={b}>{b}</option>
                   ))}
@@ -245,27 +245,20 @@ const Questionnaire: React.FC = () => {
       {/* Step 3: Motivos */}
       {step === 3 && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <h2 className="text-2xl font-bold text-[#1C42E8]">Motivos del viaje</h2>
-          <p className="text-sm text-gray-600">Selecciona entre 2 y 3 opciones que definan tu viaje.</p>
+          <h2 className="text-2xl font-bold text-[#1C42E8]">{t('tourist.step3.title')}</h2>
+          <p className="text-sm text-gray-600">{t('tourist.step3.description')}</p>
           <div className="grid gap-3">
-            {[
-              "Turismo Cultural y Patrimonio",
-              "Turismo Histórico",
-              "Asistencia a eventos deportivos (Mundial)",
-              "Relajación y Descanso",
-              "Gastronomía",
-              "Vida nocturna y Entretenimiento",
-            ].map((opt) => (
+            {(['cultural', 'historical', 'sports', 'relaxation', 'gastronomy', 'nightlife'] as const).map((key) => (
               <button
-                key={opt}
+                key={key}
                 type="button"
-                onClick={() => handleMotiveChange(opt)}
+                onClick={() => handleMotiveChange(key)}
                 className={`p-4 rounded-2xl border-2 transition-all text-left flex justify-between items-center font-medium cursor-pointer touch-manipulation ${
-                  formData.trip_motives.includes(opt) ? "border-[#E8C247] bg-[#E8C247]/10 text-gray-900 shadow-sm" : "border-gray-100 text-gray-700 bg-gray-50/10"
+                  formData.trip_motives.includes(key) ? "border-[#E8C247] bg-[#E8C247]/10 text-gray-900 shadow-sm" : "border-gray-100 text-gray-700 bg-gray-50/10"
                 }`}
               >
-                <span className="pr-4">{opt}</span>
-                {formData.trip_motives.includes(opt) && (
+                <span className="pr-4">{t(`tourist.step3.motives.${key}`)}</span>
+                {formData.trip_motives.includes(key) && (
                   <div className="bg-[#E8C247] rounded-full p-1 shrink-0">
                     <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -281,23 +274,13 @@ const Questionnaire: React.FC = () => {
       {/* Step 4: Factores de elección */}
       {step === 4 && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <h2 className="text-2xl font-bold text-[#1C42E8]">Factores de elección</h2>
-          <p className="text-sm text-gray-600">Esto nos ayuda a priorizar tus rutas en el mapa.</p>
+          <h2 className="text-2xl font-bold text-[#1C42E8]">{t('tourist.step4.title')}</h2>
+          <p className="text-sm text-gray-600">{t('tourist.step4.description')}</p>
           <div className="grid gap-4">
-            {[
-              {
-                id: "prox",
-                label: "Proximidad",
-                desc: "Cercanía al estadio o sedes de eventos.",
-                icon: "📍"
-              },
-              {
-                id: "pref",
-                label: "Preferencia de actividad",
-                desc: "Sacrificar cercanía por una actividad más acorde a tus gustos.",
-                icon: "⭐️"
-              },
-            ].map((opt) => (
+            {([
+              { id: "proximity", icon: "📍" },
+              { id: "preference", icon: "⭐️" },
+            ] as const).map((opt) => (
               <button
                 key={opt.id}
                 type="button"
@@ -308,13 +291,13 @@ const Questionnaire: React.FC = () => {
               >
                 <div className="text-3xl shrink-0">{opt.icon}</div>
                 <div className="space-y-1">
-                  <div className="font-bold text-lg text-gray-900">{opt.label}</div>
-                  <div className="text-sm text-gray-600 leading-tight">{opt.desc}</div>
+                  <div className="font-bold text-lg text-gray-900">{t(`tourist.step4.factors.${opt.id}.label`)}</div>
+                  <div className="text-sm text-gray-600 leading-tight">{t(`tourist.step4.factors.${opt.id}.desc`)}</div>
                 </div>
               </button>
             ))}
           </div>
-
+          <p className="text-xs text-gray-400 text-center mt-2">{t('tourist.step4.olaMexicoTip')}</p>
         </div>
       )}
 
@@ -326,7 +309,7 @@ const Questionnaire: React.FC = () => {
             onClick={prevStep}
             className="flex-1 p-4 rounded-2xl border-2 border-[#1C42E8] text-[#1C42E8] font-bold hover:bg-[#1C42E8]/5 transition-all cursor-pointer touch-manipulation active:scale-95"
           >
-            Atrás
+            {t('back')}
           </button>
         )}
         <button
@@ -337,7 +320,7 @@ const Questionnaire: React.FC = () => {
             isNextDisabled() ? "bg-gray-300 cursor-not-allowed" : "bg-[#1C42E8] hover:shadow-lg active:scale-95 shadow-md shadow-[#1C42E8]/20"
           }`}
         >
-          {step === totalSteps ? "Crear Itinerario" : "Siguiente"}
+          {step === totalSteps ? t('createItinerary') : t('next')}
         </button>
       </div>
     </div>
