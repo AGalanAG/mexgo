@@ -1,13 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Navbar from '@/components/tourist/Navbar';
+import type { NegocioConScore } from '@/types/types';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import StarIcon from '@mui/icons-material/Star';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { motion } from 'framer-motion';
+import MapboxMap from '@/components/tourist/MapboxMap';
 
 /**
  * Interface for place details
@@ -21,6 +23,8 @@ interface PlaceDetails {
   description: string;
   opening_hours: string[];
   photos: string[];
+  lng: number;
+  lat: number;
 }
 
 /**
@@ -39,16 +43,40 @@ const MOCK_PLACES_DETAILS: Record<string, PlaceDetails> = {
       'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&q=80',
       'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80',
       'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80'
-    ]
+    ],
+    lng: -99.1650,
+    lat: 19.4200,
   },
 };
 
 export default function PlaceDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-  
-  // Get data or use fallback
-  const place = MOCK_PLACES_DETAILS[id as string] || MOCK_PLACES_DETAILS['1'];
+  const [place, setPlace] = useState<PlaceDetails>(MOCK_PLACES_DETAILS['1']);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('mexgo_recommendations');
+    if (!stored) return;
+    const recommendations: NegocioConScore[] = JSON.parse(stored);
+    const found = recommendations.find(r => r.id === id);
+    if (!found) return;
+    setPlace({
+      id: found.id,
+      name: found.businessName,
+      rating: 4.5,
+      user_ratings_total: found.estimatedWalkMinutes,
+      address: `${found.neighborhood}, ${found.boroughCode}`,
+      description: found.businessDescription,
+      opening_hours: found.operationDaysHours
+        ? found.operationDaysHours.split(',').map(h => h.trim())
+        : ['Horario no disponible'],
+      photos: found.coverImageUrl
+        ? [found.coverImageUrl]
+        : MOCK_PLACES_DETAILS['1'].photos,
+      lng: found.longitude,
+      lat: found.latitude,
+    });
+  }, [id]);
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -136,21 +164,14 @@ export default function PlaceDetailPage() {
               </div>
 
               <div className="space-y-6">
-                {/* Compact Map Integration - Using OpenStreetMap Static Fallback */}
-                <div className="w-full h-[140px] rounded-2xl overflow-hidden relative border border-gray-100 group shadow-inner">
-                  <img 
-                    src="https://www.staticmapmaker.com/img/google.png" 
-                    className="w-full h-full object-cover grayscale-[50%] group-hover:grayscale-0 transition-all duration-700 hidden"
-                    alt="Map Location"
+                {/* Interactive Map */}
+                <div className="w-full h-[140px] rounded-2xl overflow-hidden border border-gray-100 shadow-inner">
+                  <MapboxMap
+                    center={[place.lng, place.lat]}
+                    zoom={15}
+                    markers={[{ lng: place.lng, lat: place.lat, label: place.name, color: '#004891' }]}
+                    className="w-full h-full"
                   />
-                  {/* Real OpenStreetMap fallback through a reliable static provider or a stylized placeholder */}
-                  <div 
-                    className="w-full h-full bg-cover bg-center grayscale-[20%] group-hover:grayscale-0 transition-all duration-700"
-                    style={{ backgroundImage: "url('https://maps.wikimedia.org/osm-intl/14/19.4194/-99.1620.png')" }}
-                  ></div>
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--primary)] drop-shadow-lg">
-                    <LocationOnIcon sx={{ fontSize: 32 }} />
-                  </div>
                 </div>
 
                 <motion.button 

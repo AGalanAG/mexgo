@@ -21,11 +21,21 @@ type RecommendResponse = {
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json() as RecommendRequest
+  let body: RecommendRequest & { lat?: number; lng?: number }
+  try {
+    body = await req.json()
+  } catch {
+    body = {} as RecommendRequest
+  }
 
-  const { location, questionnaire, tipo } = body
+  // Soporta {location: {lat, lng}} o {lat, lng} directo
+  const location = body.location || {
+    lat: body.lat ?? 19.4326,
+    lng: body.lng ?? -99.1332,
+  }
+  const { questionnaire, tipo } = body
 
-  const negocios   = buscarNegocios(tipo ?? '')
+  const negocios = buscarNegocios(tipo ?? '')
   const saturacion = mockSaturacion(negocios.map(n => n.id))
 
   const data = calcularRecomendaciones({

@@ -1,38 +1,32 @@
-# MexGo — Tecnologías Obligatorias
+# MexGo - Tecnologias y reglas obligatorias
 **Los Mossitos · Genius Arena 2026**
 
-Reglas base de entorno y herramientas. Nadie empieza a codear sin esto.
+## 1) Entorno
+- Node LTS y npm.
+- VS Code con ESLint + Prettier.
+- Supabase configurado para entorno local/remoto.
 
-## 1. Terminal y Entorno
-- Instalar Glow para leer `.md` en terminal sin salir del flujo de trabajo.
-- ? **Gestor de paquetes** — `npm`, `yarn` o `pnpm` por definir. Usar solo el elegido para evitar conflictos en el lockfile.
-- Comandos base: `npm run dev` para levantar entorno local, `cd` y `ls`/`dir`.
+## 2) Git
+- Prohibido push directo a `main`.
+- Commits pequenos y por dominio.
+- Pull frecuente para evitar drift de contratos.
 
-## 2. Git
-- ✗ Prohibido hacer `push` directo a la rama `main`.
-- → Crear ramas con prefijo funcional: `feat/tarjetas` o `fix/auth`.
-- Ciclo de trabajo diario: `git pull origin main` → rama nueva → `add .` → `commit` claro → `push` → Avisar antes de un Merge.
+## 3) Reglas de arquitectura
+- Frontend no accede directo a secretos ni service role.
+- Integracion por API Routes (`/api/*`).
+- Cambios en backend deben ser incrementales.
+- Modulo turista actual no se rompe en esta fase.
 
-## 3. Uso de IA (Context Engineering)
-- ✗ Cero web. Usar puro Claude Code o Terminal
-- → Inyección obligatoria del bloque "Contexto mínimo" de `CONTEXT_ENGINEERING.md y pasar MEXGO.pdf` antes de pedir código.
-- La IA no toma decisiones de arquitectura. Si propone saltar el patrón BFF, se descarta.
+## 4) Reglas de documentacion
+- Si cambia endpoint: actualizar `API.md`.
+- Si cambia tabla o enum: actualizar `SCHEMA.md` y `TABLAS.md`.
+- Si cambia decision de alto nivel: actualizar `DOCUMENTO.md` y `ARQUITECTURA.md`.
 
-## 4. Editor (VS Code)
-| Extensión | Para qué |
-|---|---|
-| Tailwind CSS IntelliSense | Autocompletado exacto de clases |
-
-- → Obligatorio activar `Format on Save` para eliminar conflictos de Git por espacios.
-
-## 5. Reglas inquebrantables
-- ✗ El frontend nunca llama a Gemini ni a Supabase directamente.
-- → El frontend solo consume endpoints de `/app/api/`.
-- ✗ Claves secretas (`GEMINI_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`) nunca llevan el prefijo `NEXT_PUBLIC_`. No subir `.env.local`.
-
----
+## 5) Seguridad
+- Nunca exponer `SUPABASE_SERVICE_ROLE_KEY` ni `GEMINI_API_KEY` al cliente.
+- Revisar validaciones de rol en cada endpoint nuevo.
 
 ## Cambios
-| Fecha | Quién | Qué |
+| Fecha | Quien | Que |
 |---|---|---|
-| 2026-03-31 | IA | v1.0 — creación del documento. |
+| 2026-04-07 | Alan | v2.0 - Reglas obligatorias alineadas al enfoque negocio y cambios incrementales. |

@@ -2,7 +2,8 @@ import HomeNavbar from '@/components/tourist/HomeNavbar';
 import Footer from '@/components/tourist/Footer';
 import PlaceCard from '@/components/tourist/PlaceCard';
 import {getTranslations} from 'next-intl/server';
-import {Link} from '@/i18n/routing';
+//import {Link} from '@/i18n/routing';
+import Link from 'next/link';
 
 export default async function Home() {
   const t = await getTranslations('Home');

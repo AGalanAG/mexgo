@@ -8,11 +8,16 @@ const BOROUGHS = [
   "Miguel Hidalgo", "Milpa Alta", "Tláhuac", "Tlalpan", "Venustiano Carranza", "Xochimilco"
 ];
 
+const OPERATION_MODES = [
+  "Local físico", "Venta a domicilio", "Bazares / Tianguis",
+  "Venta a negocios (B2B)", "Venta ambulante", "Otro"
+];
+
 const SAT_STATUS = [
   { id: "formal", label: "Formal / Registrado" },
   { id: "process", label: "En proceso" },
   { id: "interested", label: "No, pero me interesa" },
-  { id: "notInterested", label: "No me interesa" }
+  { id: "notInterested", label: "No me interesa" },
 ];
 
 const QuestionnaireBusiness: React.FC = () => {
@@ -100,7 +105,7 @@ const QuestionnaireBusiness: React.FC = () => {
 
       {/* Form Steps */}
       <form className="space-y-6">
-        
+
         {/* Step 1: Datos del Propietario */}
         {step === 1 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -126,7 +131,7 @@ const QuestionnaireBusiness: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-2 text-gray-900">Género</label>
-                <select 
+                <select
                   className="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#1C42E8] text-gray-900 bg-gray-50/30 cursor-pointer"
                   value={formData.owner_gender}
                   onChange={(e) => setFormData({...formData, owner_gender: e.target.value})}
@@ -157,7 +162,7 @@ const QuestionnaireBusiness: React.FC = () => {
             <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">Ubicación y Horarios</h2>
             <div>
               <label className="block text-sm font-semibold mb-2 text-gray-900">Alcaldía (CDMX)</label>
-              <select 
+              <select
                 className="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#1C42E8] text-gray-900 bg-gray-50/30 cursor-pointer appearance-auto"
                 value={formData.borough_code}
                 onChange={(e) => setFormData({...formData, borough_code: e.target.value})}
@@ -221,7 +226,7 @@ const QuestionnaireBusiness: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-semibold mb-2 text-gray-900">¿Cuánto tiempo lleva operando?</label>
-              <select 
+              <select
                 className="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#1C42E8] text-gray-900 bg-gray-50/30 cursor-pointer"
                 value={formData.business_start_range}
                 onChange={(e) => setFormData({...formData, business_start_range: e.target.value})}

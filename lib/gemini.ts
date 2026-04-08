@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai'
 import type { Content } from '@google/genai'
 import type { ChatMessagePayload, ItineraryStop } from '@/types/types'
-import { GEMINI_MODEL } from '@/constants'
+import { GEMINI_MODEL, SYSTEM_PROMPT } from '@/constants'
 import { declarations, handlers } from '@/lib/tools'
 
 // ─── CLIENTE ──────────────────────────────────────────────────────────────────
@@ -24,7 +24,7 @@ export async function chat(mensaje: string, historial: ChatMessagePayload[] = []
 
   const config = {
     tools: [{ functionDeclarations: declarations }],
-    systemInstruction: `Eres el asistente turístico de MexGo durante el Mundial 2026. Cuando el turista quiera visitar un lugar, pregunta día y hora, agrega el evento al itinerario y luego verifica que quedó guardado. Sé breve y amable. Hoy es ${new Date().toLocaleDateString('en-CA', { timeZone: 'America/Mexico_City' })}.`,
+    systemInstruction: SYSTEM_PROMPT,
   }
 
   let eventoAgregado: ItineraryStop | undefined

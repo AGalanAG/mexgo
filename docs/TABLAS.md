@@ -1,259 +1,153 @@
-# MexGo — Tablas del Schema
+# MexGo - Tablas del schema (resumen)
 **Los Mossitos · Genius Arena 2026**
 
-Visualización en formato de tabla de todas las tablas de `SCHEMA.md`.
-Referencia rápida para Alan, Fidel y Xavier.
-
----
-
 ## Enums
-
 | Enum | Valores |
-|------|---------|
-| `status_business_request` | PENDIENTE, EN_REVISION, RECHAZADO, APROBADO |
-| `role_code` | TURISTA, ENCARGADO_NEGOCIO, ADMIN, SUPERADMIN |
-| `training_campus` | HUB_AZTECA, MIDE |
-| `business_start_range` | MENOS_1_ANO, A1_A3, A3_A5, MAS_5 |
-| `sat_status` | FORMAL_REGISTRADO, EN_PROCESO, NO_PERO_INTERESA, TAL_VEZ, NO_NO_INTERESA |
-| `visit_event_type` | VIEW, CLICK_DIRECTIONS, CHECKIN, PURCHASE_CONFIRMED |
-| `ticket_status` | OPEN, IN_PROGRESS, RESOLVED, CLOSED |
+|---|---|
+| role_code | TURISTA, ENCARGADO_NEGOCIO, EMPLEADO_NEGOCIO, ADMIN, SUPERADMIN |
+| business_status | DRAFT, ACTIVE, SUSPENDED |
+| learning_audience | OWNER, STAFF, BOTH |
+| completion_status | PENDING, PASSED, FAILED, VALIDATED |
+| badge_status | IN_PROGRESS, AWARDED, EXPIRED, REVOKED |
 
----
-
-## Usuarios y RBAC
-
+## Identidad y RBAC
 ### users_profile
 | Columna | Tipo | Notas |
-|---------|------|-------|
-| id | uuid PK | references auth.users(id) |
-| full_name | text | not null |
-| avatar_url | text | null |
-| language_code | text | not null |
-| country_of_origin | text | not null |
+|---|---|---|
+| id | uuid PK | FK auth.users |
+| full_name | text | obligatorio |
+| avatar_url | text | opcional |
+| language_code | text | obligatorio |
+| country_of_origin | text | obligatorio |
 | email_verified | boolean | default false |
-| created_at | timestamptz | default now() |
-| updated_at | timestamptz | default now() |
 
 ### roles
 | Columna | Tipo | Notas |
-|---------|------|-------|
+|---|---|---|
 | id | smallserial PK | |
-| code | role_code | unique not null |
-| description | text | not null |
+| code | role_code | unique |
+| description | text | |
 
 ### user_roles
 | Columna | Tipo | Notas |
-|---------|------|-------|
-| user_id | uuid | FK → auth.users — PK compuesta |
-| role_id | smallint | FK → roles — PK compuesta |
-| created_at | timestamptz | default now() |
-| created_by | uuid | FK → auth.users, null |
+|---|---|---|
+| user_id | uuid | FK auth.users |
+| role_id | smallint | FK roles |
+| created_at | timestamptz | default now |
 
----
-
-## Catálogos
-
-### borough_catalog
-| Columna | Tipo | Notas |
-|---------|------|-------|
-| code | text PK | ej. COYOACAN, CUAUHTEMOC |
-| name | text | not null |
-| is_active | boolean | default true |
-
-### business_operation_modes_catalog
-| Columna | Tipo | Notas |
-|---------|------|-------|
-| code | text PK | ej. LOCAL_FISICO, VENTA_DOMICILIO |
-| label | text | not null |
-
----
-
-## Solicitudes de negocio
-
-### business_requests
-| Columna | Tipo | Notas |
-|---------|------|-------|
-| id | uuid PK | gen_random_uuid() |
-| owner_user_id | uuid | FK → auth.users, null |
-| owner_full_name | text | not null |
-| owner_age | integer | check 18–100 |
-| owner_gender | text | not null |
-| owner_email | citext | not null |
-| owner_whatsapp | text | not null |
-| borough_code | text | FK → borough_catalog |
-| neighborhood | text | not null |
-| google_maps_url | text | null |
-| latitude | numeric(9,6) | null |
-| longitude | numeric(9,6) | null |
-| geocode_source | text | null |
-| geocode_confidence | numeric(5,2) | null |
-| training_campus_hint | training_campus | null |
-| employees_women_count | integer | default 0 |
-| employees_men_count | integer | default 0 |
-| business_name | text | not null |
-| business_description | varchar(150) | not null |
-| business_start_range | business_start_range | not null |
-| continuous_operation_time | text | not null |
-| operation_days_hours | text | not null |
-| operation_modes | text[] | mínimo 1 |
-| operation_modes_other | text | null |
-| sat_status | sat_status | not null |
-| social_links | text[] | default '{}' |
-| adaptation_for_world_cup | text | not null |
-| support_usage | text | not null |
-| training_campus_preference | training_campus | not null |
-| additional_comments | text | null |
-| status | status_business_request | default PENDIENTE |
-| current_lock_admin_user_id | uuid | FK → auth.users, null |
-| lock_acquired_at | timestamptz | null |
-| lock_expires_at | timestamptz | null |
-| submitted_at | timestamptz | default now() |
-| updated_at | timestamptz | default now() |
-
-### business_request_reviews
-| Columna | Tipo | Notas |
-|---------|------|-------|
-| id | uuid PK | gen_random_uuid() |
-| business_request_id | uuid | FK → business_requests |
-| action | text | CLAIM, APPROVE, REJECT, RELEASE, RESUBMIT |
-| from_status | status_business_request | not null |
-| to_status | status_business_request | not null |
-| comment | text | null |
-| performed_by_user_id | uuid | FK → auth.users |
-| created_at | timestamptz | default now() |
-
+## Negocio
 ### business_profiles
 | Columna | Tipo | Notas |
-|---------|------|-------|
-| id | uuid PK | gen_random_uuid() |
-| business_request_id | uuid | unique FK → business_requests |
-| owner_user_id | uuid | FK → auth.users |
-| business_name | text | not null |
-| business_description | varchar(150) | not null |
-| borough_code | text | FK → borough_catalog |
-| neighborhood | text | not null |
-| google_maps_url | text | null |
-| latitude | numeric(9,6) | not null |
-| longitude | numeric(9,6) | not null |
-| geocoded_at | timestamptz | null |
-| location_source | text | default 'request_or_geocode' |
-| operation_days_hours | text | not null |
-| social_links | text[] | default '{}' |
-| cover_image_url | text | null |
-| contact_phone | text | null |
+|---|---|---|
+| id | uuid PK | |
+| owner_user_id | uuid | FK auth.users |
+| business_name | text | |
+| business_description | text | |
+| category_code | text | |
+| status | business_status | default DRAFT |
+| is_public | boolean | default false |
+| latitude | numeric(9,6) | opcional |
+| longitude | numeric(9,6) | opcional |
+| created_at | timestamptz | default now |
+| updated_at | timestamptz | default now |
+
+### business_team_members
+| Columna | Tipo | Notas |
+|---|---|---|
+| id | uuid PK | |
+| business_id | uuid | FK business_profiles |
+| user_id | uuid | FK auth.users, opcional |
+| full_name | text | |
+| role_title | text | |
+| is_owner | boolean | default false |
 | is_active | boolean | default true |
-| created_at | timestamptz | default now() |
-| updated_at | timestamptz | default now() |
 
----
-
-## Cuestionario, recomendaciones e itinerario
-
-### tourist_questionnaires
+## Aprendizaje
+### learning_sources
 | Columna | Tipo | Notas |
-|---------|------|-------|
-| id | uuid PK | gen_random_uuid() |
-| tourist_user_id | uuid | FK → auth.users |
-| payload | jsonb | respuestas del cuestionario |
-| created_at | timestamptz | default now() |
+|---|---|---|
+| id | uuid PK | |
+| name | text | |
+| source_type | text | ONG, institucion, plataforma |
+| base_url | text | opcional |
+| is_active | boolean | default true |
 
-### recommendations
+### learning_modules
 | Columna | Tipo | Notas |
-|---------|------|-------|
-| id | uuid PK | gen_random_uuid() |
-| tourist_user_id | uuid | FK → auth.users |
-| questionnaire_id | uuid | FK → tourist_questionnaires, null |
-| context_payload | jsonb | contexto cultural + perfil usado |
-| created_at | timestamptz | default now() |
+|---|---|---|
+| id | uuid PK | |
+| source_id | uuid | FK learning_sources |
+| slug | text | unique |
+| title | text | |
+| audience | learning_audience | OWNER/STAFF/BOTH |
+| estimated_minutes | integer | |
+| pass_score | integer | default 70 |
+| is_active | boolean | default true |
 
-### recommendation_items
+### learning_completions
 | Columna | Tipo | Notas |
-|---------|------|-------|
-| id | uuid PK | gen_random_uuid() |
-| recommendation_id | uuid | FK → recommendations |
-| business_profile_id | uuid | FK → business_profiles |
-| rank | integer | check 1–6 |
-| score | numeric(8,5) | resultado del algoritmo equity |
-| reasons | jsonb | ej. ["cercania","baja saturacion"] |
-| estimated_walk_minutes | integer | null |
-| created_at | timestamptz | default now() |
+|---|---|---|
+| id | uuid PK | |
+| business_id | uuid | FK business_profiles |
+| member_id | uuid | FK business_team_members |
+| module_id | uuid | FK learning_modules |
+| score | integer | opcional |
+| status | completion_status | |
+| evidence_url | text | opcional |
+| validated_by | uuid | FK auth.users, opcional |
+| validated_at | timestamptz | opcional |
 
-### itineraries
+## Insignias
+### badge_definitions
 | Columna | Tipo | Notas |
-|---------|------|-------|
-| id | uuid PK | gen_random_uuid() |
-| tourist_user_id | uuid | FK → auth.users |
-| recommendation_id | uuid | FK → recommendations, null |
-| status | text | draft / saved / archived |
-| version | integer | default 1 |
-| itinerary_payload | jsonb | estructura completa del itinerario |
-| created_at | timestamptz | default now() |
-| updated_at | timestamptz | default now() |
+|---|---|---|
+| id | uuid PK | |
+| code | text | unique |
+| public_name | text | |
+| description | text | |
+| is_active | boolean | default true |
 
-### itinerary_stops
+### badge_requirements
 | Columna | Tipo | Notas |
-|---------|------|-------|
-| id | uuid PK | gen_random_uuid() |
-| itinerary_id | uuid | FK → itineraries |
-| route_date | date | not null |
-| stop_order | integer | check >= 1 |
-| stop_type | text | BUSINESS, POI, MATCH, CUSTOM |
-| business_profile_id | uuid | FK → business_profiles, null |
-| label | text | not null |
-| start_time | time | null |
-| end_time | time | null |
-| latitude | numeric(9,6) | not null |
-| longitude | numeric(9,6) | not null |
-| created_at | timestamptz | default now() |
+|---|---|---|
+| id | uuid PK | |
+| badge_id | uuid | FK badge_definitions |
+| requirement_type | text | module_set, staff_coverage, etc |
+| requirement_payload | jsonb | reglas parametrizadas |
+| is_active | boolean | default true |
 
-### itinerary_daily_routes
+### business_badges
 | Columna | Tipo | Notas |
-|---------|------|-------|
-| id | uuid PK | gen_random_uuid() |
-| itinerary_id | uuid | FK → itineraries |
-| route_date | date | not null |
-| provider | text | default 'mapbox-directions' |
-| profile | text | walking / driving |
-| waypoints | jsonb | default '[]' |
-| route_geometry | jsonb | GeoJSON LineString |
-| distance_meters | integer | default 0 |
-| duration_seconds | integer | default 0 |
-| is_stale | boolean | default false |
-| generated_at | timestamptz | default now() |
-| updated_at | timestamptz | default now() |
+|---|---|---|
+| id | uuid PK | |
+| business_id | uuid | FK business_profiles |
+| badge_id | uuid | FK badge_definitions |
+| status | badge_status | |
+| progress_percent | numeric(5,2) | default 0 |
+| awarded_at | timestamptz | opcional |
+| is_public | boolean | default true |
 
----
-
-## Visitas y equidad
-
-### visits
+### badge_events
 | Columna | Tipo | Notas |
-|---------|------|-------|
-| id | uuid PK | gen_random_uuid() |
-| tourist_user_id | uuid | FK → auth.users |
-| business_profile_id | uuid | FK → business_profiles |
-| recommendation_id | uuid | FK → recommendations, null |
-| itinerary_id | uuid | FK → itineraries, null |
-| source | text | itinerary / map / card |
-| event_type | visit_event_type | VIEW, CHECKIN, etc. |
-| occurred_at | timestamptz | not null |
-| local_day | date | derivado de occurred_at en Mexico_City |
-| lat | numeric(9,6) | null |
-| lng | numeric(9,6) | null |
-| counted_for_equity | boolean | default true |
-| dedupe_key | text | unique — evita duplicados |
-| created_at | timestamptz | default now() |
+|---|---|---|
+| id | uuid PK | |
+| business_badge_id | uuid | FK business_badges |
+| event_type | text | award/revoke/recalculate |
+| actor_user_id | uuid | FK auth.users, opcional |
+| payload | jsonb | detalle |
+| created_at | timestamptz | default now |
 
-### daily_business_saturation
+## Directorio publico
+### directory_profiles
 | Columna | Tipo | Notas |
-|---------|------|-------|
-| business_profile_id | uuid | FK → business_profiles — PK compuesta |
-| day | date | PK compuesta |
-| visits_count | integer | default 0 |
-| unique_tourists_count | integer | default 0 |
-| last_referred_at | timestamptz | null |
-| saturation_score | numeric(8,5) | default 0 — usado por lib/equity.ts |
-| updated_at | timestamptz | default now() |
+|---|---|---|
+| business_id | uuid PK | FK business_profiles |
+| public_name | text | |
+| short_description | text | |
+| categories | text[] | |
+| badge_codes | text[] | |
+| public_score | numeric(8,5) | ranking |
+| updated_at | timestamptz | |
 
 > Trigger en `visits` actualiza esta tabla en cada inserción.
 
@@ -347,3 +241,16 @@ Referencia rápida para Alan, Fidel y Xavier.
 |-------|-------|-----|
 | 2026-04-06 | Fidel | v1.0 — visualización en tablas de todo SCHEMA.md |
 | 2026-04-07 | Fidel | v1.1 — tablas chat_sessions y chat_messages |
+### directory_events
+| Columna | Tipo | Notas |
+|---|---|---|
+| id | uuid PK | |
+| business_id | uuid | FK business_profiles |
+| event_type | text | view/click/contact |
+| source | text | web/app/share |
+| occurred_at | timestamptz | |
+
+## Cambios
+| Fecha | Quien | Que |
+|---|---|---|
+| 2026-04-07 | Alan | v2.0 - Vista tabular alineada al nuevo schema de negocio. |

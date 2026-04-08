@@ -1,9 +1,18 @@
-# MexGo — Flujo de Trabajo
+# MexGo - Flujo funcional y operativo (v2)
 **Los Mossitos · Genius Arena 2026**
 
----
+## 1. Flujo funcional por rol de plataforma
+### Turista (sin cambios)
+1. Registro/login.
+2. Consulta y actualiza perfil.
+3. Consume experiencias turisticas existentes.
 
-## Roles del equipo
+### Encargado del negocio
+1. Crea su perfil de negocio.
+2. Registra o invita integrantes del equipo.
+3. Asigna y da seguimiento a modulos.
+4. Solicita recalculo de insignias.
+5. Publica perfil en directorio.
 
 | Quién | Rol | Tecnologías principales |
 |-------|-----|------------------------|
@@ -12,21 +21,37 @@
 | Emi | Frontend turista | Tailwind, Mapbox, PWA, localStorage |
 | Farid | Frontend admin y negocio | Tailwind, Supabase Auth, Supabase Storage |
 | Xavier | QA, datos semilla, polish UI | Postman, Tailwind, datos JSON |
+### Empleado del negocio
+1. Accede a modulos asignados.
+2. Completa contenido y prueba corta.
+3. Sube evidencia cuando aplique.
 
----
+### Admin
+1. Gestiona catalogo de modulos e insignias.
+2. Valida evidencias pendientes.
+3. Audita eventos de insignias y visibilidad.
 
-## Arquitectura de carpetas
+### SuperAdmin
+1. Soporte operativo y datos.
+2. Monitoreo de integridad del directorio.
 
-```
-middleware.ts                          # Alan — RBAC por rol
+## 2. Flujo de insignias (core)
+1. `learning_completions` recibe nuevo resultado validado.
+2. Se evalua regla en `badge_requirements`.
+3. Se actualiza `business_badges`.
+4. Se registra evento en `badge_events`.
+5. Se refresca `directory_profiles` para exposicion publica.
 
-constants/index.ts                     # Fidel
-types/types.ts                         # Xavier
+## 3. Flujo tecnico de entrega (equipo)
+### Orden recomendado
+1. Backend: migraciones y endpoints base de negocio.
+2. Backend: aprendizaje y recalc de insignias.
+3. Backend: endpoint publico de directorio.
+4. Frontend negocio (cuando se habilite), sin tocar frontend turista.
 
-hooks/
-├── useItinerary.ts                    # Emi
-├── useGeolocation.ts                  # Emi
-└── useAuth.ts                         # Emi
+### Regla de integracion
+- Cualquier cambio a request/response se refleja primero en `API.md`.
+- Cualquier cambio a tablas se refleja primero en `SCHEMA.md` y `TABLAS.md`.
 
 lib/
 ├── gemini.ts                          # Fidel
@@ -232,9 +257,13 @@ Emi y Farid trabajan con datos hardcodeados hasta que Fidel tenga los API routes
 | `seed/negocios.json` | 50 negocios verosímiles con coords, fotos y sello Ola México |
 
 ---
+## 4. Ramas sugeridas
+- `feat/business-profile-api`
+- `feat/learning-completions-api`
+- `feat/badges-engine-api`
+- `feat/public-directory-api`
 
 ## Cambios
-
-| Fecha | Quién | Qué |
-|-------|-------|-----|
-| 2026-04-06 | Fidel | v1.0 — flujo de trabajo, ramas, dependencias y archivos por persona |
+| Fecha | Quien | Que |
+|---|---|---|
+| 2026-04-07 | Alan | v2.0 - Flujos actualizados a enfoque negocio y pipeline de insignias. |
