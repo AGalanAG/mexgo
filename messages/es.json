@@ -197,8 +197,35 @@
     "trips": "Viajes",
     "more": "Más",
     "login": "Inicio de sesión",
-    "register": "Registro",
-    "more": "Más"
+    "register": "Registro"
+  },
+  "Profile": {
+    "edit": "Editar",
+    "save": "Guardar",
+    "originPlaceholder": "País de origen",
+    "stats": {
+      "trips": "Viajes",
+      "favorites": "Favoritos",
+      "days": "Días"
+    },
+    "preferences": {
+      "title": "Preferencias de viaje",
+      "add": "+ Añadir",
+      "items": ["Turismo Cultural", "Gastronomía", "Vida nocturna", "Museos"]
+    },
+    "itineraries": {
+      "title": "Mis Itinerarios",
+      "viewAll": "Ver todos →",
+      "stops": "paradas"
+    },
+    "mundial": {
+      "title": "Mundial 2026",
+      "subtitle": "Listo para la experiencia del año. ¡Que empiece el partido!",
+      "badge": "MexGO Ready"
+    },
+    "defaultName": "Viajero MexGO",
+    "defaultOrigin": "España 🇪🇸",
+    "defaultBio": "Amante de la cultura mexicana y la gastronomía. Aquí para vivir el Mundial 2026 al máximo."
   },
   "Discover": {
     "title": "Descubrir",

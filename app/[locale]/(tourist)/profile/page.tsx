@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import Navbar from '@/components/tourist/Navbar';
 import Footer from '@/components/tourist/Footer';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import {
   Edit as EditIcon,
   LocationOn as LocationOnIcon,
@@ -40,21 +42,21 @@ const MOCK_TRIPS = [
   },
 ];
 
-const PREFERENCES = [
-  'Turismo Cultural', 'Gastronomía', 'Vida nocturna', 'Museos',
-];
-
-const STATS = [
-  { label: 'Viajes', value: '3', icon: <FlightIcon sx={{ fontSize: 20 }} /> },
-  { label: 'Favoritos', value: '12', icon: <FavoriteIcon sx={{ fontSize: 20 }} /> },
-  { label: 'Días', value: '14', icon: <CalendarTodayIcon sx={{ fontSize: 20 }} /> },
-];
-
 export default function ProfilePage() {
+  const t = useTranslations('Profile');
+
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState('Viajero MexGO');
-  const [origin, setOrigin] = useState('España 🇪🇸');
-  const [bio, setBio] = useState('Amante de la cultura mexicana y la gastronomía. Aquí para vivir el Mundial 2026 al máximo.');
+  const [name, setName] = useState(t('defaultName'));
+  const [origin, setOrigin] = useState(t('defaultOrigin'));
+  const [bio, setBio] = useState(t('defaultBio'));
+
+  const preferences = t.raw('preferences.items') as string[];
+
+  const STATS = [
+    { labelKey: 'stats.trips',     value: '3',  icon: <FlightIcon sx={{ fontSize: 20 }} /> },
+    { labelKey: 'stats.favorites', value: '12', icon: <FavoriteIcon sx={{ fontSize: 20 }} /> },
+    { labelKey: 'stats.days',      value: '14', icon: <CalendarTodayIcon sx={{ fontSize: 20 }} /> },
+  ];
 
   return (
     <div className="flex flex-col min-h-screen bg-[var(--background)]">
@@ -67,12 +69,11 @@ export default function ProfilePage() {
           <div className="relative bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-100">
             {/* Banner */}
             <div
-              className="h-40 w-full"
+              className="h-40 w-full relative"
               style={{
                 background: 'linear-gradient(135deg, var(--coppel-blue) 0%, var(--primary) 50%, var(--dark-blue) 100%)',
               }}
             >
-              {/* decorative circles */}
               <div className="absolute top-4 right-6 w-24 h-24 rounded-full bg-[var(--secondary)]/20 blur-2xl" />
               <div className="absolute top-10 right-20 w-12 h-12 rounded-full bg-white/10" />
             </div>
@@ -101,7 +102,7 @@ export default function ProfilePage() {
                   }`}
                 >
                   <EditIcon sx={{ fontSize: 16 }} />
-                  {isEditing ? 'Guardar' : 'Editar'}
+                  {isEditing ? t('save') : t('edit')}
                 </button>
               </div>
 
@@ -117,7 +118,7 @@ export default function ProfilePage() {
                     value={origin}
                     onChange={(e) => setOrigin(e.target.value)}
                     className="w-full text-sm font-semibold text-gray-500 border-2 border-gray-100 rounded-xl px-3 py-2 outline-none focus:border-[var(--coppel-blue)] bg-gray-50"
-                    placeholder="País de origen"
+                    placeholder={t('originPlaceholder')}
                   />
                   <textarea
                     value={bio}
@@ -143,14 +144,16 @@ export default function ProfilePage() {
           <div className="grid grid-cols-3 gap-4">
             {STATS.map((s) => (
               <div
-                key={s.label}
+                key={s.labelKey}
                 className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col items-center gap-2 hover:shadow-md hover:-translate-y-0.5 transition-all"
               >
                 <div className="w-10 h-10 rounded-full bg-[var(--coppel-blue)]/10 text-[var(--coppel-blue)] flex items-center justify-center">
                   {s.icon}
                 </div>
                 <span className="text-2xl font-black text-[var(--primary)]">{s.value}</span>
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{s.label}</span>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                  {t(s.labelKey)}
+                </span>
               </div>
             ))}
           </div>
@@ -158,10 +161,10 @@ export default function ProfilePage() {
           {/* ── Preferences ── */}
           <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
             <h2 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-4">
-              Preferencias de viaje
+              {t('preferences.title')}
             </h2>
             <div className="flex flex-wrap gap-2">
-              {PREFERENCES.map((pref) => (
+              {preferences.map((pref) => (
                 <span
                   key={pref}
                   className="px-4 py-2 rounded-full text-sm font-bold bg-[var(--coppel-blue)]/8 text-[var(--coppel-blue)] border border-[var(--coppel-blue)]/20 hover:bg-[var(--coppel-blue)] hover:text-white transition-all cursor-default"
@@ -170,7 +173,7 @@ export default function ProfilePage() {
                 </span>
               ))}
               <span className="px-4 py-2 rounded-full text-sm font-bold border-2 border-dashed border-gray-200 text-gray-400 hover:border-[var(--coppel-blue)] hover:text-[var(--coppel-blue)] transition-all cursor-pointer">
-                + Añadir
+                {t('preferences.add')}
               </span>
             </div>
           </div>
@@ -179,11 +182,11 @@ export default function ProfilePage() {
           <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-sm font-black text-gray-400 uppercase tracking-widest">
-                Mis Itinerarios
+                {t('itineraries.title')}
               </h2>
-              <a href="/trips" className="text-xs font-bold text-[var(--coppel-blue)] hover:underline">
-                Ver todos →
-              </a>
+              <Link href="/trips" className="text-xs font-bold text-[var(--coppel-blue)] hover:underline">
+                {t('itineraries.viewAll')}
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -202,7 +205,9 @@ export default function ProfilePage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <div className="absolute bottom-2 left-3 text-white">
                       <p className="font-black text-sm leading-tight">{trip.title}</p>
-                      <p className="text-[10px] text-white/70 font-medium">{trip.date} · {trip.stops} paradas</p>
+                      <p className="text-[10px] text-white/70 font-medium">
+                        {trip.date} · {trip.stops} {t('itineraries.stops')}
+                      </p>
                     </div>
                   </div>
                   <div className="px-3 py-2 flex items-center gap-1">
@@ -229,11 +234,11 @@ export default function ProfilePage() {
           >
             <div className="text-5xl">⚽</div>
             <div className="flex-1">
-              <p className="text-white font-black text-lg leading-tight">Mundial 2026</p>
-              <p className="text-white/60 text-sm mt-1">Listo para la experiencia del año. ¡Que empiece el partido!</p>
+              <p className="text-white font-black text-lg leading-tight">{t('mundial.title')}</p>
+              <p className="text-white/60 text-sm mt-1">{t('mundial.subtitle')}</p>
             </div>
             <div className="bg-[var(--secondary)] text-[var(--dark-blue)] font-black text-xs px-4 py-2 rounded-xl shadow-lg whitespace-nowrap">
-              MexGO Ready
+              {t('mundial.badge')}
             </div>
           </div>
 
@@ -244,3 +249,4 @@ export default function ProfilePage() {
     </div>
   );
 }
+
