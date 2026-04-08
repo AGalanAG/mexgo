@@ -1,17 +1,18 @@
 "use client";
-
 import React, { useState } from 'react';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ModeNightIcon from '@mui/icons-material/ModeNight';
 import LanguageIcon from '@mui/icons-material/Language';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useTheme } from 'next-themes';
+import { useLogin } from '@/context/LoginContext'; // <-- Importamos el contexto
 
-export default function Navbar() {
+export default function HomeNavbar() {
   const [langAnchor, setLangAnchor] = useState<null | HTMLElement>(null);
   const [themeAnchor, setThemeAnchor] = useState<null | HTMLElement>(null);
+  
   const { setTheme } = useTheme();
+  const { openLogin } = useLogin(); // <-- Extraemos la función para abrir el modal
 
   const handleLangClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setLangAnchor(event.currentTarget);
@@ -45,13 +46,19 @@ export default function Navbar() {
         <a href="#" className="hover:text-gray-300 transition-colors">More</a>
       </div>
 
-      {/* Iconos MUI */}
+      {/* Iconos y Botones */}
       <div className="flex gap-5 items-center">
-    
-        <button className="hover:text-gray-300 transition-colors">
-          <AccountCircleIcon fontSize="medium" />
+        {/* Aquí conectamos el onClick al contexto */}
+        <button 
+          onClick={openLogin}
+          className="text-sm font-medium hover:text-gray-300 transition-colors"
+        >
+          Inicio de sesión
         </button>
-        
+        <button className="text-sm font-medium hover:text-gray-300 transition-colors">
+          Registro
+        </button>
+
         {/* Idioma */}
         <button 
           className="hover:text-gray-300 transition-colors"

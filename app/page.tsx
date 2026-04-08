@@ -1,4 +1,4 @@
-import Navbar from '@/components/tourist/Navbar';
+import HomeNavbar from '@/components/tourist/HomeNavbar';
 
 export default function Home() {
   return (
@@ -6,15 +6,23 @@ export default function Home() {
       
       {/* 1. SECCIÓN HERO */}
       <section 
-        className="relative min-h-screen flex flex-col items-center justify-center bg-black/40 bg-blend-overlay"
+        className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
         style={{ 
-          backgroundImage: "url('/fondoLanding/angel-independencia-paseo-de-reforma.jpg')", 
+          backgroundImage: "url('/fondoLanding/angel-independencia-paseo-de-reforma.webp' )", 
           backgroundSize: 'cover', 
           backgroundPosition: 'center' 
         }}
       >
+        {/* Filtro Rectangle 3 */}
+        <div 
+          className="absolute left-0 top-0 w-[1752px] h-[1161px] pointer-events-none z-0"
+          style={{ 
+            background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.81) -3.79%, rgba(158, 158, 158, 0) 73.81%, rgba(114, 114, 114, 0) 78.41%, rgba(14, 14, 14, 0.649064) 96.21%)' 
+          }}
+        ></div>
+
         {/* Componente Navbar Separado */}
-        <Navbar />
+        <HomeNavbar />
 
         {/* Hero Content */}
         <div className="text-center text-white z-10 px-4 w-full max-w-4xl mt-16">

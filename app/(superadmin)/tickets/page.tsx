@@ -6,18 +6,20 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 
 export default function TicketsPage() {
-  const tickets = [
+  type Priority = "Baja" | "Media" | "Alta" | "Crítica";
+
+  const tickets: { id: string; title: string; priority: Priority; status: string; user: string; time: string }[] = [
     { id: "TK-101", title: "Error en carga de imagen", priority: "Alta", status: "Abierto", user: "Negocio12", time: "Hace 2 horas" },
     { id: "TK-102", title: "Problema con Google Auth", priority: "Crítica", status: "En proceso", user: "Turista88", time: "Hace 4 horas" },
     { id: "TK-103", title: "Lentitud en API recommend", priority: "Media", status: "Abierto", user: "System", time: "Hace 1 día" },
   ];
 
-  const priorityColors = {
+  const priorityColors: Record<Priority, "neutral" | "info" | "warning" | "error"> = {
     "Baja": "neutral",
     "Media": "info",
     "Alta": "warning",
     "Crítica": "error"
-  } as const;
+  };
 
   return (
     <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
