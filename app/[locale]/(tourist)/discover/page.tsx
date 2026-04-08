@@ -1,16 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/tourist/Navbar';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import MapIcon from '@mui/icons-material/Map';
 import GridViewIcon from '@mui/icons-material/GridView';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
 import MapboxMap, { MapMarker } from '@/components/tourist/MapboxMap';
+import type { NegocioConScore } from '@/types/types';
 
-interface StaticPlace {
+interface DisplayPlace {
   id: string;
   name: string;
   imageUrl: string;
@@ -20,49 +22,51 @@ interface StaticPlace {
   lat: number;
 }
 
-const RECOMMENDED_PLACES: StaticPlace[] = [
-  {
-    id: '1',
-    name: 'Sabores de Antaño',
-    imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80',
-    description: 'Authentic traditional cuisine with recipes passed down through generations.',
-    location: 'Colonia Roma, CDMX',
-    lng: -99.1650,
-    lat: 19.4200,
-  },
-  {
-    id: '2',
-    name: 'El Rincón del Arte',
-    imageUrl: 'https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=600&q=80',
-    description: 'A cozy gallery showcasing local contemporary artists and handmade crafts.',
-    location: 'Coyoacán, CDMX',
-    lng: -99.1624,
-    lat: 19.3508,
-  },
-  {
-    id: '3',
-    name: 'Café Luna Nueva',
-    imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&q=80',
-    description: 'Specialty coffee from organic beans harvested in Veracruz and Oaxaca.',
-    location: 'Condesa, CDMX',
-    lng: -99.1770,
-    lat: 19.4130,
-  },
-  {
-    id: '4',
-    name: 'Textiles del Sur',
-    imageUrl: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&q=80',
-    description: 'Hand-woven garments and accessories using ancient natural dyeing techniques.',
-    location: 'San Ángel, CDMX',
-    lng: -99.1930,
-    lat: 19.3444,
-  },
-];
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80';
+
+function toDisplay(n: NegocioConScore): DisplayPlace {
+  return {
+    id: n.id,
+    name: n.businessName,
+    imageUrl: n.coverImageUrl || FALLBACK_IMAGE,
+    description: n.businessDescription,
+    location: `${n.neighborhood}, ${n.boroughCode}`,
+    lng: n.lng ?? -99.1620,
+    lat: n.lat ?? 19.3900,
+  };
+}
 
 export default function DiscoverPage() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [flippedId, setFlippedId] = useState<string | null>(null);
   const [showMap, setShowMap] = useState(false);
+  const [places, setPlaces] = useState<DisplayPlace[]>([]);
+  const [loading, setLoading] = useState(true);
+  const t = useTranslations('Discover');
+
+  useEffect(() => {
+    const stored = localStorage.getItem('mexgo_recommendations');
+    if (stored) {
+      const data: NegocioConScore[] = JSON.parse(stored);
+      setPlaces(data.map(toDisplay));
+      setLoading(false);
+    } else {
+      fetch('/api/recommend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lat: 19.4326, lng: -99.1332 }),
+      })
+        .then(r => r.json())
+        .then(res => {
+          if (res.ok && res.data) {
+            localStorage.setItem('mexgo_recommendations', JSON.stringify(res.data));
+            setPlaces(res.data.map(toDisplay));
+          }
+        })
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    }
+  }, []);
 
   const clearSearch = (): void => setSearchValue('');
 
@@ -71,15 +75,13 @@ export default function DiscoverPage() {
     setFlippedId(flippedId === id ? null : id);
   };
 
-  const filtered = searchValue
-    ? RECOMMENDED_PLACES.filter(
-        (p) =>
-          p.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-          p.location.toLowerCase().includes(searchValue.toLowerCase())
-      )
-    : RECOMMENDED_PLACES;
+  const filtered = places.filter(p =>
+    !searchValue ||
+    p.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+    p.description.toLowerCase().includes(searchValue.toLowerCase())
+  );
 
-  const markers: MapMarker[] = RECOMMENDED_PLACES.map((p) => ({
+  const markers: MapMarker[] = places.map((p) => ({
     lng: p.lng,
     lat: p.lat,
     label: p.name,
@@ -98,7 +100,7 @@ export default function DiscoverPage() {
           {/* Header + view toggle */}
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl md:text-3xl font-bold text-[var(--primary)]">
-              Discover
+              {t('title')}
             </h2>
             <button
               onClick={() => setShowMap((v) => !v)}
@@ -116,7 +118,7 @@ export default function DiscoverPage() {
             </button>
             <input
               type="text"
-              placeholder="Search places..."
+              placeholder={t('searchPlaceholder')}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               className="flex-1 bg-transparent border-none outline-none px-3 text-[var(--text-primary)] font-medium placeholder-gray-400"
@@ -132,7 +134,12 @@ export default function DiscoverPage() {
           )}
 
           {/* Cards grid */}
-          <h3 className="text-lg font-semibold text-[var(--primary)] mb-4">Recommendations</h3>
+          <h3 className="text-lg font-semibold text-[var(--primary)] mb-4">{t('recommendations')}</h3>
+
+          {loading && (
+            <p className="text-center text-gray-400 text-sm py-10">Cargando recomendaciones...</p>
+          )}
+
           <div className="grid grid-cols-2 gap-4 w-full">
             {filtered.map((place) => (
               <div
@@ -178,7 +185,7 @@ export default function DiscoverPage() {
                       href={`/discover/${place.id}`}
                       className="mt-auto text-[10px] font-bold py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110"
                     >
-                      View Details
+                      {t('viewDetails')}
                     </Link>
                   </div>
                 </motion.div>
@@ -192,7 +199,7 @@ export default function DiscoverPage() {
               whileTap={{ scale: 0.95 }}
               className="btn-primary text-sm px-10"
             >
-              See more
+              {t('seeMore')}
             </motion.button>
           </div>
         </section>

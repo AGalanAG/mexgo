@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Navbar from '@/components/tourist/Navbar';
+import type { NegocioConScore } from '@/types/types';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import StarIcon from '@mui/icons-material/Star';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -51,9 +52,29 @@ const MOCK_PLACES_DETAILS: Record<string, PlaceDetails> = {
 export default function PlaceDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-  
-  // Get data or use fallback
-  const place = MOCK_PLACES_DETAILS[id as string] || MOCK_PLACES_DETAILS['1'];
+  const [place, setPlace] = useState<PlaceDetails>(MOCK_PLACES_DETAILS['1']);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('mexgo_recommendations');
+    if (!stored) return;
+    const recommendations: NegocioConScore[] = JSON.parse(stored);
+    const found = recommendations.find(r => r.id === id);
+    if (!found) return;
+    setPlace({
+      id: found.id,
+      name: found.businessName,
+      rating: 4.5,
+      user_ratings_total: found.estimatedWalkMinutes,
+      address: `${found.neighborhood}, ${found.boroughCode}`,
+      description: found.businessDescription,
+      opening_hours: found.operationDaysHours
+        ? found.operationDaysHours.split(',').map(h => h.trim())
+        : ['Horario no disponible'],
+      photos: found.coverImageUrl
+        ? [found.coverImageUrl]
+        : MOCK_PLACES_DETAILS['1'].photos,
+    });
+  }, [id]);
 
   return (
     <div className="flex flex-col min-h-screen bg-white">

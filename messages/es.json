@@ -1,0 +1,196 @@
+{
+  "Questionnaire": {
+    "steps": "Paso {step} de {total}",
+    "next": "Siguiente",
+    "back": "Atrás",
+    "createItinerary": "Crear Itinerario",
+    "tourist": {
+      "step1": {
+        "title": "Perfil y Origen",
+        "countryLabel": "¿De qué país nos visitas?",
+        "countryPlaceholder": "Ej. España, Brasil...",
+        "companionsLabel": "Número de acompañantes",
+        "companionsOptions": {
+          "solo": "Viajo solo(a)",
+          "small": "2 a 4 personas",
+          "large": "Más de 4 personas"
+        },
+        "isAdultSolo": "¿Eres mayor de edad?",
+        "isAdultGroup": "¿Todos son mayores de edad?",
+        "ageOptions": {
+          "yes": "Si",
+          "no": "No"
+        }
+      },
+      "step2": {
+        "title": "Logística",
+        "durationLabel": "Duración de la estancia",
+        "durationOptions": {
+          "1-3": "1 a 3 días",
+          "4-7": "4 a 7 días",
+          "8-14": "8 a 14 días",
+          "15+": "Más de 15 días"
+        },
+        "cityLabel": "Ciudad de hospedaje",
+        "cityPlaceholder": "Selecciona una ciudad",
+        "boroughLabel": "Alcaldía / Municipio",
+        "boroughPlaceholder": "Selecciona zona"
+      },
+      "step3": {
+        "title": "Motivos del viaje",
+        "description": "Selecciona entre 2 y 3 opciones que definan tu viaje.",
+        "motives": {
+          "cultural": "Turismo Cultural y Patrimonio",
+          "historical": "Turismo Histórico",
+          "sports": "Asistencia a eventos deportivos (Mundial)",
+          "relaxation": "Relajación y Descanso",
+          "gastronomy": "Gastronomía",
+          "nightlife": "Vida nocturna y Entretenimiento"
+        }
+      },
+      "step4": {
+        "title": "Factores de elección",
+        "description": "Esto nos ayuda a priorizar tus rutas en el mapa.",
+        "factors": {
+          "proximity": {
+            "label": "Proximidad",
+            "desc": "Cercanía al estadio o sedes de eventos."
+          },
+          "preference": {
+            "label": "Preferencia de actividad",
+            "desc": "Sacrificar cercanía por una actividad más acorde a tus gustos."
+          }
+        },
+        "olaMexicoTip": "El sello Ola México destaca negocios locales impulsados por Fundación Coppel."
+      }
+    },
+    "business": {
+      "title": "Registro de Negocio",
+      "subtitle": "Sello Ola México",
+      "sendRequest": "Enviar Solicitud",
+      "step1": {
+        "title": "Datos del Propietario",
+        "nameLabel": "Nombre completo",
+        "ageLabel": "Edad",
+        "genderLabel": "Género",
+        "genderOptions": {
+          "placeholder": "Selecciona",
+          "female": "Mujer",
+          "male": "Hombre",
+          "other": "Otro"
+        },
+        "whatsappLabel": "WhatsApp"
+      },
+      "step2": {
+        "title": "Ubicación y Horarios",
+        "boroughLabel": "Alcaldía (CDMX)",
+        "boroughPlaceholder": "Selecciona alcaldía",
+        "neighborhoodLabel": "Colonia",
+        "mapsLabel": "URL de Google Maps",
+        "hoursLabel": "Días y Horarios de atención",
+        "hoursPlaceholder": "Ej. Lunes a Viernes 9:00 - 18:00"
+      },
+      "step3": {
+        "title": "Perfil del Negocio",
+        "nameLabel": "Nombre del Negocio",
+        "descLabel": "Descripción (Máx. 150 car.)",
+        "timeLabel": "¿Cuánto tiempo lleva operando?",
+        "timeOptions": {
+          "placeholder": "Selecciona rango",
+          "less1": "Menos de 1 año",
+          "1-3": "1 a 3 años",
+          "3-5": "3 a 5 años",
+          "more5": "Más de 5 años"
+        }
+      },
+      "step4": {
+        "title": "Impacto Social y Mundial 2026",
+        "satLabel": "Situación ante el SAT",
+        "satOptions": {
+          "formal": "Formal / Registrado",
+          "process": "En proceso",
+          "interested": "No, pero me interesa",
+          "notInterested": "No me interesa"
+        },
+        "adaptationLabel": "¿Cómo te adaptarás para el Mundial 2026?",
+        "adaptationPlaceholder": "Ej. Menú en inglés, pago con tarjeta, etc.",
+        "supportLabel": "¿En qué invertirías el apoyo de Fundación Coppel?",
+        "supportPlaceholder": "Ej. Remodelación, marketing, inventario..."
+      },
+      "step5": {
+        "title": "Preferencia de Capacitación",
+        "campuses": {
+          "hub": {
+            "label": "Hub Azteca",
+            "desc": "Cercanía estratégica al Estadio Azteca."
+          },
+          "mide": {
+            "label": "MIDE",
+            "desc": "Centro Histórico, corazón financiero y cultural."
+          }
+        },
+        "footerTip": "Al completar este registro, tu negocio será evaluado para recibir el sello de calidad Ola México."
+      }
+    }
+  },
+  "Home": {
+    "hero": {
+      "title": "Encuentra Tu <br /> Próxima Aventura",
+      "searchPlaceholder": "Lugares a donde ir, qué hacer, hoteles...",
+      "subtitle": "Cada calle en la Ciudad de México tiene una historia que contar.",
+      "cta": "Descubrir más"
+    },
+    "services": {
+      "title": "Nuestro Servicio",
+      "item1": {
+        "title": "Recomendaciones de Viaje Personalizadas",
+        "desc": "¡Recomendaciones impulsadas por IA diseñadas solo para ti!"
+      },
+      "item2": {
+        "title": "Reserva de Hoteles",
+        "desc": "¡Puedes reservar fácilmente de acuerdo a tu presupuesto!"
+      },
+      "item3": {
+        "title": "Plan de Recorrido",
+        "desc": "Te proporcionamos el mejor plan en poco tiempo."
+      }
+    },
+    "bestService": {
+      "title": "Siempre intentamos darte<br/>el mejor servicio",
+      "subtitle": "Tu satisfacción es nuestra principal prioridad."
+    },
+    "bestTours": {
+      "title": "Los mejores tours para ti",
+      "comingSoon": "Próximamente: Las mejores rutas personalizadas aparecerán aquí."
+    }
+  },
+  "Navbar": {
+    "discover": "Descubrir",
+    "trips": "Viajes",
+    "more": "Más"
+  },
+  "Discover": {
+    "title": "Recomendaciones",
+    "searchPlaceholder": "Buscar lugares...",
+    "seeMore": "Ver más",
+    "viewDetails": "Ver detalles"
+  },
+  "Trips": {
+    "title": "Mi Ruta Personalizada",
+    "subtitle": "Selecciona lugares en el mapa para crear tu ruta",
+    "searchPlaceholder": "Buscar lugares...",
+    "transport": {
+      "walking": "Caminando",
+      "bicycle": "Bicicleta",
+      "car": "Auto",
+      "transit": "Transporte"
+    },
+    "dateLabel": "Fecha",
+    "selectedStops": "Paradas Seleccionadas",
+    "noStops": "No hay paradas seleccionadas. ¡Agrega lugares desde el mapa!",
+    "addToRoute": "+ Agregar a mi ruta",
+    "totalDistance": "Distancia Total",
+    "estimatedTime": "Tiempo Estimado",
+    "finalizeRoute": "✓ Finalizar y Guardar Ruta"
+  }
+}

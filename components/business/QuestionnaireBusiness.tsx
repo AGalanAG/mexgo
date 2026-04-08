@@ -9,12 +9,15 @@ const BOROUGHS = [
 ];
 
 const OPERATION_MODES = [
-  "Local físico", "Venta a domicilio", "Bazares / Tianguis", 
+  "Local físico", "Venta a domicilio", "Bazares / Tianguis",
   "Venta a negocios (B2B)", "Venta ambulante", "Otro"
 ];
 
 const SAT_STATUS = [
-  "Formal / Registrado", "En proceso", "No, pero me interesa", "No me interesa"
+  { id: "formal", label: "Formal / Registrado" },
+  { id: "process", label: "En proceso" },
+  { id: "interested", label: "No, pero me interesa" },
+  { id: "notInterested", label: "No me interesa" },
 ];
 
 const QuestionnaireBusiness: React.FC = () => {
@@ -78,7 +81,7 @@ const QuestionnaireBusiness: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-2xl w-full bg-white p-6 md:p-10 font-sans shadow-xl rounded-3xl relative border border-gray-100 mb-10">
+    <div className="mx-auto max-w-2xl w-full bg-white p-6 md:p-10 font-sans shadow-xl rounded-3xl relative border border-gray-100 mb-10 text-black">
       {/* Header */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
@@ -102,7 +105,7 @@ const QuestionnaireBusiness: React.FC = () => {
 
       {/* Form Steps */}
       <form className="space-y-6">
-        
+
         {/* Step 1: Datos del Propietario */}
         {step === 1 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -128,7 +131,7 @@ const QuestionnaireBusiness: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-2 text-gray-900">Género</label>
-                <select 
+                <select
                   className="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#1C42E8] text-gray-900 bg-gray-50/30 cursor-pointer"
                   value={formData.owner_gender}
                   onChange={(e) => setFormData({...formData, owner_gender: e.target.value})}
@@ -159,9 +162,8 @@ const QuestionnaireBusiness: React.FC = () => {
             <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">Ubicación y Horarios</h2>
             <div>
               <label className="block text-sm font-semibold mb-2 text-gray-900">Alcaldía (CDMX)</label>
-              <select 
-                className="input-base cursor-pointer"
-                style={{ appearance: 'auto', padding: '1rem', width: '100%', borderRadius: '1rem', border: '2px solid #f3f4f6', backgroundColor: 'rgba(249, 250, 251, 0.3)', color: '#111827', outline: 'none' }}
+              <select
+                className="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#1C42E8] text-gray-900 bg-gray-50/30 cursor-pointer appearance-auto"
                 value={formData.borough_code}
                 onChange={(e) => setFormData({...formData, borough_code: e.target.value})}
               >
@@ -224,7 +226,7 @@ const QuestionnaireBusiness: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-semibold mb-2 text-gray-900">¿Cuánto tiempo lleva operando?</label>
-              <select 
+              <select
                 className="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#1C42E8] text-gray-900 bg-gray-50/30 cursor-pointer"
                 value={formData.business_start_range}
                 onChange={(e) => setFormData({...formData, business_start_range: e.target.value})}
@@ -246,16 +248,16 @@ const QuestionnaireBusiness: React.FC = () => {
             <div>
               <label className="block text-sm font-semibold mb-2 text-gray-900">Situación ante el SAT</label>
               <div className="grid gap-2">
-                {SAT_STATUS.map(status => (
+                {SAT_STATUS.map(opt => (
                   <button
-                    key={status}
+                    key={opt.id}
                     type="button"
-                    onClick={() => setFormData({...formData, sat_status: status})}
+                    onClick={() => setFormData({...formData, sat_status: opt.id})}
                     className={`p-4 rounded-2xl border-2 transition-all text-left text-sm font-medium ${
-                      formData.sat_status === status ? "border-[#1C42E8] bg-[#1C42E8]/5 text-[#1C42E8]" : "border-gray-100 text-gray-700"
+                      formData.sat_status === opt.id ? "border-[#1C42E8] bg-[#1C42E8]/5 text-[#1C42E8]" : "border-gray-100 text-gray-700"
                     }`}
                   >
-                    {status}
+                    {opt.label}
                   </button>
                 ))}
               </div>
