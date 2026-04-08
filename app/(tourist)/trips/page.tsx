@@ -208,33 +208,62 @@ export default function TripsPage() {
         <section className="flex-1 h-[400px] lg:h-full p-4 lg:p-6 lg:pl-0">
           <div 
             ref={mapContainer}
-            className="w-full h-full bg-gray-200 rounded-[var(--radius-xl)] relative overflow-hidden border border-gray-100 shadow-inner flex items-center justify-center"
+            className="w-full h-full bg-gray-100 rounded-[var(--radius-xl)] relative overflow-hidden border border-gray-100 shadow-inner flex items-center justify-center"
           >
+            {/* Fallback to OpenStreetMap if no Mapbox Token */}
             {!process.env.NEXT_PUBLIC_MAPBOX_TOKEN && (
-              <>
-                <div className="absolute inset-0 bg-[url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/-99.1620,19.4194,13,0/800x600?access_token=none')] bg-cover opacity-60"></div>
-                <span className="relative z-10 text-gray-500 font-black uppercase tracking-[0.3em] text-sm bg-white/40 backdrop-blur-md px-6 py-3 rounded-full border border-white/50">
-                  Interactive Map (Token Required)
-                </span>
-              </>
+              <iframe 
+                width="100%" 
+                height="100%" 
+                frameBorder="0" 
+                scrolling="no" 
+                marginHeight={0} 
+                marginWidth={0} 
+                src="https://www.openstreetmap.org/export/embed.html?bbox=-99.2155%2C19.3905%2C-99.1085%2C19.4484&amp;layer=mapnik&amp;marker=19.4326%2C-99.1332"
+                className="absolute inset-0 grayscale-[20%] opacity-80"
+              ></iframe>
             )}
 
-            {/* Popup Preview */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[120%] z-20 pointer-events-auto">
-              <div className="bg-white rounded-2xl p-4 shadow-2xl border border-gray-100 min-w-[280px] relative">
-                <button className="absolute top-3 right-3 text-gray-300 hover:text-gray-600">
+            {/* Popup Preview - Adjusted z-index and clickability */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[120%] z-30 pointer-events-auto">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                className="bg-white rounded-2xl p-5 shadow-2xl border border-gray-100 min-w-[300px] relative"
+              >
+                <button className="absolute top-3 right-3 text-gray-300 hover:text-gray-600 transition-colors">
                   <CloseIcon fontSize="small" />
                 </button>
                 <div className="mb-4">
-                  <h5 className="font-black text-[var(--primary)] text-base mb-0.5">Zócalo</h5>
-                  <p className="text-[10px] text-gray-400 font-bold uppercase leading-tight">Plaza de la Constitución, Centro Histórico, CDMX</p>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                    <h5 className="font-black text-[var(--primary)] text-lg leading-none">Zócalo</h5>
+                  </div>
+                  <p className="text-[10px] text-gray-400 font-black uppercase leading-tight tracking-wider">Plaza de la Constitución, Centro Histórico</p>
                 </div>
-                <button className="w-full bg-[var(--primary)] text-white font-black py-2.5 rounded-xl text-xs uppercase tracking-widest shadow-md hover:brightness-110 transition-all">
+                
+                <div className="flex gap-2 mb-4">
+                  <span className="text-[9px] bg-gray-100 px-2 py-1 rounded font-bold text-gray-500">HISTORIC SITE</span>
+                  <span className="text-[9px] bg-yellow-50 px-2 py-1 rounded font-bold text-yellow-600">★ 4.8</span>
+                </div>
+
+                <button className="w-full bg-[var(--primary)] text-white font-black py-3 rounded-xl text-[10px] uppercase tracking-[0.2em] shadow-lg hover:brightness-110 transition-all active:scale-95">
                   + Add to my route
                 </button>
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-r border-b border-gray-100 rotate-45"></div>
-              </div>
+                
+                {/* Pointer arrow */}
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-r border-b border-gray-100 rotate-45 shadow-sm"></div>
+              </motion.div>
             </div>
+
+            {/* Map Overlay info if token is missing */}
+            {!process.env.NEXT_PUBLIC_MAPBOX_TOKEN && (
+              <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-gray-100 z-20">
+                <p className="text-[9px] font-black text-[var(--primary)] uppercase tracking-widest">
+                  Using OpenStreetMap (Live Preview)
+                </p>
+              </div>
+            )}
           </div>
         </section>
       </main>
