@@ -55,125 +55,123 @@ export default function PlaceDetailPage() {
       {/* Navbar fija */}
       <Navbar variant="light" />
 
-      <main className="pt-24 pb-20 px-4 bg-white">
-        {/* Back Button - Aligned to the container */}
-        <div className="max-w-6xl mx-auto mb-8">
+      <main className="pt-24 pb-16 px-4 bg-[var(--background)]">
+        {/* Navigation & Breadcrumb */}
+        <div className="max-w-5xl mx-auto mb-6 flex justify-between items-center">
           <button 
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-[var(--primary)] font-bold hover:opacity-70 transition-opacity text-sm"
+            className="group flex items-center gap-2 text-[var(--primary)] font-bold hover:text-[var(--light-blue)] transition-colors text-xs uppercase tracking-widest"
           >
-            <ArrowBackIcon fontSize="small" /> Back to Discover
+            <ArrowBackIcon sx={{ fontSize: 18 }} className="group-hover:-translate-x-1 transition-transform" /> 
+            Back
           </button>
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Discover / {place.name}</span>
         </div>
 
-        {/* Symmetric Header: Centered */}
-        <section className="max-w-6xl mx-auto text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-black text-[var(--primary)] mb-4 tracking-tight" style={{ fontFamily: 'var(--font-display, inherit)' }}>
-            {place.name}
-          </h1>
-          <div className="flex items-center justify-center gap-3">
-            <div className="flex text-yellow-400">
-              {[...Array(5)].map((_, i) => (
-                <StarIcon key={i} fontSize="small" className={i < Math.floor(place.rating) ? 'text-yellow-400' : 'text-gray-200'} />
-              ))}
-            </div>
-            <span className="font-bold text-gray-800 text-lg">{place.rating}</span>
-            <span className="text-gray-400 text-sm font-medium">({place.user_ratings_total.toLocaleString()} reviews)</span>
-          </div>
-        </section>
-
-        {/* 50/50 Symmetric Grid */}
-        <section className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            
-            {/* Left Column: Balanced Visual Block */}
-            <div className="flex flex-col gap-8">
-              <div 
-                className="w-full h-[550px] rounded-[var(--radius-xl)] shadow-xl bg-cover bg-center border border-gray-100 overflow-hidden"
-                style={{ backgroundImage: `url(${place.photos[0]})` }}
-              >
-                <div className="absolute inset-0 bg-black/5"></div>
+        {/* Premium Compact Container */}
+        <section className="max-w-5xl mx-auto">
+          {/* Header Section */}
+          <div className="text-center mb-10">
+            <h1 className="text-3xl md:text-5xl font-black text-[var(--primary)] mb-3 tracking-tight" style={{ fontFamily: 'var(--font-display, inherit)' }}>
+              {place.name}
+            </h1>
+            <div className="flex items-center justify-center gap-2">
+              <div className="flex text-[var(--secondary)]">
+                {[...Array(5)].map((_, i) => (
+                  <StarIcon key={i} sx={{ fontSize: 18 }} className={i < Math.floor(place.rating) ? 'text-[var(--secondary)]' : 'text-gray-200'} />
+                ))}
               </div>
-              
-              {/* Short description below the main image to maintain the column structure */}
-              <div className="p-2">
-                <h4 className="text-[var(--primary)] font-bold mb-4 uppercase tracking-widest text-xs border-b border-gray-100 pb-2">Experience Overview</h4>
-                <p className="text-gray-600 leading-relaxed text-lg italic">
+              <span className="font-bold text-[var(--primary)] text-sm">{place.rating}</span>
+              <span className="text-gray-400 text-xs font-medium">({place.user_ratings_total.toLocaleString()} reviews)</span>
+            </div>
+          </div>
+
+          {/* Symmetrical 50/50 Content Block */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 shadow-2xl rounded-[2rem] overflow-hidden bg-white border border-gray-100">
+            
+            {/* Left: Main Visual */}
+            <div className="relative h-[450px] lg:h-[550px]">
+              <img 
+                src={place.photos[0]} 
+                alt={place.name} 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+              <div className="absolute bottom-6 left-6 right-6">
+                <p className="text-white text-sm italic font-medium leading-relaxed opacity-90">
                   "{place.description}"
                 </p>
               </div>
             </div>
 
-            {/* Right Column: Stacked Cards (Matching the left block height) */}
-            <div className="flex flex-col gap-6 h-full">
-              {/* Business Details Card */}
-              <div className="bg-[var(--background)] p-10 rounded-[var(--radius-xl)] border border-gray-100 shadow-sm flex-1 flex flex-col justify-center">
-                <h4 className="font-bold text-[var(--primary)] mb-8 uppercase tracking-wider text-xs text-center">Business Information</h4>
+            {/* Right: Integrated Info & Action */}
+            <div className="p-8 md:p-12 flex flex-col justify-between bg-white border-l border-gray-50 h-[450px] lg:h-[550px]">
+              <div>
+                <h4 className="text-[var(--primary)] font-black uppercase tracking-[0.2em] text-[10px] mb-8 border-b border-gray-100 pb-2">Business Details</h4>
                 
-                <div className="space-y-8 mb-10">
-                  <div className="flex items-center gap-6">
-                    <div className="bg-white p-3 rounded-xl shadow-md text-[var(--color-accent)]">
-                      <LocationOnIcon />
+                <div className="space-y-8">
+                  <div className="flex items-start gap-5">
+                    <div className="mt-1 bg-[var(--background)] p-2.5 rounded-lg text-[var(--primary)] border border-gray-100">
+                      <LocationOnIcon sx={{ fontSize: 20 }} />
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Our Location</p>
-                      <p className="text-base text-gray-800 font-bold leading-tight">{place.address}</p>
+                      <p className="text-[9px] font-black text-gray-400 uppercase mb-1 tracking-wider">Location</p>
+                      <p className="text-sm text-gray-700 font-bold leading-tight">{place.address}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-6">
-                    <div className="bg-white p-3 rounded-xl shadow-md text-[var(--color-accent)]">
-                      <AccessTimeIcon />
+                  <div className="flex items-start gap-5">
+                    <div className="mt-1 bg-[var(--background)] p-2.5 rounded-lg text-[var(--primary)] border border-gray-100">
+                      <AccessTimeIcon sx={{ fontSize: 20 }} />
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Service Hours</p>
-                      <ul className="text-sm text-gray-600 font-bold grid grid-cols-2 gap-x-4">
+                      <p className="text-[9px] font-black text-gray-400 uppercase mb-1 tracking-wider">Service Hours</p>
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1">
                         {place.opening_hours.map((hour, i) => (
-                          <li key={i} className="whitespace-nowrap">{hour}</li>
+                          <p key={i} className="text-[11px] text-gray-600 font-semibold">{hour}</p>
                         ))}
-                      </ul>
+                      </div>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                {/* Compact Map Integration */}
+                <div className="w-full h-[140px] rounded-2xl overflow-hidden relative border border-gray-100 group shadow-inner">
+                  <img 
+                    src="https://api.mapbox.com/styles/v1/mapbox/light-v10/static/-99.1620,19.4194,14,0/500x200?access_token=none" 
+                    className="w-full h-full object-cover grayscale-[50%] group-hover:grayscale-0 transition-all duration-700"
+                    alt="Map Location"
+                  />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--primary)] drop-shadow-lg">
+                    <LocationOnIcon sx={{ fontSize: 32 }} />
                   </div>
                 </div>
 
                 <motion.button 
-                  whileHover={{ scale: 1.02, elevation: 5 }}
+                  whileHover={{ scale: 1.02, backgroundColor: 'var(--medium-blue)' }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full bg-[var(--color-accent)] text-white font-black py-4 px-8 rounded-2xl shadow-xl transition-all text-sm uppercase tracking-[0.2em]"
+                  className="w-full bg-[var(--primary)] text-white font-black py-4 rounded-xl shadow-lg transition-all text-xs uppercase tracking-[0.2em]"
                 >
                   Add to Itinerary
                 </motion.button>
-              </div>
-
-              {/* Map Card - Balanced height */}
-              <div className="w-full h-[280px] bg-gray-100 rounded-[var(--radius-xl)] overflow-hidden relative shadow-lg border border-gray-100 group">
-                <div className="absolute inset-0 bg-[url('https://api.mapbox.com/styles/v1/mapbox/light-v10/static/-99.1620,19.4194,14,0/500x300?access_token=none')] bg-cover transition-transform duration-1000 group-hover:scale-110">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--primary)] drop-shadow-2xl">
-                    <LocationOnIcon sx={{ fontSize: 50 }} />
-                  </div>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                  <span className="text-white font-bold text-xs uppercase tracking-widest">Open in Google Maps</span>
-                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Symmetrical Bottom Gallery */}
-        <section className="max-w-6xl mx-auto mt-20">
-          <h4 className="text-center text-[var(--primary)] font-black uppercase tracking-widest text-xs mb-10">Gallery</h4>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {place.photos.map((photo, idx) => (
-              <motion.div 
-                key={idx} 
-                whileHover={{ y: -10 }}
-                className="aspect-square rounded-2xl bg-gray-100 overflow-hidden shadow-md border border-gray-100"
-              >
-                <img src={photo} alt={`${place.name} ${idx}`} className="w-full h-full object-cover" />
-              </motion.div>
-            ))}
-          </div>
+        {/* Small Elegant Gallery */}
+        <section className="max-w-5xl mx-auto mt-12 grid grid-cols-4 gap-4">
+          {place.photos.map((photo, idx) => (
+            <motion.div 
+              key={idx} 
+              whileHover={{ y: -5 }}
+              className="aspect-[4/3] rounded-2xl overflow-hidden shadow-sm border border-white"
+            >
+              <img src={photo} alt={`${place.name} ${idx}`} className="w-full h-full object-cover" />
+            </motion.div>
+          ))}
         </section>
       </main>
     </div>
