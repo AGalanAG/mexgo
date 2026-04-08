@@ -24,31 +24,31 @@ interface StaticPlace {
 const RECOMMENDED_PLACES: StaticPlace[] = [
   {
     id: '1',
-    name: 'Bellas Artes',
-    imageUrl: 'https://images.unsplash.com/photo-1518638150340-f706e86654de?w=600&q=80',
-    description: 'The Palace of Fine Arts is a prominent cultural center in Mexico City.',
-    location: 'Centro Histórico, CDMX'
+    name: 'Sabores de Antaño',
+    imageUrl: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80',
+    description: 'Authentic traditional cuisine with recipes passed down through generations.',
+    location: 'Colonia Roma, CDMX'
   },
   {
     id: '2',
-    name: 'Castillo de Chapultepec',
-    imageUrl: 'https://images.unsplash.com/photo-1580619305218-8423a7ef79b4?w=600&q=80',
-    description: 'A historic castle located on top of Chapultepec Hill with stunning views.',
-    location: 'Bosque de Chapultepec, CDMX'
+    name: 'El Rincón del Arte',
+    imageUrl: 'https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?w=600&q=80',
+    description: 'A cozy gallery showcasing local contemporary artists and handmade crafts.',
+    location: 'Coyoacán, CDMX'
   },
   {
     id: '3',
-    name: 'Xochimilco',
-    imageUrl: 'https://images.unsplash.com/photo-1547995886-6dc09384c6e8?w=600&q=80',
-    description: 'Famous for its canals and colorful trajinera boat rides.',
-    location: 'Xochimilco, CDMX'
+    name: 'Café Luna Nueva',
+    imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&q=80',
+    description: 'Specialty coffee from organic beans harvested in Veracruz and Oaxaca.',
+    location: 'Condesa, CDMX'
   },
   {
     id: '4',
-    name: 'Coyoacán',
-    imageUrl: 'https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?w=600&q=80',
-    description: 'A charming bohemian neighborhood, home to the Frida Kahlo Museum.',
-    location: 'Coyoacán, CDMX'
+    name: 'Textiles del Sur',
+    imageUrl: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&q=80',
+    description: 'Hand-woven garments and accessories using ancient natural dyeing techniques.',
+    location: 'San Ángel, CDMX'
   },
 ];
 
