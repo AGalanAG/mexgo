@@ -1,22 +1,30 @@
 "use client";
 
-<<<<<<< HEAD
 import React, { useState } from 'react';
-=======
-import Link from 'next/link';
->>>>>>> origin/feat/turista
+import { Link } from '@/i18n/routing';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ModeNightIcon from '@mui/icons-material/ModeNight';
 import LanguageIcon from '@mui/icons-material/Language';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useTheme } from 'next-themes';
+import { useTranslations, useLocale } from 'next-intl';
+import { useRouter, usePathname } from '@/i18n/routing';
 
-<<<<<<< HEAD
-export default function Navbar() {
+interface NavbarProps {
+  variant?: 'dark' | 'light';
+}
+
+export default function Navbar({ variant = 'dark' }: NavbarProps) {
+  const isLight = variant === 'light';
+  const t = useTranslations('Navbar');
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { setTheme } = useTheme();
+
   const [langAnchor, setLangAnchor] = useState<null | HTMLElement>(null);
   const [themeAnchor, setThemeAnchor] = useState<null | HTMLElement>(null);
-  const { setTheme } = useTheme();
 
   const handleLangClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setLangAnchor(event.currentTarget);
@@ -35,14 +43,11 @@ export default function Navbar() {
     setTheme(theme);
     handleClose();
   };
-=======
-interface NavbarProps {
-  variant?: 'dark' | 'light';
-}
 
-export default function Navbar({ variant = 'dark' }: NavbarProps) {
-  const isLight = variant === 'light';
->>>>>>> origin/feat/turista
+  const toggleLocale = (nextLocale: string) => {
+    router.replace(pathname, {locale: nextLocale});
+    handleClose();
+  };
 
   return (
     <nav 
@@ -63,24 +68,20 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
 
       {/* Menú Central */}
       <div className="hidden md:flex gap-8 font-medium">
-        <Link href="/discover" className="hover:opacity-70 transition-opacity">Discover</Link>
-        <Link href="/trips" className="hover:opacity-70 transition-opacity">Trips</Link>
-        <Link href="#" className="hover:opacity-70 transition-opacity">More</Link>
+        <Link href="/discover" className="hover:opacity-70 transition-opacity">{t('discover')}</Link>
+        <Link href="/trips" className="hover:opacity-70 transition-opacity">{t('trips')}</Link>
+        <Link href="#" className="hover:opacity-70 transition-opacity">{t('more')}</Link>
       </div>
 
-      {/* Iconos MUI */}
+      {/* Iconos */}
       <div className="flex gap-5 items-center">
-        <button className="hover:opacity-70 transition-opacity">
-          <AccountCircleIcon fontSize="medium" />
-        </button>
-<<<<<<< HEAD
-        
         {/* Idioma */}
         <button 
-          className="hover:text-gray-300 transition-colors"
+          className="hover:opacity-70 transition-opacity flex items-center gap-1 uppercase text-sm font-bold"
           onClick={handleLangClick}
         >
-          <LanguageIcon fontSize="medium" />
+          <LanguageIcon fontSize="small" />
+          {locale}
         </button>
         <Menu
           anchorEl={langAnchor}
@@ -88,13 +89,17 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
           onClose={handleClose}
           className="mt-2"
         >
-          <MenuItem onClick={handleClose}>Español</MenuItem>
-          <MenuItem onClick={handleClose}>Inglés</MenuItem>
+          <MenuItem onClick={() => toggleLocale('es')}>Español</MenuItem>
+          <MenuItem onClick={() => toggleLocale('en')}>English</MenuItem>
         </Menu>
 
+        <button className="hover:opacity-70 transition-opacity">
+          <AccountCircleIcon fontSize="medium" />
+        </button>
+        
         {/* Dark Mode */}
         <button 
-          className="hover:text-gray-300 transition-colors"
+          className="hover:opacity-70 transition-opacity"
           onClick={handleThemeClick}
         >
           <ModeNightIcon fontSize="medium" />
@@ -109,13 +114,6 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
           <MenuItem onClick={() => handleThemeSelect('dark')}>Oscuro</MenuItem>
           <MenuItem onClick={() => handleThemeSelect('system')}>Sistema</MenuItem>
         </Menu>
-=======
-        {!isLight && (
-          <button className="hover:opacity-70 transition-opacity">
-            <ModeNightIcon fontSize="medium" />
-          </button>
-        )}
->>>>>>> origin/feat/turista
       </div>
     </nav>
   );
