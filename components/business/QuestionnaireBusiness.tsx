@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 
 const BOROUGHS = [
   "Álvaro Obregón", "Azcapotzalco", "Benito Juárez", "Coyoacán", "Cuajimalpa",
@@ -8,16 +9,8 @@ const BOROUGHS = [
   "Miguel Hidalgo", "Milpa Alta", "Tláhuac", "Tlalpan", "Venustiano Carranza", "Xochimilco"
 ];
 
-const OPERATION_MODES = [
-  "Local físico", "Venta a domicilio", "Bazares / Tianguis", 
-  "Venta a negocios (B2B)", "Venta ambulante", "Otro"
-];
-
-const SAT_STATUS = [
-  "Formal / Registrado", "En proceso", "No, pero me interesa", "No me interesa"
-];
-
 const QuestionnaireBusiness: React.FC = () => {
+  const t = useTranslations("Questionnaire");
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     // Step 1: Propietario
@@ -78,15 +71,15 @@ const QuestionnaireBusiness: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-2xl w-full bg-white p-6 md:p-10 font-sans shadow-xl rounded-3xl relative border border-gray-100 mb-10">
+    <div className="mx-auto max-w-2xl w-full bg-white p-6 md:p-10 font-sans shadow-xl rounded-3xl relative border border-gray-100 mb-10 text-black">
       {/* Header */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <div className="space-y-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Registro de Negocio</span>
-            <h1 className="text-xl font-bold text-[#1C42E8]">Sello Ola México</h1>
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-400">{t('business.title')}</span>
+            <h1 className="text-xl font-bold text-[#1C42E8]">{t('business.subtitle')}</h1>
           </div>
-          <span className="text-sm font-bold text-[#1C42E8]">Paso {step} de {totalSteps}</span>
+          <span className="text-sm font-bold text-[#1C42E8]">{t('steps', {step, total: totalSteps})}</span>
         </div>
         <div className="flex space-x-1">
           {[1, 2, 3, 4, 5].map((s) => (
@@ -106,9 +99,9 @@ const QuestionnaireBusiness: React.FC = () => {
         {/* Step 1: Datos del Propietario */}
         {step === 1 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">Datos del Propietario</h2>
+            <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">{t('business.step1.title')}</h2>
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">Nombre completo</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-900">{t('business.step1.nameLabel')}</label>
               <input
                 type="text"
                 className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none transition-all text-gray-900 bg-gray-50/30"
@@ -118,7 +111,7 @@ const QuestionnaireBusiness: React.FC = () => {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-900">Edad</label>
+                <label className="block text-sm font-semibold mb-2 text-gray-900">{t('business.step1.ageLabel')}</label>
                 <input
                   type="number"
                   className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30"
@@ -127,21 +120,21 @@ const QuestionnaireBusiness: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-900">Género</label>
+                <label className="block text-sm font-semibold mb-2 text-gray-900">{t('business.step1.genderLabel')}</label>
                 <select 
                   className="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#1C42E8] text-gray-900 bg-gray-50/30 cursor-pointer"
                   value={formData.owner_gender}
                   onChange={(e) => setFormData({...formData, owner_gender: e.target.value})}
                 >
-                  <option value="">Selecciona</option>
-                  <option value="Mujer">Mujer</option>
-                  <option value="Hombre">Hombre</option>
-                  <option value="Otro">Otro</option>
+                  <option value="">{t('business.step1.genderOptions.placeholder')}</option>
+                  <option value="Mujer">{t('business.step1.genderOptions.female')}</option>
+                  <option value="Hombre">{t('business.step1.genderOptions.male')}</option>
+                  <option value="Otro">{t('business.step1.genderOptions.other')}</option>
                 </select>
               </div>
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">WhatsApp</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-900">{t('business.step1.whatsappLabel')}</label>
               <input
                 type="tel"
                 placeholder="55 0000 0000"
@@ -156,21 +149,20 @@ const QuestionnaireBusiness: React.FC = () => {
         {/* Step 2: Ubicación */}
         {step === 2 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">Ubicación y Horarios</h2>
+            <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">{t('business.step2.title')}</h2>
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">Alcaldía (CDMX)</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-900">{t('business.step2.boroughLabel')}</label>
               <select 
-                className="input-base cursor-pointer"
-                style={{ appearance: 'auto', padding: '1rem', width: '100%', borderRadius: '1rem', border: '2px solid #f3f4f6', backgroundColor: 'rgba(249, 250, 251, 0.3)', color: '#111827', outline: 'none' }}
+                className="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#1C42E8] text-gray-900 bg-gray-50/30 cursor-pointer appearance-auto"
                 value={formData.borough_code}
                 onChange={(e) => setFormData({...formData, borough_code: e.target.value})}
               >
-                <option value="">Selecciona alcaldía</option>
+                <option value="">{t('business.step2.boroughPlaceholder')}</option>
                 {BOROUGHS.map(b => <option key={b} value={b}>{b}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">Colonia</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-900">{t('business.step2.neighborhoodLabel')}</label>
               <input
                 type="text"
                 className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30"
@@ -179,7 +171,7 @@ const QuestionnaireBusiness: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">URL de Google Maps</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-900">{t('business.step2.mapsLabel')}</label>
               <input
                 type="url"
                 placeholder="https://goo.gl/maps/..."
@@ -189,9 +181,9 @@ const QuestionnaireBusiness: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">Días y Horarios de atención</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-900">{t('business.step2.hoursLabel')}</label>
               <textarea
-                placeholder="Ej. Lunes a Viernes 9:00 - 18:00"
+                placeholder={t('business.step2.hoursPlaceholder')}
                 className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30 h-24 resize-none"
                 value={formData.operation_days_hours}
                 onChange={(e) => setFormData({...formData, operation_days_hours: e.target.value})}
@@ -203,9 +195,9 @@ const QuestionnaireBusiness: React.FC = () => {
         {/* Step 3: El Negocio */}
         {step === 3 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">Perfil del Negocio</h2>
+            <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">{t('business.step3.title')}</h2>
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">Nombre del Negocio</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-900">{t('business.step3.nameLabel')}</label>
               <input
                 type="text"
                 className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30"
@@ -214,7 +206,7 @@ const QuestionnaireBusiness: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">Descripción (Máx. 150 car.)</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-900">{t('business.step3.descLabel')}</label>
               <textarea
                 maxLength={150}
                 className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30 h-20 resize-none"
@@ -223,17 +215,17 @@ const QuestionnaireBusiness: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">¿Cuánto tiempo lleva operando?</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-900">{t('business.step3.timeLabel')}</label>
               <select 
                 className="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#1C42E8] text-gray-900 bg-gray-50/30 cursor-pointer"
                 value={formData.business_start_range}
                 onChange={(e) => setFormData({...formData, business_start_range: e.target.value})}
               >
-                <option value="">Selecciona rango</option>
-                <option value="MENOS_1_ANO">Menos de 1 año</option>
-                <option value="A1_A3">1 a 3 años</option>
-                <option value="A3_A5">3 a 5 años</option>
-                <option value="MAS_5">Más de 5 años</option>
+                <option value="">{t('business.step3.timeOptions.placeholder')}</option>
+                <option value="MENOS_1_ANO">{t('business.step3.timeOptions.less1')}</option>
+                <option value="A1_A3">{t('business.step3.timeOptions.1-3')}</option>
+                <option value="A3_A5">{t('business.step3.timeOptions.3-5')}</option>
+                <option value="MAS_5">{t('business.step3.timeOptions.more5')}</option>
               </select>
             </div>
           </div>
@@ -242,37 +234,42 @@ const QuestionnaireBusiness: React.FC = () => {
         {/* Step 4: Impacto y Mundial */}
         {step === 4 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">Impacto Social y Mundial 2026</h2>
+            <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">{t('business.step4.title')}</h2>
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">Situación ante el SAT</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-900">{t('business.step4.satLabel')}</label>
               <div className="grid gap-2">
-                {SAT_STATUS.map(status => (
+                {[
+                  { id: "formal", label: t('business.step4.satOptions.formal') },
+                  { id: "process", label: t('business.step4.satOptions.process') },
+                  { id: "interested", label: t('business.step4.satOptions.interested') },
+                  { id: "notInterested", label: t('business.step4.satOptions.notInterested') }
+                ].map(opt => (
                   <button
-                    key={status}
+                    key={opt.id}
                     type="button"
-                    onClick={() => setFormData({...formData, sat_status: status})}
+                    onClick={() => setFormData({...formData, sat_status: opt.id})}
                     className={`p-4 rounded-2xl border-2 transition-all text-left text-sm font-medium ${
-                      formData.sat_status === status ? "border-[#1C42E8] bg-[#1C42E8]/5 text-[#1C42E8]" : "border-gray-100 text-gray-700"
+                      formData.sat_status === opt.id ? "border-[#1C42E8] bg-[#1C42E8]/5 text-[#1C42E8]" : "border-gray-100 text-gray-700"
                     }`}
                   >
-                    {status}
+                    {opt.label}
                   </button>
                 ))}
               </div>
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">¿Cómo te adaptarás para el Mundial 2026?</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-900">{t('business.step4.adaptationLabel')}</label>
               <textarea
-                placeholder="Ej. Menú en inglés, pago con tarjeta, etc."
+                placeholder={t('business.step4.adaptationPlaceholder')}
                 className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30 h-24 resize-none"
                 value={formData.adaptation_for_world_cup}
                 onChange={(e) => setFormData({...formData, adaptation_for_world_cup: e.target.value})}
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">¿En qué invertirías el apoyo de Fundación Coppel?</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-900">{t('business.step4.supportLabel')}</label>
               <textarea
-                placeholder="Ej. Remodelación, marketing, inventario..."
+                placeholder={t('business.step4.supportPlaceholder')}
                 className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30 h-24 resize-none"
                 value={formData.support_usage}
                 onChange={(e) => setFormData({...formData, support_usage: e.target.value})}
@@ -284,19 +281,19 @@ const QuestionnaireBusiness: React.FC = () => {
         {/* Step 5: Capacitación */}
         {step === 5 && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">Preferencia de Capacitación</h2>
+            <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">{t('business.step5.title')}</h2>
             <div className="grid gap-4">
               {[
                 {
                   id: "HUB_AZTECA",
-                  label: "Hub Azteca",
-                  desc: "Cercanía estratégica al Estadio Azteca.",
+                  label: t('business.step5.campuses.hub.label'),
+                  desc: t('business.step5.campuses.hub.desc'),
                   icon: "🏟️"
                 },
                 {
                   id: "MIDE",
-                  label: "MIDE",
-                  desc: "Centro Histórico, corazón financiero y cultural.",
+                  label: t('business.step5.campuses.mide.label'),
+                  desc: t('business.step5.campuses.mide.desc'),
                   icon: "🏦"
                 },
               ].map((opt) => (
@@ -318,7 +315,7 @@ const QuestionnaireBusiness: React.FC = () => {
             </div>
             <div className="p-4 bg-[#DF757F]/10 rounded-2xl border border-[#DF757F]/20 text-[#DF757F] text-sm italic font-medium flex gap-3">
               <span className="shrink-0 text-lg">📢</span>
-              <p>Al completar este registro, tu negocio será evaluado para recibir el sello de calidad Ola México.</p>
+              <p>{t('business.step5.footerTip')}</p>
             </div>
           </div>
         )}
@@ -331,7 +328,7 @@ const QuestionnaireBusiness: React.FC = () => {
               onClick={prevStep}
               className="flex-1 p-4 rounded-2xl border-2 border-[#1C42E8] text-[#1C42E8] font-bold transition-all active:scale-95 cursor-pointer touch-manipulation"
             >
-              Atrás
+              {t('back')}
             </button>
           )}
           <button
@@ -342,7 +339,7 @@ const QuestionnaireBusiness: React.FC = () => {
               isNextDisabled() ? "bg-gray-300 cursor-not-allowed" : "bg-[#1C42E8] hover:shadow-lg"
             }`}
           >
-            {step === totalSteps ? "Enviar Solicitud" : "Siguiente"}
+            {step === totalSteps ? t('business.sendRequest') : t('next')}
           </button>
         </div>
       </form>
