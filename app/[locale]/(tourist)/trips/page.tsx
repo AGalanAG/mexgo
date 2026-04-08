@@ -40,22 +40,51 @@ function toStop(s: ItineraryStop): Stop {
   };
 }
 
+const MOCK_STOPS: Stop[] = [
+  {
+    id: 'm1',
+    name: 'Ángel de la Independencia',
+    addr: 'Av. Paseo de la Reforma · 09:00 AM',
+    lng: -99.1677,
+    lat: 19.4270,
+  },
+  {
+    id: 'm2',
+    name: 'Museo Nacional de Antropología',
+    addr: 'Bosque de Chapultepec · 11:30 AM',
+    lng: -99.1863,
+    lat: 19.4260,
+  },
+  {
+    id: 'm3',
+    name: 'Palacio de Bellas Artes',
+    addr: 'Av. Juárez, Centro Histórico · 02:00 PM',
+    lng: -99.1412,
+    lat: 19.4352,
+  },
+  {
+    id: 'm4',
+    name: 'Zócalo de la CDMX',
+    addr: 'Plaza de la Constitución · 04:30 PM',
+    lng: -99.1332,
+    lat: 19.4326,
+  }
+];
+
 export default function TripsPage() {
   const t = useTranslations('Trips');
   const [transportMode, setTransportMode] = useState<TransportMode>('walking');
-  const [stops, setStops] = useState<Stop[]>([]);
+  const [stops, setStops] = useState<Stop[]>(MOCK_STOPS);
 
   useEffect(() => {
     fetch('/api/itinerary')
       .then(r => r.json())
       .then(res => {
-        if (res.ok && Array.isArray(res.data)) {
+        if (res.ok && Array.isArray(res.data) && res.data.length > 0) {
           setStops(res.data.map(toStop));
-        } else {
-          setStops([]);
         }
       })
-      .catch(() => setStops([]));
+      .catch(console.error);
   }, []);
 
   const moveStop = (index: number, direction: 'up' | 'down') => {
