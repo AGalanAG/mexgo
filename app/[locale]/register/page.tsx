@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Link } from '@/i18n/routing';
+import { useSearchParams } from 'next/navigation';
+import { Link, useRouter } from '@/i18n/routing';
 import HomeNavbar from '@/components/tourist/HomeNavbar';
 import Footer from '@/components/tourist/Footer';
 import { Button } from '@/components/ui/Button';
@@ -21,7 +21,8 @@ function RegisterContent() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: ''
+    password: '',
+    businessName: ''
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,6 +80,19 @@ function RegisterContent() {
                 />
               </div>
               
+              {type === 'business' && (
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wider pl-1">{t('form.businessName')}</label>
+                  <Input 
+                    name="businessName"
+                    value={formData.businessName}
+                    onChange={handleInputChange}
+                    placeholder="Ej. Tacos El Rey" 
+                    className="w-full bg-gray-50 border-gray-100 focus:bg-white transition-all"
+                    required
+                  />
+                </div>
+              )}
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider pl-1">{t('form.email')}</label>
