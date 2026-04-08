@@ -11,13 +11,14 @@ import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import CloseIcon from '@mui/icons-material/Close';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import DragHandleIcon from '@mui/icons-material/DragHandle';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { motion, AnimatePresence } from 'framer-motion';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 
 import type { ItineraryStop } from '@/types/types';
 
@@ -35,6 +36,7 @@ function toStop(s: ItineraryStop): Stop {
 }
 
 export default function TripsPage() {
+  const t = useTranslations('Trips');
   const [transportMode, setTransportMode] = useState<TransportMode>('walking');
   const [stops, setStops] = useState<Stop[]>([]);
   
@@ -45,8 +47,18 @@ export default function TripsPage() {
   useEffect(() => {
     fetch('/api/itinerary')
       .then(r => r.json())
-      .then((data: ItineraryStop[]) => setStops(data.map(toStop)))
-      .catch(console.error);
+      .then(res => {
+        if (res.ok && Array.isArray(res.data)) {
+          setStops(res.data.map(toStop));
+        } else {
+          console.error('Estructura de itinerario inesperada:', res);
+          setStops([]);
+        }
+      })
+      .catch(err => {
+        console.error('Error cargando itinerario:', err);
+        setStops([]);
+      });
   }, []);
 
   // Initialize Mapbox
@@ -104,10 +116,10 @@ export default function TripsPage() {
           
           <div className="mb-6">
             <h1 className="text-2xl md:text-3xl font-black text-[var(--primary)] mb-1 uppercase tracking-tight">
-              My Personalized Route
+              {t('title')}
             </h1>
             <p className="text-xs text-gray-500 font-medium">
-              Select locations on the map to create your route
+              {t('subtitle')}
             </p>
           </div>
 
@@ -117,7 +129,7 @@ export default function TripsPage() {
               <SearchIcon className="text-gray-400 mr-2" fontSize="small" />
               <input 
                 type="text" 
-                placeholder="Search for places..." 
+                placeholder={t('searchPlaceholder')}
                 className="flex-1 bg-transparent border-none outline-none text-sm text-[var(--text-primary)] placeholder-gray-400 font-medium"
               />
               <div className="flex items-center gap-2 border-l border-gray-300 ml-2 pl-2">
@@ -130,10 +142,15 @@ export default function TripsPage() {
           {/* Transport Mode Selector */}
           <div className="mb-6">
             <div className="flex bg-gray-100 p-1 rounded-xl gap-1">
-              {transportButtons.map((btn) => (
+              {[
+                { mode: 'walking', icon: <DirectionsWalkIcon fontSize="small" />, label: t('transport.walking') },
+                { mode: 'bicycle', icon: <DirectionsBikeIcon fontSize="small" />, label: t('transport.bicycle') },
+                { mode: 'car', icon: <DirectionsCarIcon fontSize="small" />, label: t('transport.car') },
+                { mode: 'transit', icon: <DirectionsBusIcon fontSize="small" />, label: t('transport.transit') },
+              ].map((btn) => (
                 <button 
                   key={btn.mode}
-                  onClick={() => setTransportMode(btn.mode)}
+                  onClick={() => setTransportMode(btn.mode as TransportMode)}
                   className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg transition-all text-[10px] font-black uppercase tracking-wider ${
                     transportMode === btn.mode 
                       ? 'bg-[var(--accent)] text-white shadow-md' 
@@ -148,7 +165,7 @@ export default function TripsPage() {
 
           {/* Date Selector */}
           <div className="mb-8">
-            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">Date</label>
+            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">{t('dateLabel')}</label>
             <div className="relative flex items-center bg-white border border-gray-300 rounded-xl px-4 py-3 focus-within:border-[var(--primary)] transition-all">
               <input 
                 type="date" 
@@ -161,7 +178,7 @@ export default function TripsPage() {
 
           {/* Selected Stops */}
           <div className="mb-6">
-            <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 border-b border-gray-100 pb-2">Selected Stops</h4>
+            <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 border-b border-gray-100 pb-2">{t('selectedStops')}</h4>
             
             <div className="space-y-4">
               <AnimatePresence>
@@ -210,7 +227,7 @@ export default function TripsPage() {
               </AnimatePresence>
               
               {stops.length === 0 && (
-                <p className="text-center text-gray-400 text-sm italic py-10">No stops selected. Add places from the map!</p>
+                <p className="text-center text-gray-400 text-sm italic py-10">{t('noStops')}</p>
               )}
             </div>
           </div>
@@ -260,7 +277,7 @@ export default function TripsPage() {
                 </div>
 
                 <button className="w-full bg-[var(--primary)] text-white font-black py-3 rounded-xl text-[10px] uppercase tracking-[0.2em] shadow-lg hover:brightness-110 transition-all active:scale-95">
-                  + Add to my route
+                  {t('addToRoute')}
                 </button>
                 
                 {/* Pointer arrow */}
@@ -285,16 +302,16 @@ export default function TripsPage() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-4 md:gap-10">
           <div className="flex gap-10">
             <div>
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Distance</p>
+              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('totalDistance')}</p>
               <p className="text-xl font-black text-[var(--primary)]">{stops.length > 1 ? '7.2 km' : '0.0 km'}</p>
             </div>
             <div>
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Estimated Time</p>
+              <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('estimatedTime')}</p>
               <p className="text-xl font-black text-[var(--primary)]">{stops.length > 1 ? '1h 45min' : '0 min'}</p>
             </div>
           </div>
           <button className="flex-1 w-full bg-[var(--accent)] text-white font-black py-4 rounded-2xl shadow-lg shadow-[var(--accent)]/20 text-sm uppercase tracking-[0.2em] hover:brightness-110 transition-all active:scale-[0.98]">
-            ✓ Finalize & Save Route
+            {t('finalizeRoute')}
           </button>
         </div>
       </footer>

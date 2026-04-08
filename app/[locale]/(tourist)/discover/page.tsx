@@ -5,7 +5,8 @@ import Navbar from '@/components/tourist/Navbar';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
 import type { NegocioConScore } from '@/types/types';
 
 interface DisplayPlace {
@@ -33,6 +34,7 @@ export default function DiscoverPage() {
   const [flippedId, setFlippedId] = useState<string | null>(null);
   const [places, setPlaces] = useState<DisplayPlace[]>([]);
   const [loading, setLoading] = useState(true);
+  const t = useTranslations('Discover');
 
   useEffect(() => {
     const stored = localStorage.getItem('mexgo_recommendations');
@@ -41,15 +43,21 @@ export default function DiscoverPage() {
       setPlaces(data.map(toDisplay));
       setLoading(false);
     } else {
+      // Pedir recomendaciones iniciales
       fetch('/api/recommend', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lat: 19.4326, lng: -99.1332 }),
+        body: JSON.stringify({ 
+          lat: 19.4326, 
+          lng: -99.1332 
+        }),
       })
         .then(r => r.json())
-        .then((data: NegocioConScore[]) => {
-          localStorage.setItem('mexgo_recommendations', JSON.stringify(data));
-          setPlaces(data.map(toDisplay));
+        .then(res => {
+          if (res.ok && res.data) {
+            localStorage.setItem('mexgo_recommendations', JSON.stringify(res.data));
+            setPlaces(res.data.map(toDisplay));
+          }
         })
         .catch(console.error)
         .finally(() => setLoading(false));

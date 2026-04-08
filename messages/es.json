@@ -168,5 +168,29 @@
     "discover": "Descubrir",
     "trips": "Viajes",
     "more": "Más"
+  },
+  "Discover": {
+    "title": "Recomendaciones",
+    "searchPlaceholder": "Buscar lugares...",
+    "seeMore": "Ver más",
+    "viewDetails": "Ver detalles"
+  },
+  "Trips": {
+    "title": "Mi Ruta Personalizada",
+    "subtitle": "Selecciona lugares en el mapa para crear tu ruta",
+    "searchPlaceholder": "Buscar lugares...",
+    "transport": {
+      "walking": "Caminando",
+      "bicycle": "Bicicleta",
+      "car": "Auto",
+      "transit": "Transporte"
+    },
+    "dateLabel": "Fecha",
+    "selectedStops": "Paradas Seleccionadas",
+    "noStops": "No hay paradas seleccionadas. ¡Agrega lugares desde el mapa!",
+    "addToRoute": "+ Agregar a mi ruta",
+    "totalDistance": "Distancia Total",
+    "estimatedTime": "Tiempo Estimado",
+    "finalizeRoute": "✓ Finalizar y Guardar Ruta"
   }
 }

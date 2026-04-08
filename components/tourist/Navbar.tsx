@@ -1,11 +1,10 @@
 "use client";
 
-import Link from 'next/link';
+import { Link, useRouter, usePathname } from '@/i18n/routing';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ModeNightIcon from '@mui/icons-material/ModeNight';
 import LanguageIcon from '@mui/icons-material/Language';
 import { useTranslations, useLocale } from 'next-intl';
-import { useRouter, usePathname } from '@/i18n/routing';
 
 interface NavbarProps {
   variant?: 'dark' | 'light';

@@ -168,5 +168,29 @@
     "discover": "Discover",
     "trips": "Trips",
     "more": "More"
+  },
+  "Discover": {
+    "title": "Recommendations",
+    "searchPlaceholder": "Search places...",
+    "seeMore": "See more",
+    "viewDetails": "View Details"
+  },
+  "Trips": {
+    "title": "My Personalized Route",
+    "subtitle": "Select locations on the map to create your route",
+    "searchPlaceholder": "Search for places...",
+    "transport": {
+      "walking": "Walking",
+      "bicycle": "Bicycle",
+      "car": "Car",
+      "transit": "Transit"
+    },
+    "dateLabel": "Date",
+    "selectedStops": "Selected Stops",
+    "noStops": "No stops selected. Add places from the map!",
+    "addToRoute": "+ Add to my route",
+    "totalDistance": "Total Distance",
+    "estimatedTime": "Estimated Time",
+    "finalizeRoute": "✓ Finalize & Save Route"
   }
 }

@@ -1,5 +1,6 @@
 import Navbar from '@/components/tourist/Navbar';
 import {getTranslations} from 'next-intl/server';
+import Link from 'next/link';
 
 export default async function Home() {
   const t = await getTranslations('Home');
@@ -42,9 +43,12 @@ export default async function Home() {
             {t('hero.subtitle')}
           </p>
 
-          <button className="bg-[#0ABF4F] hover:bg-[#005E3E] text-white px-8 py-3 rounded-md font-bold transition-colors shadow-lg">
+          <Link 
+            href="/discover"
+            className="bg-[#0ABF4F] hover:bg-[#005E3E] text-white px-8 py-3 rounded-md font-bold transition-colors shadow-lg"
+          >
             {t('hero.cta')}
-          </button>
+          </Link>
         </div>
       </section>
 
