@@ -70,7 +70,7 @@ const Questionnaire: React.FC = () => {
     // Simular guardado de datos
     console.log("Final Data:", formData);
     // Redirigir al chat/itinerario
-    router.push('/chat');
+    router.push('/trips');
   };
 
   const boroughs = useMemo(() => {

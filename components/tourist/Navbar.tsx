@@ -93,9 +93,9 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
         </Menu>
 
         {/* Perfil */}
-        <button className="hover:opacity-70 transition-opacity">
+        <Link href="/profile" className="hover:opacity-70 transition-opacity">
           <AccountCircleIcon fontSize="medium" />
-        </button>
+        </Link>
 
         {/* Dark Mode */}
         <button
