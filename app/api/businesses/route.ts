@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 
 import { getAuthenticatedUser, userHasAnyRole } from '@/lib/auth-helpers';
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 interface CreateBusinessBody {
   businessName?: unknown;
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
     is_public: false,
   };
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('business_profiles')
     .insert(insertPayload)
     .select('*')

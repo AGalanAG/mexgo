@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 
 import { getAuthenticatedUser, userHasAnyRole, userHasRole } from '@/lib/auth-helpers';
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 async function canMutateBusinessBadges(userId: string, businessId: string) {
   const isAdmin = await userHasRole(userId, 'ADMIN');
@@ -10,7 +10,7 @@ async function canMutateBusinessBadges(userId: string, businessId: string) {
     return true;
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('business_profiles')
     .select('id')
     .eq('id', businessId)
@@ -48,7 +48,7 @@ export async function POST(
     return apiError('FORBIDDEN', 'No autorizado para recalcular insignias de este negocio', 403);
   }
 
-  const { data: badges, error: badgesError } = await supabaseAdmin
+  const { data: badges, error: badgesError } = await getSupabaseAdmin()
     .from('badge_definitions')
     .select('id, code')
     .eq('is_active', true);
@@ -68,7 +68,7 @@ export async function POST(
   }));
 
   if (upserts.length > 0) {
-    const { error: upsertError } = await supabaseAdmin
+    const { error: upsertError } = await getSupabaseAdmin()
       .from('business_badges')
       .upsert(upserts, { onConflict: 'business_id,badge_id' });
 
@@ -77,7 +77,7 @@ export async function POST(
     }
   }
 
-  const { data: refreshed, error: refreshedError } = await supabaseAdmin
+  const { data: refreshed, error: refreshedError } = await getSupabaseAdmin()
     .from('business_badges')
     .select('id, business_id, badge_id, status, progress_percent, awarded_at, is_public, updated_at')
     .eq('business_id', businessId)

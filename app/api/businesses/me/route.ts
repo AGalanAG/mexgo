@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 
 import { getAuthenticatedUser, userHasAnyRole } from '@/lib/auth-helpers';
 import { apiError, apiOk } from '@/lib/api-response';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 export async function GET(request: NextRequest) {
   const user = await getAuthenticatedUser(request);
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     return apiError('FORBIDDEN', 'Rol no autorizado para consultar negocio', 403);
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('business_profiles')
     .select('*')
     .eq('owner_user_id', user.id)

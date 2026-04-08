@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 
 import { getAuthenticatedUser, userHasRole } from '@/lib/auth-helpers';
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 interface TeamMemberBody {
   fullName?: unknown;
@@ -17,7 +17,7 @@ async function canManageBusiness(userId: string, businessId: string) {
     return true;
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('business_profiles')
     .select('id')
     .eq('id', businessId)
@@ -50,7 +50,7 @@ export async function GET(
     return apiError('FORBIDDEN', 'No autorizado para consultar equipo', 403);
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('business_team_members')
     .select('*')
     .eq('business_id', businessId)
@@ -110,7 +110,7 @@ export async function POST(
   const isOwner = typeof body.isOwner === 'boolean' ? body.isOwner : false;
   const joinedAt = userId ? new Date().toISOString() : null;
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('business_team_members')
     .insert({
       business_id: businessId,

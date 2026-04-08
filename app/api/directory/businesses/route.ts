@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 function parsePositiveInt(value: string | null, fallback: number) {
   if (!value) {
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
-  let query = supabaseAdmin
+  let query = getSupabaseAdmin()
     .from('directory_profiles')
     .select('*', { count: 'exact' })
     .order('public_score', { ascending: false })

@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 
 import { getAuthenticatedUser, userHasAnyRole, userHasRole } from '@/lib/auth-helpers';
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 interface CompletionBody {
   businessId?: unknown;
@@ -21,7 +21,7 @@ async function canReadBusiness(userId: string, businessId: string) {
     return true;
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('business_profiles')
     .select('id')
     .eq('id', businessId)
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     return apiError('FORBIDDEN', 'No autorizado para consultar completitud', 403);
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('learning_completions')
     .select('*')
     .eq('business_id', businessId)
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
 
   const evidenceUrl = isNonEmptyString(body.evidenceUrl) ? body.evidenceUrl : null;
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('learning_completions')
     .insert({
       business_id: body.businessId,

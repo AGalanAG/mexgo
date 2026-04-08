@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 export async function getAuthenticatedUser(request: NextRequest) {
   const authHeader = request.headers.get('authorization');
@@ -14,7 +14,7 @@ export async function getAuthenticatedUser(request: NextRequest) {
     return null;
   }
 
-  const { data, error } = await supabaseAdmin.auth.getUser(token);
+  const { data, error } = await getSupabaseAdmin().auth.getUser(token);
   if (error || !data.user) {
     return null;
   }
@@ -23,7 +23,7 @@ export async function getAuthenticatedUser(request: NextRequest) {
 }
 
 export async function userHasRole(userId: string, roleCode: string) {
-  const { data: roleRows, error: rolesError } = await supabaseAdmin
+  const { data: roleRows, error: rolesError } = await getSupabaseAdmin()
     .from('roles')
     .select('id')
     .eq('code', roleCode)
@@ -35,7 +35,7 @@ export async function userHasRole(userId: string, roleCode: string) {
 
   const roleId = roleRows[0].id;
 
-  const { data: userRoleRows, error: userRolesError } = await supabaseAdmin
+  const { data: userRoleRows, error: userRolesError } = await getSupabaseAdmin()
     .from('user_roles')
     .select('user_id')
     .eq('user_id', userId)

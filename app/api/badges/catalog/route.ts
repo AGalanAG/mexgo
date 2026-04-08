@@ -1,8 +1,8 @@
 import { apiError, apiOk } from '@/lib/api-response';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 export async function GET() {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('badge_definitions')
     .select('id, code, public_name, description, icon_key, is_active, created_at')
     .eq('is_active', true)

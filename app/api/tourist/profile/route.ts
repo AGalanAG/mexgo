@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 
 import { getAuthenticatedUser, userHasRole } from '@/lib/auth-helpers';
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 interface TouristProfilePatchBody {
   fullName?: unknown;
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     return apiError('FORBIDDEN', 'El usuario no tiene rol TURISTA', 403);
   }
 
-  const { data: profile, error } = await supabaseAdmin
+  const { data: profile, error } = await getSupabaseAdmin()
     .from('users_profile')
     .select('id, full_name, avatar_url, language_code, country_of_origin, email_verified')
     .eq('id', user.id)
@@ -98,7 +98,7 @@ export async function PATCH(request: NextRequest) {
     return apiError('VALIDATION_ERROR', 'No hay campos validos para actualizar', 400);
   }
 
-  const { data: updatedProfile, error } = await supabaseAdmin
+  const { data: updatedProfile, error } = await getSupabaseAdmin()
     .from('users_profile')
     .update(updateData)
     .eq('id', user.id)

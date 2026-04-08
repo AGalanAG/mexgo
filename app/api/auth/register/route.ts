@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 interface RegisterBody {
   email?: unknown;
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
   const userId = signUpData.user.id;
 
   const { data: adminUserData, error: adminUserError } =
-    await supabaseAdmin.auth.admin.getUserById(userId);
+    await getSupabaseAdmin().auth.admin.getUserById(userId);
 
   if (adminUserError || !adminUserData.user) {
     return apiError(
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { error: profileError } = await supabaseAdmin.from('users_profile').upsert({
+  const { error: profileError } = await getSupabaseAdmin().from('users_profile').upsert({
     id: userId,
     full_name: fullName,
     language_code: language,
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
     return apiError('INTERNAL_ERROR', profileError.message, 500);
   }
 
-  const { data: roleRows, error: roleError } = await supabaseAdmin
+  const { data: roleRows, error: roleError } = await getSupabaseAdmin()
     .from('roles')
     .select('id')
     .eq('code', 'TURISTA')
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
 
   const turistaRoleId = roleRows[0].id;
 
-  const { error: userRoleError } = await supabaseAdmin.from('user_roles').upsert(
+  const { error: userRoleError } = await getSupabaseAdmin().from('user_roles').upsert(
     {
       user_id: userId,
       role_id: turistaRoleId,

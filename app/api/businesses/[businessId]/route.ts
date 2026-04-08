@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 
 import { getAuthenticatedUser, userHasRole } from '@/lib/auth-helpers';
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 interface UpdateBusinessBody {
   businessName?: unknown;
@@ -54,7 +54,7 @@ export async function PATCH(
     return apiError('VALIDATION_ERROR', 'businessId invalido', 400);
   }
 
-  const { data: business, error: businessError } = await supabaseAdmin
+  const { data: business, error: businessError } = await getSupabaseAdmin()
     .from('business_profiles')
     .select('id, owner_user_id')
     .eq('id', businessId)
@@ -156,7 +156,7 @@ export async function PATCH(
     return apiError('VALIDATION_ERROR', 'No hay campos validos para actualizar', 400);
   }
 
-  const { data: updated, error: updateError } = await supabaseAdmin
+  const { data: updated, error: updateError } = await getSupabaseAdmin()
     .from('business_profiles')
     .update(updateData)
     .eq('id', businessId)

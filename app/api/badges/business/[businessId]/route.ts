@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 
 import { getAuthenticatedUser, userHasRole } from '@/lib/auth-helpers';
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 async function canReadBusinessBadges(userId: string, businessId: string) {
   const isAdmin = await userHasRole(userId, 'ADMIN');
@@ -10,7 +10,7 @@ async function canReadBusinessBadges(userId: string, businessId: string) {
     return true;
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('business_profiles')
     .select('id')
     .eq('id', businessId)
@@ -43,7 +43,7 @@ export async function GET(
     return apiError('FORBIDDEN', 'No autorizado para consultar insignias', 403);
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('business_badges')
     .select('id, business_id, badge_id, status, progress_percent, awarded_at, expires_at, revoked_reason, is_public, updated_at, badge_definitions(code, public_name, description)')
     .eq('business_id', businessId)
