@@ -4,6 +4,8 @@
     "next": "Next",
     "back": "Back",
     "createItinerary": "Create Itinerary",
+    "onboardingTitle": "Welcome to MexGo",
+    "onboardingSubtitle": "Customize your experience for your stay in Mexico",
     "tourist": {
       "step1": {
         "title": "Profile and Origin",
@@ -42,7 +44,7 @@
         "motives": {
           "cultural": "Cultural Tourism & Heritage",
           "historical": "Historical Tourism",
-          "sports": "Sports Events (World Cup)",
+          "sports": "Sports Events Attendance",
           "relaxation": "Relaxation and Rest",
           "gastronomy": "Gastronomy",
           "nightlife": "Nightlife & Entertainment"
@@ -99,7 +101,7 @@
           "placeholder": "Select range",
           "less1": "Less than 1 year",
           "1-3": "1 to 3 years",
-          "3-5": "3 to 5 years",
+          "3-5": "3 a 5 years",
           "more5": "More than 5 years"
         }
       },

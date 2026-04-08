@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/routing";
+import { useTranslations, useLocale } from "next-intl";
+import { useRouter, usePathname, routing } from "@/i18n/routing";
+import LanguageIcon from '@mui/icons-material/Language';
 
 const CITIES_DATA: Record<string, string[]> = {
   CDMX: [
@@ -32,7 +33,9 @@ interface QuestionnaireState {
 
 const Questionnaire: React.FC = () => {
   const t = useTranslations("Questionnaire");
+  const locale = useLocale();
   const router = useRouter();
+  const pathname = usePathname();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<QuestionnaireState>({
     country: "",
@@ -55,6 +58,14 @@ const Questionnaire: React.FC = () => {
   const prevStep = () => {
     setStep((prev) => Math.max(prev - 1, 1));
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const toggleLocale = () => {
+    const locales = routing.locales;
+    const currentIndex = locales.indexOf(locale as any);
+    const nextIndex = (currentIndex + 1) % locales.length;
+    const nextLocale = locales[nextIndex];
+    router.replace(pathname, {locale: nextLocale});
   };
 
   const handleMotiveChange = (motive: string) => {
@@ -84,12 +95,25 @@ const Questionnaire: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-lg w-full bg-white p-6 md:p-10 font-sans shadow-xl rounded-3xl relative border border-gray-100 mb-10">
-      {/* Header with Progress Bar */}
+    <div className="mx-auto max-w-lg w-full bg-white p-6 md:p-10 font-sans shadow-xl rounded-3xl relative border border-gray-100 mb-10 text-black">
+      {/* Header with Progress Bar and Language Switcher */}
       <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-sm font-bold text-[#1C42E8]">Paso {step} de {totalSteps}</span>
-          <div className="flex items-center gap-3">
+        <div className="flex justify-between items-start mb-6">
+          <div className="space-y-1">
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-400 block">{t('steps', {step, total: totalSteps})}</span>
+            <div className="flex space-x-1">
+              {[1, 2, 3, 4].map((s) => (
+                <div
+                  key={s}
+                  className={`h-1.5 w-8 rounded-full transition-all duration-300 ${
+                    s < step ? "bg-[#1C42E8]" : s === step ? "bg-[#E8C247]" : "bg-gray-100"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => router.push('/trips')}
@@ -97,16 +121,13 @@ const Questionnaire: React.FC = () => {
             >
               Saltar (demo) →
             </button>
-            <div className="flex space-x-1">
-              {[1, 2, 3, 4].map((s) => (
-                <div
-                  key={s}
-                  className={`h-2 w-10 rounded-full transition-all duration-300 ${
-                    s < step ? "bg-[#1C42E8]" : s === step ? "bg-[#E8C247]" : "bg-gray-200"
-                  }`}
-                />
-              ))}
-            </div>
+            <button
+              onClick={toggleLocale}
+              className="bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-full shadow-sm hover:bg-white hover:border-[#1C42E8]/20 transition-all flex items-center gap-2 text-xs font-bold text-gray-600 active:scale-95"
+            >
+              <LanguageIcon sx={{ fontSize: 16 }} className="text-[#1C42E8]" />
+              <span className="uppercase">{locale}</span>
+            </button>
           </div>
         </div>
       </div>

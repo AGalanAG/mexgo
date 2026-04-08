@@ -5,5 +5,15 @@ export default createMiddleware(routing);
  
 export const config = {
   // Match only internationalized pathnames
-  matcher: ['/', '/(en|es)/:path*']
+  // Aseguramos que ignore archivos estáticos, api y el ícono
+  matcher: [
+    // Habilitar redirección automática en la raíz
+    '/',
+    
+    // Set locales
+    '/(en|es|fr)/:path*',
+
+    // Habilitar todas las rutas excepto las de sistema
+    '/((?!api|_next|_vercel|.*\\..*).*)'
+  ]
 };

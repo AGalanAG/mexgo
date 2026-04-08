@@ -4,6 +4,8 @@
     "next": "Siguiente",
     "back": "Atrás",
     "createItinerary": "Crear Itinerario",
+    "onboardingTitle": "Bienvenido a MexGo",
+    "onboardingSubtitle": "Personaliza tu experiencia para tu estancia en México",
     "tourist": {
       "step1": {
         "title": "Perfil y Origen",
@@ -42,7 +44,7 @@
         "motives": {
           "cultural": "Turismo Cultural y Patrimonio",
           "historical": "Turismo Histórico",
-          "sports": "Asistencia a eventos deportivos (Mundial)",
+          "sports": "Asistencia a eventos deportivos",
           "relaxation": "Relajación y Descanso",
           "gastronomy": "Gastronomía",
           "nightlife": "Vida nocturna y Entretenimiento"
