@@ -56,8 +56,8 @@ export default function PlaceDetailPage() {
       <Navbar variant="light" />
 
       <main className="pt-24 pb-16 px-4 bg-[var(--background)]">
-        {/* Navigation & Breadcrumb */}
-        <div className="max-w-5xl mx-auto mb-6 flex justify-between items-center">
+        {/* Navigation */}
+        <div className="max-w-5xl mx-auto mb-6">
           <button 
             onClick={() => router.back()}
             className="group flex items-center gap-2 text-[var(--primary)] font-bold hover:text-[var(--light-blue)] transition-colors text-xs uppercase tracking-widest"
@@ -65,7 +65,6 @@ export default function PlaceDetailPage() {
             <ArrowBackIcon sx={{ fontSize: 18 }} className="group-hover:-translate-x-1 transition-transform" /> 
             Back
           </button>
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Discover / {place.name}</span>
         </div>
 
         {/* Premium Compact Container */}
@@ -161,13 +160,13 @@ export default function PlaceDetailPage() {
           </div>
         </section>
 
-        {/* Small Elegant Gallery */}
-        <section className="max-w-5xl mx-auto mt-12 grid grid-cols-4 gap-4">
+        {/* Small Elegant Gallery: Centered */}
+        <section className="max-w-5xl mx-auto mt-12 flex flex-wrap justify-center gap-4">
           {place.photos.map((photo, idx) => (
             <motion.div 
               key={idx} 
               whileHover={{ y: -5 }}
-              className="aspect-[4/3] rounded-2xl overflow-hidden shadow-sm border border-white"
+              className="w-[180px] aspect-[4/3] rounded-2xl overflow-hidden shadow-sm border border-white flex-shrink-0"
             >
               <img src={photo} alt={`${place.name} ${idx}`} className="w-full h-full object-cover" />
             </motion.div>
