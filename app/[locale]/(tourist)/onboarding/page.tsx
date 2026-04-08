@@ -28,7 +28,7 @@ export default function OnboardingPage() {
               Mex<span className="text-[var(--secondary)]">GO</span>
             </h1>
             <p className="text-white/80 text-base md:text-lg font-medium drop-shadow-md">
-              Personaliza tu experiencia para el Mundial 2026
+              Personaliza tu experiencia en México
             </p>
             <div className="w-20 h-1.5 bg-[var(--secondary)] mx-auto rounded-full shadow-lg shadow-[var(--secondary)]/20 mt-4" />
           </div>

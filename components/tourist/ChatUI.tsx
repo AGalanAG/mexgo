@@ -21,6 +21,23 @@ function leerPerfil(): TouristProfile {
   return MOCK_TOURIST_PROFILE
 }
 
+const CHAT_LS_KEY = 'mexgo_chat_history'
+const ITINERARY_LS_KEY = 'mexgo_itinerary'
+
+function leerItinerario() {
+  try {
+    const raw = localStorage.getItem(ITINERARY_LS_KEY)
+    return raw ? JSON.parse(raw) : []
+  } catch { return [] }
+}
+
+function sincronizarItinerario(fn: (prev: import('@/types/types').ItineraryStop[]) => import('@/types/types').ItineraryStop[]) {
+  try {
+    const prev = leerItinerario()
+    localStorage.setItem(ITINERARY_LS_KEY, JSON.stringify(fn(prev)))
+  } catch { /* ignore */ }
+}
+
 export default function ChatUI() {
   const [historial, setHistorial] = useState<ChatMessagePayload[]>([])
   const [mensajes, setMensajes] = useState<RichMessage[]>([])
@@ -28,9 +45,27 @@ export default function ChatUI() {
   const [cargando, setCargando] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
+  // Cargar historial guardado al montar
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(CHAT_LS_KEY)
+      if (raw) {
+        const { historial: h, mensajes: m } = JSON.parse(raw)
+        if (Array.isArray(h)) setHistorial(h)
+        if (Array.isArray(m)) setMensajes(m)
+      }
+    } catch { /* ignore */ }
+  }, [])
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [mensajes, cargando])
+
+  function limpiarChat() {
+    setHistorial([])
+    setMensajes([])
+    localStorage.removeItem(CHAT_LS_KEY)
+  }
 
   async function enviar() {
     const mensaje = input.trim()
@@ -48,12 +83,30 @@ export default function ChatUI() {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mensaje, historial, perfil: leerPerfil() }),
+        body: JSON.stringify({
+          mensaje,
+          historial,
+          perfil: leerPerfil(),
+          itinerario: leerItinerario(),
+        }),
       })
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
 
       const data: ChatResponse = await res.json()
+
+      // Sincronizar itinerario en localStorage según lo que hizo Gemini
+      if (data.eventoAgregado) {
+        sincronizarItinerario(prev => [...prev, data.eventoAgregado!])
+      }
+      if (data.eventoEliminado?.eliminado) {
+        sincronizarItinerario(prev => prev.filter(s => s.id !== data.eventoEliminado!.id))
+      }
+      if (data.eventoEditado) {
+        sincronizarItinerario(prev =>
+          prev.map(s => s.id === data.eventoEditado!.id ? { ...s, ...data.eventoEditado } : s)
+        )
+      }
 
       const msgModelo: RichMessage = {
         role: 'model',
@@ -64,8 +117,19 @@ export default function ChatUI() {
         eventoEliminado: data.eventoEliminado,
       }
 
-      setHistorial([...nuevoHistorial, { role: 'model', text: data.respuesta }])
-      setMensajes(prev => [...prev, msgModelo])
+      const nuevoHistorialFinal = [...nuevoHistorial, { role: 'model' as const, text: data.respuesta }]
+      setHistorial(nuevoHistorialFinal)
+      setMensajes(prev => {
+        const nuevos = [...prev, msgModelo]
+        // Persistir historial + mensajes
+        try {
+          localStorage.setItem(CHAT_LS_KEY, JSON.stringify({
+            historial: nuevoHistorialFinal,
+            mensajes: nuevos,
+          }))
+        } catch { /* ignore */ }
+        return nuevos
+      })
     } catch {
       setMensajes(prev => [
         ...prev,
@@ -91,7 +155,7 @@ export default function ChatUI() {
           <div className="text-center mt-16 space-y-2">
             <p className="text-4xl">🇲🇽</p>
             <p className="text-[var(--text-primary)] font-semibold">Hola, soy tu asistente MexGo</p>
-            <p className="text-[var(--text-secondary)] text-sm">¿Qué quieres visitar durante el Mundial 2026?</p>
+            <p className="text-[var(--text-secondary)] text-sm">¿Qué quieres visitar en México?</p>
           </div>
         )}
 
@@ -196,7 +260,16 @@ export default function ChatUI() {
       </div>
 
       {/* Input */}
-      <div className="border-t border-gray-200 px-4 py-3 flex gap-2">
+      <div className="border-t border-gray-200 px-4 py-3 flex gap-2 items-center">
+        {mensajes.length > 0 && (
+          <button
+            onClick={limpiarChat}
+            title="Limpiar chat"
+            className="rounded-full border border-gray-200 px-3 py-2 text-xs text-gray-400 hover:text-red-500 hover:border-red-200 transition-colors shrink-0"
+          >
+            🗑
+          </button>
+        )}
         <input
           className="flex-1 rounded-full border border-gray-300 px-4 py-2 text-sm outline-none focus:border-[var(--primary)] transition-colors bg-white text-[var(--text-primary)] placeholder-gray-400"
           placeholder="Escribe un mensaje..."
@@ -208,7 +281,7 @@ export default function ChatUI() {
         <button
           onClick={enviar}
           disabled={cargando || !input.trim()}
-          className="rounded-full bg-[var(--primary)] px-5 py-2 text-sm font-semibold text-white disabled:opacity-40 hover:brightness-110 transition-all active:scale-95"
+          className="rounded-full bg-[var(--primary)] px-5 py-2 text-sm font-semibold text-white disabled:opacity-40 hover:brightness-110 transition-all active:scale-95 shrink-0"
         >
           Enviar
         </button>

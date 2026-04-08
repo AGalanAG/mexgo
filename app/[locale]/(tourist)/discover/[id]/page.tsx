@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import Navbar from '@/components/tourist/Navbar';
-import type { NegocioConScore } from '@/types/types';
+import type { NegocioConScore, ItineraryStop } from '@/types/types';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import StarIcon from '@mui/icons-material/Star';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -27,32 +28,57 @@ interface PlaceDetails {
   lat: number;
 }
 
-/**
- * Mock data for the specific place (this would come from the backend/lib)
- */
-const MOCK_PLACES_DETAILS: Record<string, PlaceDetails> = {
-  '1': {
-    id: '1',
-    name: 'Sabores de Antaño',
-    rating: 4.7,
-    user_ratings_total: 842,
-    address: 'Calle Colima 124, Colonia Roma Norte, CDMX',
-    description: 'A traditional Mexican eatery where every dish tells a story. Specializing in mole and handmade tortillas, this local gem offers an authentic experience away from the tourist traps.',
-    opening_hours: ['Mon: 13:00 - 22:00', 'Tue-Sat: 09:00 - 22:00', 'Sun: 09:00 - 18:00'],
-    photos: [
-      'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&q=80',
-      'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80',
-      'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80'
-    ],
-    lng: -99.1650,
-    lat: 19.4200,
-  },
-};
-
 export default function PlaceDetailPage() {
   const { id } = useParams();
   const router = useRouter();
-  const [place, setPlace] = useState<PlaceDetails>(MOCK_PLACES_DETAILS['1']);
+  const [place, setPlace] = useState<PlaceDetails | null>(null);
+  const [adding, setAdding] = useState(false);
+  const [addError, setAddError] = useState('');
+
+  function handleAddToItinerary() {
+    if (!place) return;
+    try {
+      setAdding(true);
+      setAddError('');
+      
+      const raw = localStorage.getItem('mexgo_itinerary');
+      const itinerary: ItineraryStop[] = raw ? JSON.parse(raw) : [];
+
+      // Validar si ya existe para evitar duplicados
+      const alreadyIn = itinerary.some(s => s.businessProfileId === place.id);
+      if (alreadyIn) {
+        router.push('/trips');
+        return;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+      const newStop: ItineraryStop = {
+        id: `stop-${Date.now()}`,
+        itineraryId: 'local',
+        routeDate: today,
+        stopOrder: itinerary.length + 1,
+        stopType: 'BUSINESS',
+        businessProfileId: place.id,
+        label: place.name,
+        startTime: '10:00',
+        latitude: Number(place.lat),
+        longitude: Number(place.lng),
+        createdAt: new Date().toISOString(),
+      };
+
+      const updatedItinerary = [...itinerary, newStop];
+      localStorage.setItem('mexgo_itinerary', JSON.stringify(updatedItinerary));
+      
+      // Forzar un evento de storage para que otras pestañas/componentes se enteren si es necesario
+      window.dispatchEvent(new Event('storage'));
+      
+      router.push('/trips');
+    } catch (err) {
+      console.error('Error adding to itinerary:', err);
+      setAddError('No se pudo agregar al itinerario. Intenta de nuevo.');
+      setAdding(false);
+    }
+  }
 
   useEffect(() => {
     const stored = localStorage.getItem('mexgo_recommendations');
@@ -72,11 +98,23 @@ export default function PlaceDetailPage() {
         : ['Horario no disponible'],
       photos: found.coverImageUrl
         ? [found.coverImageUrl]
-        : MOCK_PLACES_DETAILS['1'].photos,
+        : ['https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&q=80'],
       lng: found.longitude,
       lat: found.latitude,
     });
   }, [id]);
+
+  if (!place) {
+    return (
+      <div className="flex flex-col min-h-screen bg-white">
+        <Navbar variant="light" />
+        <main className="pt-32 flex flex-col items-center justify-center">
+          <div className="w-12 h-12 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-[var(--primary)] font-black uppercase tracking-widest text-xs">Cargando detalles...</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -174,12 +212,17 @@ export default function PlaceDetailPage() {
                   />
                 </div>
 
-                <motion.button 
-                  whileHover={{ scale: 1.02, backgroundColor: 'var(--medium-blue)' }}
+                {addError && (
+                  <p className="text-red-500 text-xs font-bold text-center">{addError}</p>
+                )}
+                <motion.button
+                  onClick={handleAddToItinerary}
+                  disabled={adding}
+                  whileHover={{ scale: adding ? 1 : 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full bg-[var(--primary)] text-white font-black py-4 rounded-xl shadow-lg transition-all text-xs uppercase tracking-[0.2em]"
+                  className="w-full bg-[var(--primary)] text-white font-black py-4 rounded-xl shadow-lg transition-all text-xs uppercase tracking-[0.2em] disabled:opacity-60"
                 >
-                  Add to Itinerary
+                  {adding ? 'Agregando...' : 'Agregar al Itinerario'}
                 </motion.button>
               </div>
             </div>

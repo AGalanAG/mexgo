@@ -2,15 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/tourist/Navbar';
-// Importación agrupada de Iconos (ESM Friendly)
 import {
   Search as SearchIcon,
-  Layers as LayersIcon,
-  Settings as SettingsIcon,
-  DirectionsWalk as DirectionsWalkIcon,
-  DirectionsBike as DirectionsBikeIcon,
-  DirectionsCar as DirectionsCarIcon,
-  DirectionsBus as DirectionsBusIcon,
   Close as CloseIcon,
   CalendarToday as CalendarTodayIcon,
   ArrowUpward as ArrowUpwardIcon,
@@ -20,7 +13,9 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import MapboxMap, { MapMarker } from '@/components/tourist/MapboxMap';
 import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/routing'; // Navegación i18n
 import type { ItineraryStop } from '@/types/types';
+import { MOCK_BUSINESSES } from '@/lib/businesses';
 
 interface Stop {
   id: string;
@@ -28,9 +23,8 @@ interface Stop {
   addr: string;
   lng: number;
   lat: number;
+  businessProfileId?: string;
 }
-
-type TransportMode = 'walking' | 'bicycle' | 'car' | 'transit';
 
 function toStop(s: ItineraryStop): Stop {
   const time = s.startTime ? ` · ${s.startTime}` : '';
@@ -40,81 +34,97 @@ function toStop(s: ItineraryStop): Stop {
     addr: `${s.routeDate}${time}`,
     lng: s.longitude,
     lat: s.latitude,
+    businessProfileId: s.businessProfileId,
   };
 }
 
-const MOCK_STOPS: Stop[] = [
-  {
-    id: 'm1',
-    name: 'Ángel de la Independencia',
-    addr: 'Av. Paseo de la Reforma · 09:00 AM',
-    lng: -99.1677,
-    lat: 19.4270,
-  },
-  {
-    id: 'm2',
-    name: 'Museo Nacional de Antropología',
-    addr: 'Bosque de Chapultepec · 11:30 AM',
-    lng: -99.1863,
-    lat: 19.4260,
-  },
-  {
-    id: 'm3',
-    name: 'Palacio de Bellas Artes',
-    addr: 'Av. Juárez, Centro Histórico · 02:00 PM',
-    lng: -99.1412,
-    lat: 19.4352,
-  },
-  {
-    id: 'm4',
-    name: 'Zócalo de la CDMX',
-    addr: 'Plaza de la Constitución · 04:30 PM',
-    lng: -99.1332,
-    lat: 19.4326,
+const LS_KEY = 'mexgo_itinerary';
+
+function saveToLS(stops: ItineraryStop[]) {
+  localStorage.setItem(LS_KEY, JSON.stringify(stops));
+}
+
+function loadFromLS(): Stop[] {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return [];
+    return (JSON.parse(raw) as ItineraryStop[]).map(toStop);
+  } catch {
+    return [];
   }
-];
+}
 
 export default function TripsPage() {
   const t = useTranslations('Trips');
-  const [transportMode, setTransportMode] = useState<TransportMode>('walking');
-  const [stops, setStops] = useState<Stop[]>(MOCK_STOPS);
+  const router = useRouter(); // router restaurado
+  const [stops, setStops] = useState<Stop[]>([]);
+  const [hasLocationPermission, setHasLocationPermission] = useState(true);
 
   useEffect(() => {
-    fetch('/api/itinerary')
-      .then(r => r.json())
-      .then(res => {
-        if (res.ok && Array.isArray(res.data) && res.data.length > 0) {
-          setStops(res.data.map(toStop));
-        }
-      })
-      .catch(console.error);
+    setStops(loadFromLS());
+    const perm = localStorage.getItem('mexgo_location_permission');
+    if (perm === 'denied') setHasLocationPermission(false);
   }, []);
 
   const moveStop = (index: number, direction: 'up' | 'down') => {
     const newStops = [...stops];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
-
     if (targetIndex >= 0 && targetIndex < newStops.length) {
-      const temp = newStops[index];
-      newStops[index] = newStops[targetIndex];
-      newStops[targetIndex] = temp;
+      [newStops[index], newStops[targetIndex]] = [newStops[targetIndex], newStops[index]];
       setStops(newStops);
+      // Persistir reorden en localStorage
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (raw) {
+          const itinerary: ItineraryStop[] = JSON.parse(raw);
+          const a = itinerary.findIndex(s => s.id === newStops[index].id);
+          const b = itinerary.findIndex(s => s.id === newStops[targetIndex].id);
+          if (a !== -1 && b !== -1) [itinerary[a], itinerary[b]] = [itinerary[b], itinerary[a]];
+          saveToLS(itinerary);
+        }
+      } catch { /* ignore */ }
     }
   };
 
   const removeStop = (id: string) => {
     setStops(prev => prev.filter(s => s.id !== id));
-    fetch(`/api/itinerary/${id}`, { method: 'DELETE' }).catch(console.error);
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (raw) {
+        const itinerary: ItineraryStop[] = JSON.parse(raw);
+        saveToLS(itinerary.filter(s => s.id !== id));
+      }
+    } catch { /* ignore */ }
   };
 
-  const markers: MapMarker[] = stops
-    .filter(s => s.lng !== 0 || s.lat !== 0)
-    .map((s, i) => ({
-      lng: s.lng,
-      lat: s.lat,
-      label: `${i + 1}. ${s.name}`,
-      color: '#004891',
-    }));
+  const handleMarkerClick = (id: string) => {
+    router.push(`/discover/${id}`);
+  };
+
+  const markers: MapMarker[] = [
+    ...MOCK_BUSINESSES.map(b => {
+      const stopIndex = stops.findIndex(s => s.businessProfileId === b.id);
+      const isInItinerary = stopIndex !== -1;
+      return {
+        lng: b.longitude,
+        lat: b.latitude,
+        label: isInItinerary ? `${stopIndex + 1}. ${b.businessName}` : b.businessName,
+        color: isInItinerary ? '#22c55e' : '#004891',
+        businessProfileId: b.id,
+        onClick: handleMarkerClick
+      };
+    }),
+    ...stops
+      .filter(s => !MOCK_BUSINESSES.some(b => b.id === s.businessProfileId))
+      .map(s => ({
+        lng: s.lng,
+        lat: s.lat,
+        label: `${stops.indexOf(s) + 1}. ${s.name}`,
+        color: '#22c55e',
+        businessProfileId: s.businessProfileId,
+        onClick: handleMarkerClick
+      }))
+  ];
 
   return (
     <div className="flex flex-col h-screen bg-white overflow-hidden">
@@ -143,30 +153,6 @@ export default function TripsPage() {
                   placeholder={t('searchPlaceholder')}
                   className="flex-1 bg-transparent border-none outline-none text-sm text-[var(--text-primary)] placeholder-gray-400 font-bold"
                 />
-              </div>
-            </div>
-
-            {/* Transport Mode Selector */}
-            <div className="mb-8">
-              <div className="flex bg-gray-50 p-1.5 rounded-2xl gap-1.5">
-                {[
-                  { mode: 'walking', icon: <DirectionsWalkIcon fontSize="small" />, label: t('transport.walking') },
-                  { mode: 'bicycle', icon: <DirectionsBikeIcon fontSize="small" />, label: t('transport.bicycle') },
-                  { mode: 'car', icon: <DirectionsCarIcon fontSize="small" />, label: t('transport.car') },
-                  { mode: 'transit', icon: <DirectionsBusIcon fontSize="small" />, label: t('transport.transit') },
-                ].map((btn) => (
-                  <button
-                    key={btn.mode}
-                    onClick={() => setTransportMode(btn.mode as TransportMode)}
-                    className={`flex-1 flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl transition-all text-[9px] font-black uppercase tracking-widest ${
-                      transportMode === btn.mode
-                        ? 'bg-white text-[var(--primary)] shadow-md border border-gray-100'
-                        : 'text-gray-400 hover:bg-gray-100'
-                    }`}
-                  >
-                    {btn.icon} <span>{btn.label}</span>
-                  </button>
-                ))}
               </div>
             </div>
 
@@ -243,13 +229,6 @@ export default function TripsPage() {
               </div>
             </div>
           </div>
-
-          {/* Sidebar Action Button */}
-          <div className="p-6 bg-white border-t border-gray-100 shadow-[0_-10px_30px_rgba(0,0,0,0.03)]">
-            <button className="w-full bg-[var(--primary)] text-white font-black py-5 rounded-[1.5rem] shadow-xl shadow-[var(--primary)]/20 text-xs uppercase tracking-[0.3em] hover:brightness-110 hover:translate-y-[-2px] transition-all active:scale-[0.98]">
-              {t('finalizeRoute')}
-            </button>
-          </div>
         </section>
 
         {/* Right Section: Map - FILLS FULL SPACE */}
@@ -261,18 +240,19 @@ export default function TripsPage() {
             className="w-full h-full"
           />
           
-          {/* Floating Stats */}
-          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md px-10 py-6 rounded-[2rem] shadow-2xl border border-white/50 flex gap-12 z-20">
-            <div>
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">{t('totalDistance')}</p>
-              <p className="text-2xl font-black text-[var(--primary)]">{stops.length > 1 ? '7.2 km' : '0.0 km'}</p>
+          {hasLocationPermission && (
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md px-10 py-6 rounded-[2rem] shadow-2xl border border-white/50 flex gap-12 z-20">
+              <div>
+                <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">{t('totalDistance')}</p>
+                <p className="text-2xl font-black text-[var(--primary)]">{stops.length > 1 ? '7.2 km' : '0.0 km'}</p>
+              </div>
+              <div className="w-[1px] bg-gray-200 self-stretch"></div>
+              <div>
+                <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">{t('estimatedTime')}</p>
+                <p className="text-2xl font-black text-[var(--primary)]">{stops.length > 1 ? '1h 45m' : '0m'}</p>
+              </div>
             </div>
-            <div className="w-[1px] bg-gray-200 self-stretch"></div>
-            <div>
-              <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">{t('estimatedTime')}</p>
-              <p className="text-2xl font-black text-[var(--primary)]">{stops.length > 1 ? '1h 45m' : '0m'}</p>
-            </div>
-          </div>
+          )}
         </section>
       </main>
 

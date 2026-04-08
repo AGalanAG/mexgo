@@ -51,6 +51,22 @@ export default function ProfilePage() {
   const [origin, setOrigin] = useState(t('defaultOrigin'));
   const [bio, setBio]       = useState(t('defaultBio'));
 
+  React.useEffect(() => {
+    try {
+      const session = localStorage.getItem('mexgo_session');
+      if (session) {
+        const parsed = JSON.parse(session);
+        if (parsed.name) setName(parsed.name);
+      }
+      const profile = localStorage.getItem('mexgo_tourist_profile');
+      if (profile) {
+        const parsed = JSON.parse(profile);
+        if (parsed.country) setOrigin(parsed.country);
+        if (parsed.city && parsed.borough) setBio(`Explorando ${parsed.city} — ${parsed.borough}`);
+      }
+    } catch {}
+  }, []);
+
   const preferences = t.raw('preferences.items') as string[];
 
   const STATS = [

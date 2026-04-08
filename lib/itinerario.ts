@@ -1,9 +1,14 @@
 import type { ItineraryStop } from '@/types/types'
+import { MOCK_BUSINESSES } from '@/lib/businesses'
 
-// Hoy: array en memoria (se resetea al reiniciar el servidor)
-// Mañana: reemplaza con queries a Supabase — nada más cambia
-
+// Array en memoria por request — se inicializa desde el cliente via inicializarParadas()
 const paradas: ItineraryStop[] = []
+
+// Llamado desde /api/chat antes de invocar Gemini para sincronizar el estado del cliente
+export function inicializarParadas(stops: ItineraryStop[]): void {
+  paradas.length = 0
+  paradas.push(...stops)
+}
 
 type AgregarEventoArgs = {
   negocio_id: string
@@ -24,6 +29,7 @@ type EliminarEventoArgs = {
 }
 
 export function agregarEvento(args: AgregarEventoArgs): ItineraryStop {
+  const negocio = MOCK_BUSINESSES.find(b => b.id === args.negocio_id)
   const stop: ItineraryStop = {
     id: `stop-${Date.now()}`,
     itineraryId: 'local',
@@ -33,8 +39,8 @@ export function agregarEvento(args: AgregarEventoArgs): ItineraryStop {
     businessProfileId: args.negocio_id,
     label: args.nombre,
     startTime: args.hora,
-    latitude: 0,
-    longitude: 0,
+    latitude: negocio?.latitude ?? 19.4326,
+    longitude: negocio?.longitude ?? -99.1332,
     createdAt: new Date().toISOString(),
   }
   paradas.push(stop)

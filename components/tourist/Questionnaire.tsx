@@ -67,10 +67,8 @@ const Questionnaire: React.FC = () => {
   };
 
   const handleFinish = () => {
-    // Simular guardado de datos
-    console.log("Final Data:", formData);
-    // Redirigir al chat/itinerario
-    router.push('/trips');
+    localStorage.setItem('mexgo_tourist_profile', JSON.stringify(formData));
+    router.push('/chat');
   };
 
   const boroughs = useMemo(() => {
