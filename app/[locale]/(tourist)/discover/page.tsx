@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/tourist/Navbar';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
-import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import { motion } from 'framer-motion';
 import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
@@ -229,14 +228,6 @@ export default function DiscoverPage() {
         .rotate-y-180 { transform: rotateY(180deg); }
       `}</style>
 
-      {/* Floating Chat Button */}
-      <motion.button
-        whileHover={{ scale: 1.1, y: -5 }}
-        whileTap={{ scale: 0.9 }}
-        className="fixed bottom-10 right-10 w-16 h-16 bg-[var(--accent)] text-white rounded-full flex items-center justify-center shadow-2xl z-50 transition-all border-4 border-white"
-      >
-        <ChatBubbleIcon />
-      </motion.button>
     </div>
   );
 }
