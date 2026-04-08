@@ -13,7 +13,6 @@ import {
   DirectionsBus as DirectionsBusIcon,
   Close as CloseIcon,
   CalendarToday as CalendarTodayIcon,
-  ChatBubble as ChatBubbleIcon,
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon
 } from '@mui/icons-material';
@@ -277,14 +276,6 @@ export default function TripsPage() {
         </section>
       </main>
 
-      {/* Floating Chat Button */}
-      <motion.button
-        whileHover={{ scale: 1.1, y: -5 }}
-        whileTap={{ scale: 0.9 }}
-        className="fixed bottom-10 right-10 w-16 h-16 bg-[var(--accent)] text-white rounded-full flex items-center justify-center shadow-2xl z-50 transition-all border-4 border-white"
-      >
-        <ChatBubbleIcon />
-      </motion.button>
     </div>
   );
 }

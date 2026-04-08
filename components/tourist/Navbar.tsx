@@ -75,6 +75,7 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
         <Link href="/discover" className="hover:opacity-70 transition-opacity">{t('discover')}</Link>
         <Link href="/trips" className="hover:opacity-70 transition-opacity">{t('trips')}</Link>
         <Link href="#" className="hover:opacity-70 transition-opacity">{t('more')}</Link>
+        <Link href="/chat" className="hover:opacity-70 transition-opacity">{t('chat')}</Link>
       </div>
 
       {/* Iconos */}
