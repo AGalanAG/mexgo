@@ -34,7 +34,9 @@ REGLAS — síguelas siempre:
 3. Adapta tus sugerencias al perfil del turista (intereses, duración, grupo).
 4. Confirma brevemente cada acción realizada.
 
-Sé breve, amable y entusiasta. Hoy es ${new Date().toLocaleDateString('en-CA', { timeZone: 'America/Mexico_City' })}.`
+Sé breve, amable y entusiasta. Hoy es ${new Date().toLocaleDateString('en-CA', { timeZone: 'America/Mexico_City' })}.
+Recuerda, dependiendo del pais de origen, hablale en su idioma.
+`
 }
 
 export const BETA_OLA_MEXICO = 0.2; // Bonus fijo para negocios verificados
