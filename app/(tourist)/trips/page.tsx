@@ -16,8 +16,6 @@ import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { motion, AnimatePresence } from 'framer-motion';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface Stop {
   id: string;
@@ -36,22 +34,32 @@ export default function TripsPage() {
   ]);
   
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
+  const map = useRef<any>(null);
 
   // Initialize Mapbox
   useEffect(() => {
-    if (!mapContainer.current) return;
-    
-    const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-    if (token) {
-      mapboxgl.accessToken = token;
-      map.current = new mapboxgl.Map({
-        container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/light-v11',
-        center: [-99.1620, 19.4194],
-        zoom: 13,
-      });
-    }
+    const initMap = async () => {
+      if (!mapContainer.current) return;
+      
+      // 1. Importar mapbox-gl dinámicamente
+      const mapboxgl = (await import('mapbox-gl')).default;
+      // 2. Importar el CSS dinámicamente
+      await import('mapbox-gl/dist/mapbox-gl.css');
+
+      // 4. El token se asigna así
+      mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ?? '';
+      
+      if (mapboxgl.accessToken) {
+        map.current = new mapboxgl.Map({
+          container: mapContainer.current,
+          style: 'mapbox://styles/mapbox/light-v11',
+          center: [-99.1620, 19.4194],
+          zoom: 13,
+        });
+      }
+    };
+
+    initMap();
 
     return () => {
       map.current?.remove();
