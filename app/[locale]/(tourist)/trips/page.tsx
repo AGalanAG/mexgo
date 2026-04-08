@@ -2,18 +2,22 @@
 
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/tourist/Navbar';
-import SearchIcon from '@mui/icons-material/Search';
-import LayersIcon from '@mui/icons-material/Layers';
-import SettingsIcon from '@mui/icons-material/Settings';
-import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
-import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
-import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
-import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
-import CloseIcon from '@mui/icons-material/Close';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+// Importación agrupada de Iconos (ESM Friendly)
+import {
+  Search as SearchIcon,
+  Layers as LayersIcon,
+  Settings as SettingsIcon,
+  DirectionsWalk as DirectionsWalkIcon,
+  DirectionsBike as DirectionsBikeIcon,
+  DirectionsCar as DirectionsCarIcon,
+  DirectionsBus as DirectionsBusIcon,
+  Close as CloseIcon,
+  CalendarToday as CalendarTodayIcon,
+  ChatBubble as ChatBubbleIcon,
+  ArrowUpward as ArrowUpwardIcon,
+  ArrowDownward as ArrowDownwardIcon
+} from '@mui/icons-material';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import MapboxMap, { MapMarker } from '@/components/tourist/MapboxMap';
 import { useTranslations } from 'next-intl';
