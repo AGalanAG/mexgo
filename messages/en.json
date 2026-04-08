@@ -170,7 +170,8 @@
     "more": "More"
   },
   "Discover": {
-    "title": "Recommendations",
+    "title": "Discover",
+    "recommendations": "Recommendations",
     "searchPlaceholder": "Search places...",
     "seeMore": "See more",
     "viewDetails": "View Details"

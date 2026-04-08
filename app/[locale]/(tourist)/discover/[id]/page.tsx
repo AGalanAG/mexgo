@@ -73,6 +73,8 @@ export default function PlaceDetailPage() {
       photos: found.coverImageUrl
         ? [found.coverImageUrl]
         : MOCK_PLACES_DETAILS['1'].photos,
+      lng: found.longitude,
+      lat: found.latitude,
     });
   }, [id]);
 

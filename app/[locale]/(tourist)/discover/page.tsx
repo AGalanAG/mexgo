@@ -31,8 +31,8 @@ function toDisplay(n: NegocioConScore): DisplayPlace {
     imageUrl: n.coverImageUrl || FALLBACK_IMAGE,
     description: n.businessDescription,
     location: `${n.neighborhood}, ${n.boroughCode}`,
-    lng: n.lng ?? -99.1620,
-    lat: n.lat ?? 19.3900,
+    lng: n.longitude,
+    lat: n.latitude,
   };
 }
 

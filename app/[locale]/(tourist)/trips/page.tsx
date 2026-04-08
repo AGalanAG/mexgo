@@ -35,8 +35,8 @@ function toStop(s: ItineraryStop): Stop {
     id: s.id,
     name: s.label,
     addr: `${s.routeDate}${time}`,
-    lng: 0,
-    lat: 0,
+    lng: s.longitude,
+    lat: s.latitude,
   };
 }
 

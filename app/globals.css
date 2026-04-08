@@ -12,6 +12,8 @@
 }
 
 :root {
+  color-scheme: light only;
+
   /* Coppel & México Palette */
   --primary: #004891;
   --secondary: #FFD400;
@@ -62,15 +64,6 @@
   --foreground: 33 37 41; /* #212529 in RGB */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #121212;
-    --surface: #1E1E1E;
-    --text-primary: #F8F9FA;
-    --text-secondary: #ADB5BD;
-    --foreground: 248 249 250;
-  }
-}
 
 @layer base {
   html {
