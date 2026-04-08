@@ -167,6 +167,8 @@
   "Navbar": {
     "discover": "Descubrir",
     "trips": "Viajes",
-    "more": "Más"
+    "more": "Más",
+    "login": "Inicio de sesión",
+    "register": "Registro"
   }
 }

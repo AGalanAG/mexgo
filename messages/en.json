@@ -167,6 +167,8 @@
   "Navbar": {
     "discover": "Discover",
     "trips": "Trips",
-    "more": "More"
+    "more": "More",
+    "login": "Login",
+    "register": "Register"
   }
 }
