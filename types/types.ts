@@ -139,6 +139,14 @@ export interface ItineraryStop {
   createdAt: string
 }
 
+// ─── EQUITY ───────────────────────────────────────────────────────────────────
+
+export interface NegocioConScore extends BusinessProfile {
+  score: number
+  reasons: string[]
+  estimatedWalkMinutes: number
+}
+
 // ─── RECOMENDACIONES ──────────────────────────────────────────────────────────
 
 export interface Recommendation {
@@ -181,14 +189,30 @@ export interface Visit {
 
 // ─── CHAT / GEMINI ────────────────────────────────────────────────────────────
 
+export interface ChatSession {
+  id: string
+  touristUserId: string
+  createdAt: string
+  updatedAt: string
+}
+
 export interface ChatMessage {
+  id: string
+  sessionId: string
+  role: 'user' | 'model'
+  content: string
+  createdAt: string
+}
+
+// Payload que viaja en cada request al BFF (sin ids, solo lo necesario)
+export interface ChatMessagePayload {
   role: 'user' | 'model'
   text: string
 }
 
 export interface ChatRequest {
   mensaje: string
-  historial?: ChatMessage[]
+  historial?: ChatMessagePayload[]
 }
 
 export interface ChatResponse {

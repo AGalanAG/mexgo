@@ -1,7 +1,7 @@
 import { Type } from '@google/genai'
 import type { FunctionDeclaration } from '@google/genai'
 import { buscarNegocios } from '@/lib/businesses'
-import { agregarEvento, leerItinerario } from '@/lib/itinerario'
+import { agregarEvento, editarEvento, eliminarEvento, leerItinerario } from '@/lib/itinerario'
 
 export const declarations: FunctionDeclaration[] = [
   {
@@ -33,8 +33,33 @@ export const declarations: FunctionDeclaration[] = [
     },
   },
   {
+    name: 'editar_evento',
+    description: 'Edita una parada del itinerario. Úsala cuando el turista quiera cambiar el día, hora o nombre de una parada existente. Primero llama leer_itinerario para obtener el id correcto.',
+    parameters: {
+      type: Type.OBJECT,
+      properties: {
+        id:     { type: Type.STRING, description: 'ID de la parada a editar.' },
+        dia:    { type: Type.STRING, description: 'Nueva fecha, formato YYYY-MM-DD. Opcional.' },
+        hora:   { type: Type.STRING, description: 'Nueva hora, formato HH:MM. Opcional.' },
+        nombre: { type: Type.STRING, description: 'Nuevo nombre o etiqueta. Opcional.' },
+      },
+      required: ['id'],
+    },
+  },
+  {
+    name: 'eliminar_evento',
+    description: 'Elimina una parada del itinerario. Úsala cuando el turista quiera quitar un lugar de su plan. Primero llama leer_itinerario para obtener el id correcto.',
+    parameters: {
+      type: Type.OBJECT,
+      properties: {
+        id: { type: Type.STRING, description: 'ID de la parada a eliminar.' },
+      },
+      required: ['id'],
+    },
+  },
+  {
     name: 'leer_itinerario',
-    description: 'Lee el itinerario actual del turista. Úsala para confirmar que un evento fue agregado correctamente.',
+    description: 'Lee el itinerario actual del turista con todos los ids. Úsala para confirmar cambios o cuando el turista quiera ver su plan.',
     parameters: {
       type: Type.OBJECT,
       properties: {},
@@ -46,5 +71,7 @@ export const declarations: FunctionDeclaration[] = [
 export const handlers: Record<string, (args: never) => unknown> = {
   buscar_negocios: ({ tipo }: { tipo: string }) => buscarNegocios(tipo),
   agregar_evento:  (args: { negocio_id: string; nombre: string; dia: string; hora: string }) => agregarEvento(args),
+  editar_evento:   (args: { id: string; dia?: string; hora?: string; nombre?: string }) => editarEvento(args),
+  eliminar_evento: (args: { id: string }) => eliminarEvento(args),
   leer_itinerario: () => leerItinerario(),
 }

@@ -60,7 +60,7 @@ La arquitectura y tecnologías se mantienen. El cambio actual es de flujos y per
 | IA         | Gemini Flash        | ✓ Confirmado                        |
 | Mapas      | Mapbox,GL,JS,Google APIS        | ✓ Confirmado                        |
 | i18n       | i18next + DeepL     | ✓ Confirmado                        |
-| Imágenes   | Cloudinary          | ✓ Confirmado                        |
+| Imágenes   | Supabase Storage    | ✓ Confirmado                        |
 | Estilos    | Tailwind CSS        | ✓ Confirmado                        |
 | Lenguaje   | TypeScript estricto | ✓ Confirmado                        |
 | Offline    | PWA Cache API       | ✓ Confirmado                        |
@@ -84,7 +84,7 @@ Detalle de decisiones → `ARQUITECTURA.md`.
 | `IA.md`                  | Gemini, perfil cultural, itinerario.               |
 | `FRONTEND.md`            | Compartido: `ui/`, Tailwind, convenciones.         |
 | `FRONTEND_TURISTA.md`    | Flujo turista, Mapbox, tarjetas, offline.          |
-| `FRONTEND_ADMIN.md`      | Panel, auth, Cloudinary.                           |
+| `FRONTEND_ADMIN.md`      | Panel, auth, Supabase Storage.                     |
 | `BUENAS_PRACTICAS.md`    | Naming, commits, PR, qué no hacer.                 |
 | `SETUP.md`               | Cómo levantar el proyecto desde cero.              |
 | `DECISIONS.md`           | Funcionalidades y decisiones conceptuales          |

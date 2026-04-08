@@ -1,0 +1,98 @@
+[
+  {
+    "id": "q1",
+    "pregunta": "Perfil y Origen",
+    "tipo": "group",
+    "campos": [
+      {
+        "id": "country_of_origin",
+        "label": "País de origen",
+        "tipo": "text",
+        "placeholder": "Ej. México, Colombia, España..."
+      },
+      {
+        "id": "companions_count",
+        "label": "Número de acompañantes",
+        "tipo": "choice",
+        "opciones": [
+          "Viajo solo(a)",
+          "2 a 4 personas",
+          "Más de 4 personas"
+        ]
+      },
+      {
+        "id": "is_adult_group",
+        "label": "¿Son todos mayores de edad? (O soy mayor de edad si viajo solo)",
+        "tipo": "choice",
+        "opciones": ["Si", "No"]
+      }
+    ]
+  },
+  {
+    "id": "q2",
+    "pregunta": "Logística",
+    "tipo": "group",
+    "campos": [
+      {
+        "id": "stay_duration",
+        "label": "Duración de la estancia",
+        "tipo": "choice",
+        "opciones": [
+          "1 a 3 días",
+          "4 a 7 días",
+          "8 a 14 días",
+          "Más de 15 días"
+        ]
+      },
+      {
+        "id": "accommodation_zone",
+        "label": "Zona de hospedaje",
+        "tipo": "choice",
+        "opciones": [
+          "Centro Histórico / Zona Central",
+          "Zona Residencial (Airbnb/Casas)",
+          "Zona Hotelera / Comercial",
+          "Periferia o alrededores de la ciudad"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "q3",
+    "pregunta": "Motivos del viaje",
+    "descripcion": "Selecciona de 2 a 3 opciones",
+    "tipo": "multiple_choice",
+    "min": 2,
+    "max": 3,
+    "opciones": [
+      "Turismo Cultural y Patrimonio",
+      "Asistencia a eventos deportivos (Mundial)",
+      "Relajación y Descanso",
+      "Gastronomía",
+      "Vida nocturna y Entretenimiento"
+    ]
+  },
+  {
+    "id": "q4",
+    "pregunta": "Preferencia de Turismo",
+    "descripcion": "Selecciona de una a tres opciones",
+    "tipo": "multiple_choice",
+    "min": 1,
+    "max": 3,
+    "opciones": [
+      "Turismo Histórico",
+      "Turismo Gastronómico",
+      "Turismo de Aventura / Otro"
+    ]
+  },
+  {
+    "id": "q5",
+    "pregunta": "Factores de elección de destino",
+    "descripcion": "¿Qué priorizas en tu visita?",
+    "tipo": "choice",
+    "opciones": [
+      "Proximidad: Cercanía al estadio o sedes de eventos.",
+      "Priorización de las preferencias de turismo: sacrificar cercanía por una actividad más acorde a lo que prefiere el usuario"
+    ]
+  }
+]

@@ -30,7 +30,7 @@ Reglas:
 |---|---|---|
 | Fidel | Arquitecto / IA / Algoritmo | Next.js API Routes, Gemini, AWS |
 | Emi | Frontend Turista | Tailwind, Mapbox, PWA Cache |
-| Farid | Frontend Admin | Tailwind, Supabase Auth, Cloudinary |
+| Farid | Frontend Admin | Tailwind, Supabase Auth, Supabase Storage |
 | Alan | Backend / BD | Supabase, PostgreSQL, Next.js API |
 | Xavier | QA Global / Integrador | Postman, UI Polish, E2E, Datos de Impacto |
 
@@ -56,7 +56,7 @@ Reglas:
 - Crear flujo /register
 - Crear flujo admin y super admin
 - Crear flujo de negocio
-- Implementar subida de archivos a Cloudinary y renderizado de respuesta.
+- Implementar subida de archivos a Supabase Storage y renderizado de respuesta.
 - Diseñar dashboard administrativo básico para gestión de negocios.
 
 ## Alan
