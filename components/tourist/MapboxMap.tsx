@@ -7,6 +7,8 @@ export interface MapMarker {
   lat: number;
   label?: string;
   color?: string;
+  businessProfileId?: string;
+  onClick?: (id: string) => void;
 }
 
 interface MapboxMapProps {
@@ -69,6 +71,18 @@ export default function MapboxMap({
             cursor: pointer;
           `;
 
+          // Evento Click (Navegación estática)
+          if (marker.businessProfileId) {
+            el.addEventListener('click', (e) => {
+              e.stopPropagation();
+              if (marker.onClick) {
+                marker.onClick(marker.businessProfileId!);
+              } else {
+                window.location.href = `/discover/${marker.businessProfileId}`;
+              }
+            });
+          }
+
           const m = new mapboxgl.Marker(el).setLngLat([marker.lng, marker.lat]);
 
           if (marker.label) {
@@ -93,7 +107,7 @@ export default function MapboxMap({
       mapRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [markers]); // CRÍTICO: Mantiene los colores verdes actualizados
 
   const hasToken = !!process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 

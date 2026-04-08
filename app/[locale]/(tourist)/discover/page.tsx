@@ -4,11 +4,11 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/tourist/Navbar';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
-import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import { motion } from 'framer-motion';
 import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
 import type { NegocioConScore } from '@/types/types';
+import { MOCK_BUSINESSES } from '@/lib/businesses';
 
 interface DisplayPlace {
   id: string;
@@ -42,53 +42,15 @@ export default function DiscoverPage() {
   const t = useTranslations('Discover');
 
   useEffect(() => {
-    const stored = localStorage.getItem('mexgo_recommendations');
-    
-    const handleData = (data: NegocioConScore[]) => {
-      const mapped = data.map(toDisplay);
-      // Agregamos 2 cards extras para mejorar la simetría como pidió el usuario
-      const extras: DisplayPlace[] = [
-        {
-          id: 'extra-1',
-          name: 'Mercado de Antojitos',
-          imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80',
-          description: 'Una explosión de sabores tradicionales en el corazón de la ciudad. Perfecto para probar de todo un poco.',
-          location: 'Coyoacán, CDMX',
-          lng: -99.1633,
-          lat: 19.3467
-        },
-        {
-          id: 'extra-2',
-          name: 'Café de la Esquina',
-          imageUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&q=80',
-          description: 'El aroma del café recién tostado y pan dulce artesanal. Un refugio acogedor para iniciar el día.',
-          location: 'Roma Norte, CDMX',
-          lng: -99.1611,
-          lat: 19.4122
-        }
-      ];
-      setPlaces([...mapped, ...extras]);
-      setLoading(false);
-    };
-
-    if (stored) {
-      handleData(JSON.parse(stored));
-    } else {
-      fetch('/api/recommend', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lat: 19.4326, lng: -99.1332 }),
-      })
-        .then(r => r.json())
-        .then(res => {
-          if (res.ok && res.data) {
-            localStorage.setItem('mexgo_recommendations', JSON.stringify(res.data));
-            handleData(res.data);
-          }
-        })
-        .catch(console.error)
-        .finally(() => setLoading(false));
-    }
+    const negocios: NegocioConScore[] = MOCK_BUSINESSES.map(n => ({
+      ...n,
+      score: 0.8,
+      reasons: ['negocio verificado Ola México'],
+      estimatedWalkMinutes: 10,
+    }));
+    localStorage.setItem('mexgo_recommendations', JSON.stringify(negocios));
+    setPlaces(negocios.map(toDisplay));
+    setLoading(false);
   }, []);
 
   const clearSearch = (): void => setSearchValue('');
@@ -229,14 +191,6 @@ export default function DiscoverPage() {
         .rotate-y-180 { transform: rotateY(180deg); }
       `}</style>
 
-      {/* Floating Chat Button */}
-      <motion.button
-        whileHover={{ scale: 1.1, y: -5 }}
-        whileTap={{ scale: 0.9 }}
-        className="fixed bottom-10 right-10 w-16 h-16 bg-[var(--accent)] text-white rounded-full flex items-center justify-center shadow-2xl z-50 transition-all border-4 border-white"
-      >
-        <ChatBubbleIcon />
-      </motion.button>
     </div>
   );
 }

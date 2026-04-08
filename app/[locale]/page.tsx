@@ -1,8 +1,6 @@
 import HomeNavbar from '@/components/tourist/HomeNavbar';
 import Footer from '@/components/tourist/Footer';
-import PlaceCard from '@/components/tourist/PlaceCard';
 import {getTranslations} from 'next-intl/server';
-//import {Link} from '@/i18n/routing';
 import Link from 'next/link';
 
 export default async function Home() {
@@ -66,19 +64,19 @@ export default async function Home() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-4 mb-16">
           <div className="card-base p-10 flex flex-col items-center shadow-sm border border-gray-100 bg-white">
-            <span className="text-4xl mb-4 text-gray-400">✈️</span>
+            <span className="text-4xl mb-4 text-gray-400"></span>
             <h3 className="font-bold text-lg mb-2 text-gray-900">{t('services.item1.title')}</h3>
             <p className="text-sm text-gray-500">{t('services.item1.desc')}</p>
           </div>
           
           <div className="card-base p-10 flex flex-col items-center shadow-sm border border-gray-100 bg-white">
-            <span className="text-4xl mb-4 text-[var(--light-blue)]">🏨</span>
+            <span className="text-4xl mb-4 text-[var(--light-blue)]"></span>
             <h3 className="font-bold text-lg mb-2 text-gray-900">{t('services.item2.title')}</h3>
             <p className="text-sm text-gray-500">{t('services.item2.desc')}</p>
           </div>
           
           <div className="card-base p-10 flex flex-col items-center shadow-sm border border-gray-100 bg-white">
-            <span className="text-4xl mb-4 text-[var(--red)]">🧭</span>
+            <span className="text-4xl mb-4 text-[var(--red)]"></span>
             <h3 className="font-bold text-lg mb-2 text-gray-900">{t('services.item3.title')}</h3>
             <p className="text-sm text-gray-500">{t('services.item3.desc')}</p>
           </div>
@@ -97,29 +95,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* SECCIÓN BEST TOURS */}
-      <section className="py-20 bg-[#F4F6F5]">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-12">{t('bestTours.title')}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center">
-            <PlaceCard 
-              title="Palacio de Bellas Artes" 
-              location="CDMX, México" 
-              imageUrl="https://images.unsplash.com/photo-1585464231875-d9ef1f5ad396?q=80&w=2070&auto=format&fit=crop" 
-            />
-            <PlaceCard 
-              title="Teotihuacán" 
-              location="Edomex, México" 
-              imageUrl="https://images.unsplash.com/photo-1512813195386-6cf811ad3542?q=80&w=2070&auto=format&fit=crop" 
-            />
-            <PlaceCard 
-              title="Xochimilco" 
-              location="CDMX, México" 
-              imageUrl="https://images.unsplash.com/photo-1518105779142-d975b22f1b0a?q=80&w=2070&auto=format&fit=crop" 
-            />
-          </div>
-        </div>
-      </section>
 
       <Footer />
     </div>

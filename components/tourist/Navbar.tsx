@@ -1,12 +1,15 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Link, useRouter, usePathname } from '@/i18n/routing';
+import { Link, useRouter, usePathname, routing } from '@/i18n/routing';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ModeNightIcon from '@mui/icons-material/ModeNight';
 import LanguageIcon from '@mui/icons-material/Language';
+import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Divider from '@mui/material/Divider';
 import { useTheme } from 'next-themes';
 import { useTranslations, useLocale } from 'next-intl';
 import { clearSession, getStoredSession } from '@/lib/client-auth';
@@ -29,20 +32,16 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
     setIsAuthenticated(Boolean(session?.accessToken));
   }, []);
 
-  const [langAnchor, setLangAnchor] = useState<null | HTMLElement>(null);
   const [themeAnchor, setThemeAnchor] = useState<null | HTMLElement>(null);
-
-  const handleLangClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setLangAnchor(event.currentTarget);
-  };
+  const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
 
   const handleThemeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setThemeAnchor(event.currentTarget);
   };
 
   const handleClose = () => {
-    setLangAnchor(null);
     setThemeAnchor(null);
+    setProfileAnchor(null);
   };
 
   const handleThemeSelect = (theme: string) => {
@@ -50,54 +49,40 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
     handleClose();
   };
 
-  const toggleLocale = (nextLocale: string) => {
+  const toggleLocale = () => {
+    const locales = routing.locales;
+    const currentIndex = locales.indexOf(locale as any);
+    const nextLocale = locales[(currentIndex + 1) % locales.length];
     router.replace(pathname, { locale: nextLocale });
-    handleClose();
   };
 
   return (
-    <nav
-      className={`${
-        isLight
-          ? 'fixed top-0 left-0 bg-white text-[var(--text-primary)] shadow-sm'
-          : 'absolute top-0 left-1/2 -translate-x-1/2 text-white'
-      } w-full p-4 md:p-6 flex justify-between items-center z-50 transition-all ${!isLight ? 'max-w-7xl' : ''}`}
-    >
+    <nav className={`absolute top-0 left-0 w-full p-6 flex justify-between items-center z-50 max-w-7xl mx-auto left-1/2 -translate-x-1/2 ${isLight ? 'text-gray-800' : 'text-white'}`}>
       {/* Logo */}
-      <Link
-        href="/"
-        className="font-bold text-2xl leading-tight cursor-pointer"
-        style={{ fontFamily: 'var(--font-display, inherit)' }}
+      <div 
+        className="font-bold text-2xl leading-tight cursor-pointer" 
+        onClick={() => router.push('/')}
       >
-        {isLight ? 'MexGo' : <>Mex<br />GO</>}
-      </Link>
+        Mex<br />GO
+      </div>
 
       {/* Menú Central */}
       <div className="hidden md:flex gap-8 font-medium">
         <Link href="/discover" className="hover:opacity-70 transition-opacity">{t('discover')}</Link>
         <Link href="/trips" className="hover:opacity-70 transition-opacity">{t('trips')}</Link>
-        <Link href="#" className="hover:opacity-70 transition-opacity">{t('more')}</Link>
+        <Link href="/chat" className="hover:opacity-70 transition-opacity">{t('chat')}</Link>
       </div>
 
       {/* Iconos */}
       <div className="flex gap-5 items-center">
         {/* Idioma */}
         <button
-          className="hover:opacity-70 transition-opacity flex items-center gap-1 uppercase text-sm font-bold"
-          onClick={handleLangClick}
+          onClick={toggleLocale}
+          className={`hover:opacity-70 transition-opacity flex items-center gap-1 uppercase text-sm font-bold ${isLight ? 'bg-black/5 border-black/10' : 'bg-white/10 border-white/20'} px-3 py-1 rounded-full backdrop-blur-sm border`}
         >
           <LanguageIcon fontSize="small" />
           {locale}
         </button>
-        <Menu
-          anchorEl={langAnchor}
-          open={Boolean(langAnchor)}
-          onClose={handleClose}
-          className="mt-2"
-        >
-          <MenuItem onClick={() => toggleLocale('es')}>Español</MenuItem>
-          <MenuItem onClick={() => toggleLocale('en')}>English</MenuItem>
-        </Menu>
 
         {/* Perfil */}
         {isAuthenticated ? (

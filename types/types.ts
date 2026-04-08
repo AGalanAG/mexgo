@@ -226,6 +226,7 @@ export interface ChatRequest {
   mensaje: string
   historial?: ChatMessagePayload[]
   perfil?: TouristProfile
+  itinerario?: ItineraryStop[]
 }
 
 export interface ChatResponse {

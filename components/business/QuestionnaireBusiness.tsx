@@ -3,22 +3,27 @@
 import React, { useState } from "react";
 import { getStoredAccessToken } from "@/lib/client-auth";
 
-const BOROUGHS = [
+const ALCALDIAS = [
   "Álvaro Obregón", "Azcapotzalco", "Benito Juárez", "Coyoacán", "Cuajimalpa",
-  "Cuauhtémoc", "Gustavo A. Madero", "Iztacalco", "Iztapalapa", "Magdalena Contreras",
-  "Miguel Hidalgo", "Milpa Alta", "Tláhuac", "Tlalpan", "Venustiano Carranza", "Xochimilco"
+  "Cuauhtémoc", "Gustavo A. Madero", "Iztapalapa", "Magdalena Contreras",
+  "Miguel Hidalgo", "Milpa Alta", "Tláhuac", "Tlalpan", "Venustiano Carranza",
+  "Xochimilco", "Otro"
 ];
 
-const OPERATION_MODES = [
-  "Local físico", "Venta a domicilio", "Bazares / Tianguis",
-  "Venta a negocios (B2B)", "Venta ambulante", "Otro"
+const FORMAS_OPERACION = [
+  "Cuento con local o espacio",
+  "Realizo ventas a domicilio a través de una aplicación de entregas o por mi cuenta",
+  "Vendo en bazares o eventos o tianguis",
+  "Vendo a otros negocios o distribuidores (restaurantes, tiendas, mercados, etc.)",
+  "Realizo venta ambulante / en vía pública",
 ];
 
 const SAT_STATUS = [
-  { id: "formal", label: "Formal / Registrado" },
-  { id: "process", label: "En proceso" },
-  { id: "interested", label: "No, pero me interesa" },
-  { id: "notInterested", label: "No me interesa" },
+  { id: "si_formal", label: "Sí, es formal y está registrado" },
+  { id: "en_proceso", label: "Estoy en proceso de registrarlo" },
+  { id: "no_pero_interesa", label: "No está registrado pero me interesa" },
+  { id: "tal_vez", label: "Tal vez" },
+  { id: "no_no_interesa", label: "No y no me interesa" },
 ];
 
 const QuestionnaireBusiness: React.FC = () => {
@@ -52,17 +57,75 @@ const QuestionnaireBusiness: React.FC = () => {
     training_campus_preference: ""
   });
 
+interface FormState {
+  // Step 1
+  nombre_completo: string;
+  edad: string;
+  genero: string;
+  // Step 2
+  alcaldia: string;
+  colonia_y_maps: string;
+  sede_previa: string;
+  // Step 3
+  mujeres_empleadas: string;
+  hombres_empleados: string;
+  nombre_negocio: string;
+  descripcion_negocio: string;
+  antiguedad: string;
+  tiempo_continuo: string;
+  horarios: string;
+  // Step 4
+  formas_operacion: string[];
+  otra_forma_venta: string;
+  sat_status: string;
+  redes_sociales: string;
+  // Step 5
+  adaptacion_mundial: string;
+  uso_apoyo: string;
+  sede_presencial: string;
+}
+
+// Reusable styled input
+const Field = ({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) => (
+  <div>
+    <label className="block text-sm font-semibold mb-2 text-gray-800">
+      {label}{required && <span className="text-[#E8C247] ml-1">*</span>}
+    </label>
+    {children}
+  </div>
+);
+
+const inputCls = "w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#004891] outline-none transition-all text-gray-900 bg-gray-50/50 placeholder:text-gray-400 text-sm";
+const selectCls = "w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#004891] text-gray-900 bg-gray-50/50 cursor-pointer text-sm";
+
+const QuestionnaireBusiness: React.FC = () => {
+  const t = useTranslations("Questionnaire");
+  const router = useRouter();
+  const [step, setStep] = useState(1);
   const totalSteps = 5;
 
-  const nextStep = () => {
-    setStep((prev) => Math.min(prev + 1, totalSteps));
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  const [formData, setFormData] = useState<FormState>({
+    nombre_completo: "", edad: "", genero: "",
+    alcaldia: "", colonia_y_maps: "", sede_previa: "",
+    mujeres_empleadas: "", hombres_empleados: "",
+    nombre_negocio: "", descripcion_negocio: "", antiguedad: "", tiempo_continuo: "", horarios: "",
+    formas_operacion: [], otra_forma_venta: "", sat_status: "", redes_sociales: "",
+    adaptacion_mundial: "", uso_apoyo: "", sede_presencial: "",
+  });
 
-  const prevStep = () => {
-    setStep((prev) => Math.max(prev - 1, 1));
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  const set = (field: keyof FormState, value: string) =>
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
+  const toggleForma = (opt: string) =>
+    setFormData((prev) => ({
+      ...prev,
+      formas_operacion: prev.formas_operacion.includes(opt)
+        ? prev.formas_operacion.filter((o) => o !== opt)
+        : [...prev.formas_operacion, opt],
+    }));
+
+  const nextStep = () => { setStep((p) => Math.min(p + 1, totalSteps)); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const prevStep = () => { setStep((p) => Math.max(p - 1, 1)); window.scrollTo({ top: 0, behavior: "smooth" }); };
 
   const isNextDisabled = () => {
     if (step === 1) {
@@ -83,48 +146,79 @@ const QuestionnaireBusiness: React.FC = () => {
     return false;
   };
 
+  const handleFinish = () => {
+    console.log("Business Form Data:", formData);
+    router.push("/business/dashboard");
+  };
+
+  const STEP_LABELS = [
+    "Datos del Propietario",
+    "Ubicación",
+    "Tu Negocio",
+    "Operación y Legal",
+    "Proyección",
+  ];
+
   return (
     <div className="mx-auto max-w-2xl w-full bg-white p-6 md:p-10 font-sans shadow-xl rounded-3xl relative border border-gray-100 mb-10 text-black">
-      {/* Header */}
+      {/* ── Header / Progress ── */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
-          <div className="space-y-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Registro de Negocio</span>
-            <h1 className="text-xl font-bold text-[#1C42E8]">Sello Ola México</h1>
+          <div className="space-y-0.5">
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+              {t("business.title")}
+            </span>
+            <h1 className="text-lg font-black text-[#004891] leading-tight">
+              {t("business.subtitle")}
+            </h1>
+            <p className="text-xs text-gray-400 font-medium">{STEP_LABELS[step - 1]}</p>
           </div>
-          <span className="text-sm font-bold text-[#1C42E8]">Paso {step} de {totalSteps}</span>
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => router.push('/business/dashboard')}
+              className="text-xs font-bold text-gray-300 hover:text-gray-500 border border-gray-200 hover:border-gray-300 px-3 py-1.5 rounded-xl transition-all"
+            >
+              Saltar (demo) →
+            </button>
+            <span className="text-sm font-bold text-[#004891]">
+              {t('steps', { step, total: totalSteps })}
+            </span>
+          </div>
         </div>
         <div className="flex space-x-1">
-          {[1, 2, 3, 4, 5].map((s) => (
+          {Array.from({ length: totalSteps }, (_, i) => i + 1).map((s) => (
             <div
               key={s}
               className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
-                s < step ? "bg-[#1C42E8]" : s === step ? "bg-[#E8C247]" : "bg-gray-200"
+                s < step ? "bg-[#004891]" : s === step ? "bg-[#E8C247]" : "bg-gray-100"
               }`}
             />
           ))}
         </div>
       </div>
 
-      {/* Form Steps */}
-      <form className="space-y-6">
+      <form className="space-y-5">
 
-        {/* Step 1: Datos del Propietario */}
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            PASO 1 — Datos del Propietario
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
         {step === 1 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">Datos del Propietario</h2>
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">Nombre completo</label>
+            <h2 className="text-2xl font-black text-[#004891] mb-6">Datos del Propietario</h2>
+
+            <Field label="1. Nombre Completo (exactamente como aparece en su identificación oficial)" required>
               <input
                 type="text"
-                className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none transition-all text-gray-900 bg-gray-50/30"
-                value={formData.owner_full_name}
-                onChange={(e) => setFormData({...formData, owner_full_name: e.target.value})}
+                className={inputCls}
+                placeholder="Juan Pérez López"
+                value={formData.nombre_completo}
+                onChange={(e) => set("nombre_completo", e.target.value)}
               />
-            </div>
+            </Field>
+
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-900">Edad</label>
+              <Field label="2. Edad" required>
                 <input
                   type="number"
                   min={18}
@@ -133,30 +227,19 @@ const QuestionnaireBusiness: React.FC = () => {
                   value={formData.owner_age}
                   onChange={(e) => setFormData({...formData, owner_age: e.target.value})}
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-900">Género</label>
+              </Field>
+              <Field label="3. Género" required>
                 <select
-                  className="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#1C42E8] text-gray-900 bg-gray-50/30 cursor-pointer"
-                  value={formData.owner_gender}
-                  onChange={(e) => setFormData({...formData, owner_gender: e.target.value})}
+                  className={selectCls}
+                  value={formData.genero}
+                  onChange={(e) => set("genero", e.target.value)}
                 >
-                  <option value="">Selecciona</option>
+                  <option value="">Selecciona...</option>
                   <option value="Mujer">Mujer</option>
                   <option value="Hombre">Hombre</option>
                   <option value="Otro">Otro</option>
                 </select>
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">WhatsApp</label>
-              <input
-                type="tel"
-                placeholder="55 0000 0000"
-                className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30"
-                value={formData.owner_whatsapp}
-                onChange={(e) => setFormData({...formData, owner_whatsapp: e.target.value})}
-              />
+              </Field>
             </div>
             <div>
               <label className="block text-sm font-semibold mb-2 text-gray-900">Correo electrónico</label>
@@ -171,72 +254,135 @@ const QuestionnaireBusiness: React.FC = () => {
           </div>
         )}
 
-        {/* Step 2: Ubicación */}
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            PASO 2 — Ubicación
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
         {step === 2 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">Ubicación y Horarios</h2>
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">Alcaldía (CDMX)</label>
+            <h2 className="text-2xl font-black text-[#004891] mb-6">Ubicación y Sede</h2>
+
+            <Field label="6. ¿A qué alcaldía pertenece tu negocio?" required>
               <select
-                className="w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#1C42E8] text-gray-900 bg-gray-50/30 cursor-pointer appearance-auto"
-                value={formData.borough_code}
-                onChange={(e) => setFormData({...formData, borough_code: e.target.value})}
+                className={selectCls}
+                value={formData.alcaldia}
+                onChange={(e) => set("alcaldia", e.target.value)}
               >
-                <option value="">Selecciona alcaldía</option>
-                {BOROUGHS.map(b => <option key={b} value={b}>{b}</option>)}
+                <option value="">Selecciona alcaldía...</option>
+                {ALCALDIAS.map((a) => (
+                  <option key={a} value={a}>{a}</option>
+                ))}
               </select>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">Colonia</label>
-              <input
-                type="text"
-                className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30"
-                value={formData.neighborhood}
-                onChange={(e) => setFormData({...formData, neighborhood: e.target.value})}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">URL de Google Maps</label>
-              <input
-                type="url"
-                placeholder="https://goo.gl/maps/..."
-                className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30"
-                value={formData.google_maps_url}
-                onChange={(e) => setFormData({...formData, google_maps_url: e.target.value})}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">Días y Horarios de atención</label>
+            </Field>
+
+            <Field label="7. ¿En qué colonia está tu negocio? Si además cuentas con el link de Google Maps, agrégalo después de escribir tu colonia." required>
               <textarea
-                placeholder="Ej. Lunes a Viernes 9:00 - 18:00"
-                className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30 h-24 resize-none"
-                value={formData.operation_days_hours}
-                onChange={(e) => setFormData({...formData, operation_days_hours: e.target.value})}
+                className={`${inputCls} h-24 resize-none`}
+                placeholder="Ej: Colonia Del Valle. https://goo.gl/maps/..."
+                value={formData.colonia_y_maps}
+                onChange={(e) => set("colonia_y_maps", e.target.value)}
               />
-            </div>
+            </Field>
+
+            <Field label="¿Qué sede te queda mejor para las capacitaciones presenciales?" required>
+              <div className="grid gap-3 mt-1">
+                {SEDES_CAPACITACION.map((sede) => (
+                  <button
+                    key={sede.id}
+                    type="button"
+                    onClick={() => set("sede_previa", sede.id)}
+                    className={`p-4 rounded-2xl border-2 transition-all text-left flex gap-4 items-start cursor-pointer touch-manipulation ${
+                      formData.sede_previa === sede.id
+                        ? "border-[#004891] bg-[#004891]/5 ring-2 ring-[#004891]/10"
+                        : "border-gray-100 bg-gray-50/30 hover:border-gray-200"
+                    }`}
+                  >
+                    <span className="text-2xl shrink-0 mt-0.5">{sede.icon}</span>
+                    <div>
+                      <p className="font-black text-sm text-gray-900">{sede.label} <span className="font-medium text-gray-500">— {sede.sublabel}</span></p>
+                      <p className="text-xs text-gray-400 mt-0.5 leading-snug">{sede.desc}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </Field>
           </div>
         )}
 
-        {/* Step 3: El Negocio */}
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            PASO 3 — Tu Negocio
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
         {step === 3 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">Perfil del Negocio</h2>
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">Nombre del Negocio</label>
-              <input
-                type="text"
-                className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30"
-                value={formData.business_name}
-                onChange={(e) => setFormData({...formData, business_name: e.target.value})}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">Descripción (Máx. 150 car.)</label>
+            <h2 className="text-2xl font-black text-[#004891] mb-6">Tu Negocio</h2>
+
+            <Field label="8. ¿Cuántas mujeres y cuántos hombres son empleados en tu negocio?" required>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wide block mb-1.5">👩 Mujeres</label>
+                  <input type="number" min={0} className={inputCls} placeholder="0"
+                    value={formData.mujeres_empleadas}
+                    onChange={(e) => set("mujeres_empleadas", e.target.value)} />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wide block mb-1.5">👨 Hombres</label>
+                  <input type="number" min={0} className={inputCls} placeholder="0"
+                    value={formData.hombres_empleados}
+                    onChange={(e) => set("hombres_empleados", e.target.value)} />
+                </div>
+              </div>
+            </Field>
+
+            <Field label="9. Nombre de tu negocio" required>
+              <input type="text" className={inputCls} placeholder="Ej. Tacos El Huarache"
+                value={formData.nombre_negocio}
+                onChange={(e) => set("nombre_negocio", e.target.value)} />
+            </Field>
+
+            <Field label="10. Describe tu negocio en un párrafo (máximo 150 caracteres). Cuéntanos qué vendes o qué servicios ofreces." required>
+              <div className="relative">
+                <textarea
+                  maxLength={150}
+                  className={`${inputCls} h-20 resize-none`}
+                  placeholder="Ej. Vendemos tacos de canasta artesanales en el mercado local, especializados en recetas tradicionales..."
+                  value={formData.descripcion_negocio}
+                  onChange={(e) => set("descripcion_negocio", e.target.value)}
+                />
+                <span className={`absolute bottom-3 right-4 text-xs font-bold ${formData.descripcion_negocio.length >= 140 ? "text-[#E8C247]" : "text-gray-300"}`}>
+                  {formData.descripcion_negocio.length}/150
+                </span>
+              </div>
+            </Field>
+
+            <Field label="11. ¿Cuándo iniciaste con tu negocio?" required>
+              <div className="grid grid-cols-2 gap-2">
+                {["Menos de un año", "1-3 años", "3-5 años", "Más de 5 años"].map((opt) => (
+                  <button
+                    key={opt} type="button"
+                    onClick={() => set("antiguedad", opt)}
+                    className={`p-3 rounded-2xl border-2 transition-all text-sm font-semibold text-left cursor-pointer ${
+                      formData.antiguedad === opt
+                        ? "border-[#004891] bg-[#004891]/5 text-[#004891]"
+                        : "border-gray-100 text-gray-700 hover:border-gray-200"
+                    }`}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+            </Field>
+
+            <Field label="12. ¿Cuánto tiempo lleva operando tu negocio de forma continua?" required>
+              <input type="text" className={inputCls} placeholder="Ej. 2 años y 3 meses"
+                value={formData.tiempo_continuo}
+                onChange={(e) => set("tiempo_continuo", e.target.value)} />
+            </Field>
+
+            <Field label="13. ¿Qué días y en qué horarios opera tu negocio?" required>
               <textarea
-                maxLength={150}
-                className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30 h-20 resize-none"
-                value={formData.business_description}
-                onChange={(e) => setFormData({...formData, business_description: e.target.value})}
+                className={`${inputCls} h-20 resize-none`}
+                placeholder="Ej. Lunes a Viernes 9:00 - 18:00, Sábado 10:00 - 14:00"
+                value={formData.horarios}
+                onChange={(e) => set("horarios", e.target.value)}
               />
             </div>
             <div>
@@ -266,99 +412,147 @@ const QuestionnaireBusiness: React.FC = () => {
           </div>
         )}
 
-        {/* Step 4: Impacto y Mundial */}
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            PASO 4 — Operación y Legal
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
         {step === 4 && (
-          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">Impacto Social y Mundial 2026</h2>
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">Situación ante el SAT</label>
-              <div className="grid gap-2">
-                {SAT_STATUS.map(opt => (
+          <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-2xl font-black text-[#004891] mb-6">Operación y Legal</h2>
+
+            <Field label="14. Selecciona todas las que apliquen ¿Cuál de las siguientes opciones describe mejor la manera en la que opera tu negocio?" required>
+              <div className="grid gap-2 mt-1">
+                {FORMAS_OPERACION.map((opt) => (
                   <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => setFormData({...formData, sat_status: opt.id})}
-                    className={`p-4 rounded-2xl border-2 transition-all text-left text-sm font-medium ${
-                      formData.sat_status === opt.id ? "border-[#1C42E8] bg-[#1C42E8]/5 text-[#1C42E8]" : "border-gray-100 text-gray-700"
+                    key={opt} type="button"
+                    onClick={() => toggleForma(opt)}
+                    className={`p-4 rounded-2xl border-2 transition-all text-left flex justify-between items-center text-sm font-medium cursor-pointer touch-manipulation ${
+                      formData.formas_operacion.includes(opt)
+                        ? "border-[#E8C247] bg-[#E8C247]/10 text-gray-900"
+                        : "border-gray-100 text-gray-700 bg-gray-50/30 hover:border-gray-200"
+                    }`}
+                  >
+                    <span className="pr-3">{opt}</span>
+                    {formData.formas_operacion.includes(opt) && (
+                      <div className="bg-[#E8C247] rounded-full p-1 shrink-0">
+                        <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </Field>
+
+            <Field label="15. Si tienes otra forma de venta no enlistada anteriormente, compártela">
+              <input type="text" className={inputCls} placeholder="Describe tu forma de venta..."
+                value={formData.otra_forma_venta}
+                onChange={(e) => set("otra_forma_venta", e.target.value)} />
+            </Field>
+
+            <Field label="16. ¿Tu negocio está dado de alta ante el SAT?" required>
+              <div className="grid gap-2 mt-1">
+                {SAT_STATUS.map((opt) => (
+                  <button
+                    key={opt.id} type="button"
+                    onClick={() => set("sat_status", opt.id)}
+                    className={`p-4 rounded-2xl border-2 transition-all text-left text-sm font-medium cursor-pointer ${
+                      formData.sat_status === opt.id
+                        ? "border-[#004891] bg-[#004891]/5 text-[#004891]"
+                        : "border-gray-100 text-gray-700 hover:border-gray-200"
                     }`}
                   >
                     {opt.label}
                   </button>
                 ))}
               </div>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">¿Cómo te adaptarás para el Mundial 2026?</label>
-              <textarea
-                placeholder="Ej. Menú en inglés, pago con tarjeta, etc."
-                className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30 h-24 resize-none"
-                value={formData.adaptation_for_world_cup}
-                onChange={(e) => setFormData({...formData, adaptation_for_world_cup: e.target.value})}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-900">¿En qué invertirías el apoyo de Fundación Coppel?</label>
-              <textarea
-                placeholder="Ej. Remodelación, marketing, inventario..."
-                className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30 h-24 resize-none"
-                value={formData.support_usage}
-                onChange={(e) => setFormData({...formData, support_usage: e.target.value})}
-              />
-            </div>
+            </Field>
+
+            <Field label="17. Si tienes redes sociales de negocio, compártenos cuáles y cómo podemos encontrarte" required>
+              <input type="text" className={inputCls} placeholder="@mi_negocio en Instagram, FB: Mi Negocio..."
+                value={formData.redes_sociales}
+                onChange={(e) => set("redes_sociales", e.target.value)} />
+            </Field>
           </div>
         )}
 
-        {/* Step 5: Capacitación */}
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            PASO 5 — Proyección y Capacitación
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
         {step === 5 && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-bold text-[#1C42E8] mb-6">Preferencia de Capacitación</h2>
-            <div className="grid gap-4">
-              {[
-                {
-                  id: "HUB_AZTECA",
-                  label: "Hub Azteca",
-                  desc: "Cercanía estratégica al Estadio Azteca.",
-                  icon: "🏟️"
-                },
-                {
-                  id: "MIDE",
-                  label: "MIDE",
-                  desc: "Centro Histórico, corazón financiero y cultural.",
-                  icon: "🏦"
-                },
-              ].map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => setFormData({ ...formData, training_campus_preference: opt.id })}
-                  className={`p-6 rounded-3xl border-2 transition-all text-left flex gap-4 cursor-pointer touch-manipulation ${
-                    formData.training_campus_preference === opt.id ? "border-[#1C42E8] bg-[#1C42E8]/5 ring-2 ring-[#1C42E8]/20" : "border-gray-100 text-gray-700 bg-gray-50/10"
-                  }`}
-                >
-                  <div className="text-3xl shrink-0">{opt.icon}</div>
-                  <div className="space-y-1">
-                    <div className="font-bold text-lg text-gray-900">{opt.label}</div>
-                    <div className="text-sm text-gray-600 leading-tight">{opt.desc}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-            <div className="p-4 bg-[#DF757F]/10 rounded-2xl border border-[#DF757F]/20 text-[#DF757F] text-sm italic font-medium flex gap-3">
-              <span className="shrink-0 text-lg">📢</span>
-              <p>Al completar este registro, tu negocio será evaluado para recibir el sello de calidad Ola México.</p>
-            </div>
+          <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-2xl font-black text-[#004891] mb-6">Proyección y Capacitación</h2>
+
+            <Field label="18. ¿Cómo consideras que podrías adaptar e impulsar tu negocio de cara al Mundial de Fútbol 2026?" required>
+              <textarea
+                className={`${inputCls} h-28 resize-none`}
+                placeholder="Ej. Menú en inglés, pago con tarjeta, señalética bilingüe, productos temáticos..."
+                value={formData.adaptacion_mundial}
+                onChange={(e) => set("adaptacion_mundial", e.target.value)}
+              />
+            </Field>
+
+            <Field label="19. ¿En caso de que tu negocio sea seleccionado para ganar el apoyo económico, en qué ocuparías ese apoyo?" required>
+              <textarea
+                className={`${inputCls} h-28 resize-none`}
+                placeholder="Ej. Remodelación del local, marketing digital, compra de inventario..."
+                value={formData.uso_apoyo}
+                onChange={(e) => set("uso_apoyo", e.target.value)}
+              />
+            </Field>
+
+            <Field label="20. ¿Qué sede preferirías para tomar las capacitaciones PRESENCIALES?" required>
+              <div className="grid gap-3 mt-1">
+                {[
+                  {
+                    id: "HUB_AZTECA_PRES",
+                    label: "HUB AZTECA",
+                    sublabel: "A un costado del Estadio Azteca",
+                    desc: "C. San Julio 6 Circuito Estadio Azteca, Santa Úrsula, Coyoacán 04600",
+                    icon: "🏟️",
+                  },
+                  {
+                    id: "MIDE_PRES",
+                    label: "MIDE",
+                    sublabel: "Museo Interactivo de Economía — Centro Histórico",
+                    desc: "C. de Tacuba 17, Centro, Cuauhtémoc, 06000 Ciudad de México, CDMX",
+                    icon: "🏛️",
+                  },
+                ].map((sede) => (
+                  <button
+                    key={sede.id} type="button"
+                    onClick={() => set("sede_presencial", sede.id)}
+                    className={`p-4 rounded-2xl border-2 transition-all text-left flex gap-4 items-start cursor-pointer touch-manipulation ${
+                      formData.sede_presencial === sede.id
+                        ? "border-[#004891] bg-[#004891]/5 ring-2 ring-[#004891]/10"
+                        : "border-gray-100 bg-gray-50/30 hover:border-gray-200"
+                    }`}
+                  >
+                    <span className="text-2xl shrink-0 mt-0.5">{sede.icon}</span>
+                    <div>
+                      <p className="font-black text-sm text-gray-900">
+                        {sede.label} <span className="font-medium text-gray-500">— {sede.sublabel}</span>
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5 leading-snug">{sede.desc}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </Field>
+
+
           </div>
         )}
 
-        {/* Navigation */}
+        {/* ── Navigation ── */}
         <div className="mt-10 flex gap-4 pt-6 border-t border-gray-50">
           {step > 1 && (
             <button
               type="button"
               onClick={prevStep}
-              className="flex-1 p-4 rounded-2xl border-2 border-[#1C42E8] text-[#1C42E8] font-bold transition-all active:scale-95 cursor-pointer touch-manipulation"
+              className="flex-1 p-4 rounded-2xl border-2 border-[#004891] text-[#004891] font-bold transition-all active:scale-95 cursor-pointer touch-manipulation hover:bg-[#004891]/5"
             >
-              Atrás
+              {t("back")}
             </button>
           )}
           <button

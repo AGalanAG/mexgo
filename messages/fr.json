@@ -1,0 +1,258 @@
+{
+  "Questionnaire": {
+    "steps": "Étape {step} sur {total}",
+    "next": "Suivant",
+    "back": "Retour",
+    "createItinerary": "Créer mon Itinéraire",
+    "onboardingTitle": "Bienvenue sur MexGo",
+    "onboardingSubtitle": "Personnalisez votre expérience pour votre séjour au Mexique",
+    "tourist": {
+      "step1": {
+        "title": "Profil et Origine",
+        "countryLabel": "De quel pays nous visitez-vous ?",
+        "countryPlaceholder": "Ex. France, Belgique, Canada...",
+        "companionsLabel": "Nombre d'accompagnateurs",
+        "companionsOptions": {
+          "solo": "Je voyage seul(e)",
+          "small": "2 à 4 personnes",
+          "large": "Plus de 4 personas"
+        },
+        "isAdultSolo": "Êtes-vous majeur(e) ?",
+        "isAdultGroup": "Êtes-vous tous majeurs ?",
+        "ageOptions": {
+          "yes": "Oui",
+          "no": "Non"
+        }
+      },
+      "step2": {
+        "title": "Logistique",
+        "durationLabel": "Durée du séjour",
+        "durationOptions": {
+          "1-3": "1 à 3 jours",
+          "4-7": "4 à 7 jours",
+          "8-14": "8 à 14 jours",
+          "15+": "Plus de 15 jours"
+        },
+        "cityLabel": "Ville d'hébergement",
+        "cityPlaceholder": "Sélectionnez une ville",
+        "boroughLabel": "Arrondissement / Municipalité",
+        "boroughPlaceholder": "Sélectionnez une zone"
+      },
+      "step3": {
+        "title": "Motifs du voyage",
+        "description": "Sélectionnez entre 2 et 3 options qui définissent votre voyage.",
+        "motives": {
+          "cultural": "Tourisme Culturel et Patrimoine",
+          "historical": "Tourisme Historique",
+          "sports": "Événements sportifs",
+          "relaxation": "Détente et Repos",
+          "gastronomy": "Gastronomie",
+          "nightlife": "Vie nocturne et Divertissement"
+        }
+      },
+      "step4": {
+        "title": "Facteurs de choix",
+        "description": "Cela nous aide à prioriser vos itinéraires sur la carte.",
+        "factors": {
+          "proximity": {
+            "label": "Proximité",
+            "desc": "Proche du stade ou des lieux d'événements."
+          },
+          "preference": {
+            "label": "Préférence d'activité",
+            "desc": "Privilégier l'activité plutôt que la proximité."
+          }
+        },
+        "olaMexicoTip": "Le label Ola México met en avant les commerces locaux soutenus par la Fondation Coppel."
+      }
+    },
+    "business": {
+      "title": "Registro de Negocio",
+      "subtitle": "Sello Ola México",
+      "sendRequest": "Enviar Solicitud",
+      "step1": {
+        "title": "Datos del Propietario",
+        "nameLabel": "Nombre completo",
+        "ageLabel": "Edad",
+        "genderLabel": "Género",
+        "genderOptions": {
+          "placeholder": "Selecciona",
+          "female": "Mujer",
+          "male": "Hombre",
+          "other": "Otro"
+        },
+        "whatsappLabel": "WhatsApp"
+      },
+      "step2": {
+        "title": "Ubicación y Horarios",
+        "boroughLabel": "Alcaldía (CDMX)",
+        "boroughPlaceholder": "Selecciona alcaldía",
+        "neighborhoodLabel": "Colonia",
+        "mapsLabel": "URL de Google Maps",
+        "hoursLabel": "Días y Horarios de atención",
+        "hoursPlaceholder": "Ej. Lunes a Viernes 9:00 - 18:00"
+      },
+      "step3": {
+        "title": "Perfil del Negocio",
+        "nameLabel": "Nombre del Negocio",
+        "descLabel": "Descripción (Máx. 150 car.)",
+        "timeLabel": "¿Cuánto tiempo lleva operando?",
+        "timeOptions": {
+          "placeholder": "Selecciona rango",
+          "less1": "Menos de 1 año",
+          "1-3": "1 a 3 años",
+          "3-5": "3 a 5 años",
+          "more5": "Más de 5 años"
+        }
+      },
+      "step4": {
+        "title": "Impacto Social y Mundial 2026",
+        "satLabel": "Situación ante el SAT",
+        "satOptions": {
+          "formal": "Formal / Registrado",
+          "process": "En proceso",
+          "interested": "No, pero me interesa",
+          "notInterested": "No me interesa"
+        },
+        "adaptationLabel": "¿Cómo te adaptarás para el Mundial 2026?",
+        "adaptationPlaceholder": "Ej. Menú en inglés, pago con tarjeta, etc.",
+        "supportLabel": "¿En qué invertirías el apoyo de Fundación Coppel?",
+        "supportPlaceholder": "Ej. Remodelación, marketing, inventario..."
+      },
+      "step5": {
+        "title": "Preferencia de Capacitación",
+        "campuses": {
+          "hub": {
+            "label": "Hub Azteca",
+            "desc": "Cercanía estratégica al Estadio Azteca."
+          },
+          "mide": {
+            "label": "MIDE",
+            "desc": "Centro Histórico, corazón financiero y cultural."
+          }
+        },
+        "footerTip": "Al completar este registro, tu negocio será evaluado para recibir el sello de calidad Ola México."
+      }
+    }
+  },
+  "Home": {
+    "hero": {
+      "title": "Trouvez Votre <br /> Prochaine Aventure",
+      "searchPlaceholder": "Lieux où aller, quoi faire, hôtels...",
+      "subtitle": "Chaque rue de Mexico a une histoire à raconter.",
+      "cta": "Découvrir plus"
+    },
+    "services": {
+      "title": "Notre Service",
+      "item1": {
+        "title": "Recommandations de Voyage Personnalisées",
+        "desc": "Des recommandations IA conçues juste pour vous !"
+      },
+      "item2": {
+        "title": "Réservation d'Hôtels",
+        "desc": "Réservez facilement selon votre budget !"
+      },
+      "item3": {
+        "title": "Plan de Visite",
+        "desc": "Nous vous fournissons le meilleur plan en peu de temps."
+      }
+    },
+    "bestService": {
+      "title": "Nous essayons toujours de vous donner<br/>le meilleur service",
+      "subtitle": "Votre satisfaction est notre priorité absolue."
+    },
+    "bestTours": {
+      "title": "Les Meilleurs Tours Pour Vous",
+      "comingSoon": "À venir : Les meilleurs itinéraires personnalisés apparaîtront ici."
+    }
+  },
+  "Navbar": {
+    "discover": "Découvrir",
+    "trips": "Voyages",
+    "more": "Plus",
+    "chat": "Chat",
+    "login": "Connexion",
+    "register": "S'inscrire"
+  },
+  "Register": {
+    "title": "Rejoindre MexGo",
+    "subtitle": "Choisissez le type de compte qui vous convient",
+    "tourist": {
+      "title": "Je suis Touriste",
+      "description": "Découvrez des itinéraires authentiques, vivez des expériences uniques et soutenez le commerce local.",
+      "cta": "M'inscrire en tant que Touriste"
+    },
+    "business": {
+      "title": "Je suis un Commerce",
+      "description": "Rejoignez le réseau Ola México, augmentez votre visibilité et préparez-vous pour la Coupe du Monde 2026.",
+      "cta": "Enregistrer mon Commerce"
+    },
+    "form": {
+      "name": "Nom complet",
+      "email": "Adresse e-mail",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "businessName": "Nom du commerce",
+      "category": "Catégorie",
+      "back": "Retour",
+      "submit": "Créer un compte",
+      "google": "Continuer avec Google",
+      "alreadyHaveAccount": "Vous avez déjà un compte ?",
+      "success": "Inscription réussie !",
+      "redirecting": "Redirection vers votre tableau de bord..."
+    }
+  },
+  "Profile": {
+    "edit": "Modifier",
+    "save": "Enregistrer",
+    "originPlaceholder": "Pays d'origine",
+    "stats": {
+      "trips": "Voyages",
+      "favorites": "Favoris",
+      "days": "Jours"
+    },
+    "preferences": {
+      "title": "Préférences de voyage",
+      "add": "+ Ajouter",
+      "items": ["Tourisme Culturel", "Gastronomie", "Vie nocturne", "Musées"]
+    },
+    "itineraries": {
+      "title": "Mes Itinéraires",
+      "viewAll": "Voir tout →",
+      "stops": "arrêts"
+    },
+    "mundial": {
+      "title": "Coupe du Monde 2026",
+      "subtitle": "Prêt pour l'expérience de l'année. Que le match commence !",
+      "badge": "MexGO Ready"
+    },
+    "defaultName": "Voyageur MexGO",
+    "defaultOrigin": "France 🇫🇷",
+    "defaultBio": "Amoureux de la culture mexicaine et de la gastronomie. Ici pour vivre la Coupe du Monde 2026 à fond."
+  },
+  "Discover": {
+    "title": "Découvrir",
+    "recommendations": "Recommandations",
+    "searchPlaceholder": "Rechercher des lieux...",
+    "seeMore": "Voir plus",
+    "viewDetails": "Voir les détails"
+  },
+  "Trips": {
+    "title": "Mon Itinéraire Personnalisé",
+    "subtitle": "Sélectionnez des lieux sur la carte pour créer votre itinéraire",
+    "searchPlaceholder": "Rechercher des lieux...",
+    "transport": {
+      "walking": "À pied",
+      "bicycle": "Vélo",
+      "car": "Voiture",
+      "transit": "Transport"
+    },
+    "dateLabel": "Date",
+    "selectedStops": "Arrêts Sélectionnés",
+    "noStops": "Aucun arrêt sélectionné. Ajoutez des lieux depuis la carte !",
+    "addToRoute": "+ Ajouter à mon itinéraire",
+    "totalDistance": "Distance Totale",
+    "estimatedTime": "Temps Estimé",
+    "finalizeRoute": "✓ Finaliser et Enregistrer l'Itinéraire"
+  }
+}

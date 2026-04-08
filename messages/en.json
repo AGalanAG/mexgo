@@ -4,6 +4,8 @@
     "next": "Next",
     "back": "Back",
     "createItinerary": "Create Itinerary",
+    "onboardingTitle": "Welcome to MexGo",
+    "onboardingSubtitle": "Customize your experience for your stay in Mexico",
     "tourist": {
       "step1": {
         "title": "Profile and Origin",
@@ -42,7 +44,7 @@
         "motives": {
           "cultural": "Cultural Tourism & Heritage",
           "historical": "Historical Tourism",
-          "sports": "Sports Events (World Cup)",
+          "sports": "Sports Events Attendance",
           "relaxation": "Relaxation and Rest",
           "gastronomy": "Gastronomy",
           "nightlife": "Nightlife & Entertainment"
@@ -61,12 +63,12 @@
             "desc": "Sacrifice proximity for an activity more in line with your tastes."
           }
         },
-        "olaMexicoTip": "The Ola México seal highlights local businesses promoted by Fundación Coppel."
+        "olaMexicoTip": "Fundación Coppel supports local businesses for the 2026 World Cup."
       }
     },
     "business": {
       "title": "Business Registration",
-      "subtitle": "Ola México Seal",
+      "subtitle": "MexGO Business",
       "sendRequest": "Send Request",
       "step1": {
         "title": "Owner Data",
@@ -99,7 +101,7 @@
           "placeholder": "Select range",
           "less1": "Less than 1 year",
           "1-3": "1 to 3 years",
-          "3-5": "3 to 5 years",
+          "3-5": "3 a 5 years",
           "more5": "More than 5 years"
         }
       },
@@ -196,9 +198,37 @@
     "discover": "Discover",
     "trips": "Trips",
     "more": "More",
+    "chat": "Chat",
     "login": "Login",
-    "register": "Register",
-    "more": "More"
+    "register": "Register"
+  },
+  "Profile": {
+    "edit": "Edit",
+    "save": "Save",
+    "originPlaceholder": "Country of origin",
+    "stats": {
+      "trips": "Trips",
+      "favorites": "Favorites",
+      "days": "Days"
+    },
+    "preferences": {
+      "title": "Travel preferences",
+      "add": "+ Add",
+      "items": ["Cultural Tourism", "Gastronomy", "Nightlife", "Museums"]
+    },
+    "itineraries": {
+      "title": "My Itineraries",
+      "viewAll": "View all →",
+      "stops": "stops"
+    },
+    "mundial": {
+      "title": "World Cup 2026",
+      "subtitle": "Ready for the experience of the year. Let the game begin!",
+      "badge": "MexGO Ready"
+    },
+    "defaultName": "MexGO Traveler",
+    "defaultOrigin": "Spain 🇪🇸",
+    "defaultBio": "Lover of Mexican culture and gastronomy. Here to experience the 2026 World Cup to the fullest."
   },
   "Discover": {
     "title": "Discover",

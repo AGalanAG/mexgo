@@ -32,6 +32,7 @@ function RegisterContent() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (errorMessage) setErrorMessage('');
   };
 
   const handleRegister = async (e: React.FormEvent) => {
