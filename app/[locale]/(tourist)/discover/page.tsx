@@ -4,12 +4,10 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/tourist/Navbar';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
-import MapIcon from '@mui/icons-material/Map';
-import GridViewIcon from '@mui/icons-material/GridView';
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import { motion } from 'framer-motion';
 import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
-import MapboxMap, { MapMarker } from '@/components/tourist/MapboxMap';
 import type { NegocioConScore } from '@/types/types';
 
 interface DisplayPlace {
@@ -39,17 +37,42 @@ function toDisplay(n: NegocioConScore): DisplayPlace {
 export default function DiscoverPage() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [flippedId, setFlippedId] = useState<string | null>(null);
-  const [showMap, setShowMap] = useState(false);
   const [places, setPlaces] = useState<DisplayPlace[]>([]);
   const [loading, setLoading] = useState(true);
   const t = useTranslations('Discover');
 
   useEffect(() => {
     const stored = localStorage.getItem('mexgo_recommendations');
-    if (stored) {
-      const data: NegocioConScore[] = JSON.parse(stored);
-      setPlaces(data.map(toDisplay));
+    
+    const handleData = (data: NegocioConScore[]) => {
+      const mapped = data.map(toDisplay);
+      // Agregamos 2 cards extras para mejorar la simetría como pidió el usuario
+      const extras: DisplayPlace[] = [
+        {
+          id: 'extra-1',
+          name: 'Mercado de Antojitos',
+          imageUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80',
+          description: 'Una explosión de sabores tradicionales en el corazón de la ciudad. Perfecto para probar de todo un poco.',
+          location: 'Coyoacán, CDMX',
+          lng: -99.1633,
+          lat: 19.3467
+        },
+        {
+          id: 'extra-2',
+          name: 'Café de la Esquina',
+          imageUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&q=80',
+          description: 'El aroma del café recién tostado y pan dulce artesanal. Un refugio acogedor para iniciar el día.',
+          location: 'Roma Norte, CDMX',
+          lng: -99.1611,
+          lat: 19.4122
+        }
+      ];
+      setPlaces([...mapped, ...extras]);
       setLoading(false);
+    };
+
+    if (stored) {
+      handleData(JSON.parse(stored));
     } else {
       fetch('/api/recommend', {
         method: 'POST',
@@ -60,7 +83,7 @@ export default function DiscoverPage() {
         .then(res => {
           if (res.ok && res.data) {
             localStorage.setItem('mexgo_recommendations', JSON.stringify(res.data));
-            setPlaces(res.data.map(toDisplay));
+            handleData(res.data);
           }
         })
         .catch(console.error)
@@ -81,140 +104,122 @@ export default function DiscoverPage() {
     p.description.toLowerCase().includes(searchValue.toLowerCase())
   );
 
-  const markers: MapMarker[] = places.map((p) => ({
-    lng: p.lng,
-    lat: p.lat,
-    label: p.name,
-    color: '#004891',
-  }));
-
   return (
     <div className="flex flex-col min-h-screen bg-[var(--background)] overflow-x-hidden">
       <Navbar variant="light" />
 
-      <main className="pt-20 flex-1 flex flex-col lg:flex-row max-w-[1600px] mx-auto w-full">
+      <main className="pt-28 pb-20 px-6 max-w-7xl mx-auto w-full flex-1 flex flex-col items-center">
+        {/* Header section centered */}
+        <div className="w-full max-w-3xl text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-black text-[var(--primary)] mb-4 tracking-tight">
+            {t('title')}
+          </h2>
+          <p className="text-gray-500 font-bold uppercase tracking-[0.2em] text-xs mb-8">
+            {t('recommendations')}
+          </p>
 
-        {/* Left panel: search + cards */}
-        <section className="flex-1 lg:max-w-xl overflow-y-auto no-scrollbar px-4 py-6">
-
-          {/* Header + view toggle */}
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl md:text-3xl font-bold text-[var(--primary)]">
-              {t('title')}
-            </h2>
-            <button
-              onClick={() => setShowMap((v) => !v)}
-              className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--primary)] text-white text-xs font-bold shadow"
-            >
-              {showMap ? <GridViewIcon sx={{ fontSize: 16 }} /> : <MapIcon sx={{ fontSize: 16 }} />}
-              {showMap ? 'Grid' : 'Map'}
-            </button>
-          </div>
-
-          {/* Search bar */}
-          <div className="relative flex items-center bg-gray-100 rounded-full border border-gray-200 overflow-hidden px-4 py-3 shadow-sm transition-all focus-within:ring-2 focus-within:ring-[var(--primary)] focus-within:bg-white mb-8">
-            <button onClick={clearSearch} className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
-              <CloseIcon fontSize="small" />
-            </button>
+          {/* Centered Search bar */}
+          <div className="relative flex items-center bg-white rounded-[2rem] border-2 border-gray-100 overflow-hidden px-6 py-4 shadow-xl shadow-gray-200/50 transition-all focus-within:ring-4 focus-within:ring-[var(--primary)]/5 focus-within:border-[var(--primary)] w-full">
+            <SearchIcon className="text-gray-300 mr-3" />
             <input
               type="text"
               placeholder={t('searchPlaceholder')}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              className="flex-1 bg-transparent border-none outline-none px-3 text-[var(--text-primary)] font-medium placeholder-gray-400"
+              className="flex-1 bg-transparent border-none outline-none text-[var(--text-primary)] font-bold placeholder-gray-300 text-lg"
             />
-            <SearchIcon className="text-gray-400" />
+            {searchValue && (
+              <button onClick={clearSearch} className="p-2 text-gray-400 hover:text-[var(--primary)] transition-colors">
+                <CloseIcon fontSize="small" />
+              </button>
+            )}
           </div>
+        </div>
 
-          {/* Mobile map panel */}
-          {showMap && (
-            <div className="lg:hidden w-full h-72 rounded-2xl overflow-hidden border border-gray-100 shadow-inner mb-8">
-              <MapboxMap center={[-99.1620, 19.3900]} zoom={11} markers={markers} className="w-full h-full" />
-            </div>
-          )}
-
-          {/* Cards grid */}
-          <h3 className="text-lg font-semibold text-[var(--primary)] mb-4">{t('recommendations')}</h3>
-
-          {loading && (
-            <p className="text-center text-gray-400 text-sm py-10">Cargando recomendaciones...</p>
-          )}
-
-          <div className="grid grid-cols-2 gap-4 w-full">
-            {filtered.map((place) => (
-              <div
-                key={place.id}
-                className="perspective-1000 cursor-pointer aspect-square"
-                onClick={(e) => handleCardClick(e, place.id)}
-              >
-                <motion.div
-                  className="relative w-full h-full transition-all duration-500 preserve-3d"
-                  animate={{ rotateY: flippedId === place.id ? 180 : 0 }}
-                  transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-                >
-                  {/* Front */}
-                  <div
-                    className="absolute inset-0 backface-hidden shadow-md flex flex-col justify-end p-3"
-                    style={{
-                      borderRadius: '1.5rem',
-                      backgroundImage: `url(${place.imageUrl})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                    }}
-                  >
-                    <div className="absolute inset-0 bg-black/20 rounded-[1.5rem]" />
-                    <div className="relative z-10">
-                      <Link
-                        href={`/discover/${place.id}`}
-                        className="inline-block text-white px-3 py-1 rounded-full text-[10px] md:text-xs font-bold shadow-md hover:scale-105 transition-transform active:scale-95"
-                        style={{ backgroundColor: 'var(--accent)' }}
-                      >
-                        {place.name}
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* Back */}
-                  <div
-                    className="absolute inset-0 backface-hidden bg-white shadow-md flex flex-col p-4 rotate-y-180 text-center"
-                    style={{ borderRadius: '1.5rem' }}
-                  >
-                    <h3 className="text-sm font-bold text-[var(--primary)] mb-1 truncate">{place.name}</h3>
-                    <p className="text-[10px] text-gray-500 mb-2 flex-1 overflow-hidden leading-tight">{place.description}</p>
-                    <Link
-                      href={`/discover/${place.id}`}
-                      className="mt-auto text-[10px] font-bold py-2 bg-[var(--primary)] text-white rounded-lg hover:brightness-110"
-                    >
-                      {t('viewDetails')}
-                    </Link>
-                  </div>
-                </motion.div>
-              </div>
-            ))}
+        {/* Loading state */}
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="w-12 h-12 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin mb-6"></div>
+            <p className="text-[var(--primary)] text-xs font-black uppercase tracking-[0.3em]">Buscando tesoros locales...</p>
           </div>
+        )}
 
-          <div className="mt-10 flex justify-center">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="btn-primary text-sm px-10"
+        {/* Cards grid centered and with aspect-square */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full justify-items-center">
+          {filtered.map((place) => (
+            <div
+              key={place.id}
+              className="perspective-1000 cursor-pointer aspect-square w-full max-w-[320px] group"
+              onClick={(e) => handleCardClick(e, place.id)}
             >
-              {t('seeMore')}
-            </motion.button>
-          </div>
-        </section>
+              <motion.div
+                className="relative w-full h-full transition-all duration-500 preserve-3d"
+                animate={{ rotateY: flippedId === place.id ? 180 : 0 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+              >
+                {/* Front */}
+                <div
+                  className="absolute inset-0 backface-hidden shadow-xl overflow-hidden flex flex-col justify-end p-6 group-hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]"
+                  style={{
+                    borderRadius: '2.5rem',
+                    backgroundImage: `url(${place.imageUrl})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-80" />
+                  <div className="relative z-10">
+                    <span className="text-[10px] text-[var(--secondary)] font-black uppercase tracking-[0.2em] mb-2 block">
+                      {place.location}
+                    </span>
+                    <h3 className="text-white text-2xl font-black leading-tight">
+                      {place.name}
+                    </h3>
+                  </div>
+                </div>
 
-        {/* Right panel: sticky map (desktop only) */}
-        <section className="hidden lg:flex flex-1 sticky top-0 h-screen p-6 pl-0">
-          <div className="w-full h-full rounded-[1.5rem] overflow-hidden border border-gray-100 shadow-inner">
-            <MapboxMap
-              center={[-99.1620, 19.3900]}
-              zoom={11}
-              markers={markers}
-              className="w-full h-full"
-            />
+                {/* Back */}
+                <div
+                  className="absolute inset-0 backface-hidden bg-white shadow-2xl flex flex-col p-8 rotate-y-180 border border-gray-50 text-center items-center justify-center"
+                  style={{ borderRadius: '2.5rem' }}
+                >
+                  <div className="mb-6">
+                    <h3 className="text-xl font-black text-[var(--primary)] mb-2">{place.name}</h3>
+                    <div className="h-1 w-12 bg-[var(--secondary)] rounded-full mx-auto"></div>
+                  </div>
+                  
+                  <p className="text-sm text-gray-500 mb-8 font-medium leading-relaxed italic">
+                    "{place.description}"
+                  </p>
+                  
+                  <Link
+                    href={`/discover/${place.id}`}
+                    className="w-full text-center text-[10px] font-black py-4 bg-[var(--primary)] text-white rounded-2xl hover:bg-[var(--primary-dark)] transition-all shadow-lg shadow-[var(--primary)]/20 active:scale-95 uppercase tracking-[0.2em]"
+                  >
+                    {t('viewDetails')}
+                  </Link>
+                </div>
+              </motion.div>
+            </div>
+          ))}
+        </div>
+
+        {/* Empty state */}
+        {!loading && filtered.length === 0 && (
+          <div className="text-center py-20 bg-gray-50 rounded-[3rem] w-full max-w-2xl border-2 border-dashed border-gray-200">
+            <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-xs">No hay resultados para tu búsqueda</p>
           </div>
-        </section>
+        )}
+
+        <div className="mt-24 flex justify-center">
+          <motion.button
+            whileHover={{ scale: 1.05, backgroundColor: 'var(--primary)', color: 'white' }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-transparent border-2 border-[var(--primary)] text-[var(--primary)] font-black py-5 px-16 rounded-2xl transition-all shadow-sm uppercase tracking-[0.3em] text-[10px]"
+          >
+            {t('seeMore')}
+          </motion.button>
+        </div>
       </main>
 
       <style jsx global>{`
@@ -223,6 +228,15 @@ export default function DiscoverPage() {
         .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
         .rotate-y-180 { transform: rotateY(180deg); }
       `}</style>
+
+      {/* Floating Chat Button */}
+      <motion.button
+        whileHover={{ scale: 1.1, y: -5 }}
+        whileTap={{ scale: 0.9 }}
+        className="fixed bottom-10 right-10 w-16 h-16 bg-[var(--accent)] text-white rounded-full flex items-center justify-center shadow-2xl z-50 transition-all border-4 border-white"
+      >
+        <ChatBubbleIcon />
+      </motion.button>
     </div>
   );
 }
