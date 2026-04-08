@@ -43,26 +43,22 @@ export default function BusinessDashboardPage() {
       <main className="flex-1 pt-24 md:pt-20 pb-24 px-4">
         <div className="max-w-5xl mx-auto space-y-6">
 
-          {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-              HERO — negocio info
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-          <div className="relative rounded-[2rem] overflow-hidden shadow-2xl">
-            {/* Background layers */}
+          {/* ── Hero ── */}
+          <div className="relative rounded-3xl overflow-hidden shadow-xl">
             <div
               className="absolute inset-0"
-              style={{ background: 'linear-gradient(150deg, #0a0f2e 0%, var(--coppel-blue) 60%, #1a3a6b 100%)' }}
+              style={{ background: 'linear-gradient(150deg, #0a0f1e 0%, var(--dark-blue) 60%, #0d2a10 100%)' }}
             />
-            {/* Geometric accent */}
-            <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute -right-16 -top-16 w-72 h-72 rounded-full border border-white/5" />
-              <div className="absolute -right-8 -top-8  w-48 h-48 rounded-full border border-white/8" />
-              <div className="absolute right-20 bottom-0 w-32 h-32 rounded-full bg-[var(--secondary)]/10 blur-2xl" />
-              <div className="absolute left-0 bottom-0 w-64 h-24 bg-[var(--coppel-blue)]/20 blur-3xl" />
+            {/* Geometric accents */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className="absolute -right-12 -top-12 w-64 h-64 rounded-full border border-[var(--secondary)]/10" />
+              <div className="absolute -right-4 -top-4  w-40 h-40 rounded-full border border-[var(--secondary)]/8" />
+              <div className="absolute right-24 bottom-0 w-28 h-28 rounded-full bg-[var(--green)]/10 blur-2xl" />
+              <div className="absolute left-0 top-0 w-48 h-48 bg-[var(--secondary)]/5 blur-3xl" />
             </div>
 
             <div className="relative z-10 p-7 md:p-9">
               <div className="flex flex-col md:flex-row md:items-start gap-7">
-
                 {/* Avatar + info */}
                 <div className="flex items-center gap-5">
                   <div
@@ -90,7 +86,7 @@ export default function BusinessDashboardPage() {
                 {/* Divider */}
                 <div className="hidden md:block w-px self-stretch bg-white/10" />
 
-                {/* Quick stats row */}
+                {/* Quick stats */}
                 <div className="flex gap-6 md:gap-8 flex-wrap">
                   {[
                     { icon: <TrendingUpIcon sx={{ fontSize: 18 }} />, val: MOCK.visitas.toString(), lbl: 'Visitas' },
@@ -98,7 +94,7 @@ export default function BusinessDashboardPage() {
                     { icon: <PeopleIcon sx={{ fontSize: 18 }} />,     val: '1,280',                 lbl: 'Comunidad' },
                   ].map((s) => (
                     <div key={s.lbl} className="flex flex-col">
-                      <div className="flex items-center gap-1.5 text-white/40 text-xs font-bold mb-1">
+                      <div className="flex items-center gap-1.5 text-[var(--secondary)]/60 text-xs font-bold mb-1">
                         {s.icon} {s.lbl}
                       </div>
                       <span className="text-white font-black text-xl">{s.val}</span>
@@ -109,14 +105,11 @@ export default function BusinessDashboardPage() {
             </div>
           </div>
 
-          {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-              PROGRESO FORMATIVO (prominent)
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-          <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
-            {/* Header */}
+          {/* ── Progreso formativo ── */}
+          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-7 pt-7 pb-5 flex items-center justify-between border-b border-gray-50">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-[var(--coppel-blue)]/10 flex items-center justify-center text-[var(--coppel-blue)]">
+                <div className="w-9 h-9 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center text-[var(--accent)]">
                   <SchoolIcon sx={{ fontSize: 20 }} />
                 </div>
                 <div>
@@ -126,33 +119,31 @@ export default function BusinessDashboardPage() {
               </div>
               <Link
                 href="/business/learning"
-                className="text-[11px] font-black text-[var(--coppel-blue)] hover:underline flex items-center gap-1"
+                className="text-[11px] font-black text-[var(--accent)] hover:underline flex items-center gap-1"
               >
                 Ver todos <ArrowForwardIcon sx={{ fontSize: 14 }} />
               </Link>
             </div>
 
             <div className="px-7 py-6 space-y-5">
-              {/* Big progress bar */}
+              {/* Big progress */}
               <div>
                 <div className="flex items-end justify-between mb-2.5">
-                  <div>
-                    <span className="text-4xl font-black text-gray-900">{progress}<span className="text-2xl text-gray-300">%</span></span>
-                  </div>
-                  <span className="text-sm font-bold text-gray-400">
-                    {done} de {total} módulos
+                  <span className="text-4xl font-black text-gray-900">
+                    {progress}<span className="text-2xl text-gray-300">%</span>
                   </span>
+                  <span className="text-sm font-bold text-gray-400">{done} de {total} módulos</span>
                 </div>
-                {/* Segmented bar */}
+                {/* Segmented bar — amarillo=done, verde=active, gris=pending */}
                 <div className="flex gap-1">
                   {Array.from({ length: total }, (_, i) => (
                     <div
                       key={i}
                       className={`h-3 flex-1 rounded-full transition-all duration-300 ${
                         i < done
-                          ? 'bg-[var(--coppel-blue)]'
-                          : i === done
                           ? 'bg-[var(--secondary)]'
+                          : i === done
+                          ? 'bg-[var(--green)]'
                           : 'bg-gray-100'
                       }`}
                     />
@@ -164,33 +155,35 @@ export default function BusinessDashboardPage() {
                 </div>
               </div>
 
-              {/* Module checklist preview */}
+              {/* Module checklist */}
               <div className="space-y-2">
                 {MODULOS_PREVIEW.map((m) => (
                   <div
                     key={m.label}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       m.active
-                        ? 'bg-[var(--coppel-blue)]/6 border border-[var(--coppel-blue)]/15'
+                        ? 'bg-[var(--green)]/6 border border-[var(--green)]/20'
                         : m.done
                         ? 'bg-gray-50/80'
                         : 'opacity-45'
                     }`}
                   >
                     {m.done ? (
-                      <CheckIcon sx={{ fontSize: 18 }} className="text-[var(--coppel-blue)] shrink-0" />
+                      <CheckIcon sx={{ fontSize: 18 }} className="text-[var(--secondary)] shrink-0" />
                     ) : m.active ? (
-                      <div className="w-4 h-4 rounded-full border-2 border-[var(--secondary)] shrink-0 flex items-center justify-center">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[var(--secondary)]" />
+                      <div className="w-4 h-4 rounded-full border-2 border-[var(--green)] shrink-0 flex items-center justify-center">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[var(--green)]" />
                       </div>
                     ) : (
                       <EmptyIcon sx={{ fontSize: 18 }} className="text-gray-200 shrink-0" />
                     )}
-                    <span className={`text-sm font-${m.active ? 'bold' : 'medium'} ${m.done ? 'text-gray-400 line-through' : m.active ? 'text-gray-900' : 'text-gray-400'}`}>
+                    <span className={`text-sm font-${m.active ? 'bold' : 'medium'} ${
+                      m.done ? 'text-gray-400 line-through' : m.active ? 'text-gray-900' : 'text-gray-400'
+                    }`}>
                       {m.label}
                     </span>
                     {m.active && (
-                      <span className="ml-auto text-[10px] font-black text-[var(--secondary)] bg-[var(--secondary)]/10 px-2 py-0.5 rounded-full">
+                      <span className="ml-auto text-[10px] font-black text-[var(--green)] bg-[var(--green)]/10 px-2 py-0.5 rounded-full">
                         En curso
                       </span>
                     )}
@@ -200,23 +193,20 @@ export default function BusinessDashboardPage() {
 
               <Link
                 href="/business/learning"
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[var(--coppel-blue)] text-white font-black text-sm hover:brightness-110 transition-all shadow-md shadow-[var(--coppel-blue)]/20 active:scale-[0.98]"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--dark-green)] text-white font-black text-sm transition-all shadow-md shadow-[var(--accent)]/20 active:scale-[0.98]"
               >
                 Continuar capacitación <ArrowForwardIcon sx={{ fontSize: 18 }} />
               </Link>
             </div>
           </div>
 
-          {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-              ACTION CARDS
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+          {/* ── Action cards ── */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* Learning card */}
             <Link
               href="/business/learning"
               className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-start gap-5 p-6"
             >
-              <div className="w-11 h-11 rounded-xl bg-[var(--green)]/10 flex items-center justify-center text-[var(--green)] shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-[var(--green)]/12 flex items-center justify-center text-[var(--accent)] shrink-0">
                 <SchoolIcon sx={{ fontSize: 24 }} />
               </div>
               <div className="flex-1 min-w-0">
@@ -226,19 +216,18 @@ export default function BusinessDashboardPage() {
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-bold text-gray-300">{done}/{total} completados</span>
-                  <span className="flex items-center gap-1 text-xs font-black text-[var(--coppel-blue)] group-hover:gap-2 transition-all">
+                  <span className="flex items-center gap-1 text-xs font-black text-[var(--accent)] group-hover:gap-2 transition-all">
                     Ir a módulos <ArrowForwardIcon sx={{ fontSize: 15 }} />
                   </span>
                 </div>
               </div>
             </Link>
 
-            {/* Support card */}
             <Link
               href="/business/support"
               className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-start gap-5 p-6"
             >
-              <div className="w-11 h-11 rounded-xl bg-[var(--coppel-blue)]/10 flex items-center justify-center text-[var(--coppel-blue)] shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-[var(--secondary)]/12 flex items-center justify-center text-[var(--dark-blue)] shrink-0">
                 <SupportAgentIcon sx={{ fontSize: 24 }} />
               </div>
               <div className="flex-1 min-w-0">
@@ -248,7 +237,7 @@ export default function BusinessDashboardPage() {
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-bold text-[var(--green)]">Disponible</span>
-                  <span className="flex items-center gap-1 text-xs font-black text-[var(--coppel-blue)] group-hover:gap-2 transition-all">
+                  <span className="flex items-center gap-1 text-xs font-black text-[var(--accent)] group-hover:gap-2 transition-all">
                     Ir a soporte <ArrowForwardIcon sx={{ fontSize: 15 }} />
                   </span>
                 </div>
@@ -256,17 +245,16 @@ export default function BusinessDashboardPage() {
             </Link>
           </div>
 
-          {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-              MUNDIAL BANNER
-          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+          {/* ── Mundial 2026 banner ── */}
           <div
-            className="rounded-[2rem] p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-5 shadow-lg relative overflow-hidden"
-            style={{ background: 'linear-gradient(130deg, #0d1b4b, var(--coppel-blue))' }}
+            className="rounded-3xl p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-5 shadow-lg relative overflow-hidden"
+            style={{ background: 'linear-gradient(135deg, #0a0f1e, var(--dark-blue))' }}
           >
-            <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute right-0 top-0 w-64 h-64 rounded-full bg-white/3 -translate-y-1/2 translate-x-1/3" />
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className="absolute right-0 top-0 w-56 h-56 rounded-full bg-[var(--secondary)]/5 -translate-y-1/2 translate-x-1/3" />
+              <div className="absolute left-0 bottom-0 w-32 h-32 bg-[var(--green)]/8 blur-2xl" />
             </div>
-            <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-white shrink-0 relative z-10">
+            <div className="w-14 h-14 rounded-2xl bg-[var(--secondary)]/15 flex items-center justify-center text-[var(--secondary)] shrink-0 relative z-10">
               <TrophyIcon sx={{ fontSize: 30 }} />
             </div>
             <div className="flex-1 relative z-10">
@@ -277,7 +265,7 @@ export default function BusinessDashboardPage() {
             </div>
             <Link
               href="/business/learning"
-              className="relative z-10 shrink-0 bg-[var(--secondary)] text-[var(--dark-blue)] font-black text-sm px-5 py-2.5 rounded-xl hover:brightness-110 transition-all whitespace-nowrap shadow-lg shadow-[var(--secondary)]/20"
+              className="relative z-10 shrink-0 bg-[var(--green)] hover:bg-[var(--dark-green)] text-white font-black text-sm px-5 py-2.5 rounded-xl transition-all whitespace-nowrap shadow-lg shadow-[var(--green)]/20"
             >
               Empezar →
             </Link>

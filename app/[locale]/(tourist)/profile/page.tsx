@@ -51,28 +51,12 @@ export default function ProfilePage() {
   const [origin, setOrigin] = useState(t('defaultOrigin'));
   const [bio, setBio]       = useState(t('defaultBio'));
 
-  React.useEffect(() => {
-    try {
-      const session = localStorage.getItem('mexgo_session');
-      if (session) {
-        const parsed = JSON.parse(session);
-        if (parsed.name) setName(parsed.name);
-      }
-      const profile = localStorage.getItem('mexgo_tourist_profile');
-      if (profile) {
-        const parsed = JSON.parse(profile);
-        if (parsed.country) setOrigin(parsed.country);
-        if (parsed.city && parsed.borough) setBio(`Explorando ${parsed.city} — ${parsed.borough}`);
-      }
-    } catch {}
-  }, []);
-
   const preferences = t.raw('preferences.items') as string[];
 
   const STATS = [
-    { labelKey: 'stats.trips',     value: '3',  icon: <FlightIcon sx={{ fontSize: 20 }} /> },
-    { labelKey: 'stats.favorites', value: '12', icon: <FavoriteIcon sx={{ fontSize: 20 }} /> },
-    { labelKey: 'stats.days',      value: '14', icon: <CalendarTodayIcon sx={{ fontSize: 20 }} /> },
+    { labelKey: 'stats.trips',     value: '3',  icon: <FlightIcon sx={{ fontSize: 20 }} />,       color: 'bg-[var(--secondary)]/15 text-[var(--dark-blue)]' },
+    { labelKey: 'stats.favorites', value: '12', icon: <FavoriteIcon sx={{ fontSize: 20 }} />,     color: 'bg-[var(--green)]/12 text-[var(--accent)]' },
+    { labelKey: 'stats.days',      value: '14', icon: <CalendarTodayIcon sx={{ fontSize: 20 }} />, color: 'bg-[var(--green)]/12 text-[var(--accent)]' },
   ];
 
   return (
@@ -84,29 +68,27 @@ export default function ProfilePage() {
 
           {/* ── Hero Card ── */}
           <div className="relative bg-white rounded-3xl shadow-sm overflow-hidden border border-gray-100">
-            {/* Banner — usa --primary del sistema */}
+            {/* Banner — gradiente oscuro + acento verde del home */}
             <div
               className="h-36 w-full relative"
-              style={{ background: 'linear-gradient(135deg, var(--primary) 0%, var(--dark-blue) 100%)' }}
+              style={{ background: 'linear-gradient(135deg, #0a0f1e 0%, var(--dark-blue) 50%, #0d2a10 100%)' }}
             >
-              {/* Subtle geometric accent */}
-              <div className="absolute right-0 top-0 w-48 h-48 rounded-full bg-white/5 -translate-y-1/3 translate-x-1/3" />
-              <div className="absolute left-8 bottom-0 w-24 h-24 rounded-full bg-[var(--secondary)]/15 blur-xl" />
+              <div className="absolute right-0 top-0 w-48 h-48 rounded-full bg-[var(--secondary)]/8 -translate-y-1/3 translate-x-1/3" />
+              <div className="absolute left-8 bottom-0 w-24 h-24 rounded-full bg-[var(--green)]/15 blur-xl" />
             </div>
 
             <div className="px-6 pb-6">
-              {/* Avatar + edit row */}
               <div className="flex items-end justify-between -mt-12 mb-4">
                 <div className="relative">
                   <div
                     className="w-24 h-24 rounded-full border-4 border-white flex items-center justify-center shadow-lg"
                     style={{ background: 'linear-gradient(135deg, var(--secondary), var(--coppel-yellow))' }}
                   >
-                    <span className="text-4xl font-black text-[var(--primary)]">
+                    <span className="text-4xl font-black text-[var(--dark-blue)]">
                       {name.charAt(0)}
                     </span>
                   </div>
-                  <button className="absolute bottom-0 right-0 w-7 h-7 bg-[var(--primary)] text-white rounded-full flex items-center justify-center shadow-md hover:brightness-110 transition-all">
+                  <button className="absolute bottom-0 right-0 w-7 h-7 bg-[var(--accent)] text-white rounded-full flex items-center justify-center shadow-md hover:bg-[var(--dark-green)] transition-all">
                     <CameraAltIcon sx={{ fontSize: 13 }} />
                   </button>
                 </div>
@@ -116,7 +98,7 @@ export default function ProfilePage() {
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
                     isEditing
                       ? 'bg-[var(--accent)] text-white'
-                      : 'border-2 border-[var(--primary)]/30 text-[var(--primary)] hover:bg-[var(--primary)]/5'
+                      : 'border-2 border-[var(--accent)]/30 text-[var(--accent)] hover:bg-[var(--accent)]/5'
                   }`}
                 >
                   <EditIcon sx={{ fontSize: 15 }} />
@@ -124,25 +106,24 @@ export default function ProfilePage() {
                 </button>
               </div>
 
-              {/* Name / Origin / Bio */}
               {isEditing ? (
                 <div className="space-y-3">
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full text-xl font-black text-[var(--primary)] border-2 border-gray-100 rounded-xl px-3 py-2 outline-none focus:border-[var(--primary)] bg-gray-50"
+                    className="w-full text-xl font-black text-[var(--primary)] border-2 border-gray-100 rounded-xl px-3 py-2 outline-none focus:border-[var(--accent)] bg-gray-50"
                   />
                   <input
                     value={origin}
                     onChange={(e) => setOrigin(e.target.value)}
-                    className="w-full text-sm font-semibold text-gray-500 border-2 border-gray-100 rounded-xl px-3 py-2 outline-none focus:border-[var(--primary)] bg-gray-50"
+                    className="w-full text-sm font-semibold text-gray-500 border-2 border-gray-100 rounded-xl px-3 py-2 outline-none focus:border-[var(--accent)] bg-gray-50"
                     placeholder={t('originPlaceholder')}
                   />
                   <textarea
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     rows={2}
-                    className="w-full text-sm text-gray-600 border-2 border-gray-100 rounded-xl px-3 py-2 outline-none focus:border-[var(--primary)] bg-gray-50 resize-none"
+                    className="w-full text-sm text-gray-600 border-2 border-gray-100 rounded-xl px-3 py-2 outline-none focus:border-[var(--accent)] bg-gray-50 resize-none"
                   />
                 </div>
               ) : (
@@ -165,7 +146,7 @@ export default function ProfilePage() {
                 key={s.labelKey}
                 className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col items-center gap-2 hover:shadow-md hover:-translate-y-0.5 transition-all"
               >
-                <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/8 text-[var(--primary)] flex items-center justify-center">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${s.color}`}>
                   {s.icon}
                 </div>
                 <span className="text-2xl font-black text-[var(--primary)]">{s.value}</span>
@@ -185,12 +166,12 @@ export default function ProfilePage() {
               {preferences.map((pref) => (
                 <span
                   key={pref}
-                  className="px-4 py-2 rounded-full text-sm font-bold bg-[var(--primary)]/6 text-[var(--primary)] border border-[var(--primary)]/15 hover:bg-[var(--primary)] hover:text-white transition-all cursor-default"
+                  className="px-4 py-2 rounded-full text-sm font-bold bg-[var(--green)]/8 text-[var(--accent)] border border-[var(--green)]/20 hover:bg-[var(--accent)] hover:text-white transition-all cursor-default"
                 >
                   {pref}
                 </span>
               ))}
-              <span className="px-4 py-2 rounded-full text-sm font-bold border-2 border-dashed border-gray-200 text-gray-400 hover:border-[var(--primary)] hover:text-[var(--primary)] transition-all cursor-pointer">
+              <span className="px-4 py-2 rounded-full text-sm font-bold border-2 border-dashed border-gray-200 text-gray-400 hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all cursor-pointer">
                 {t('preferences.add')}
               </span>
             </div>
@@ -202,7 +183,7 @@ export default function ProfilePage() {
               <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest">
                 {t('itineraries.title')}
               </h2>
-              <Link href="/trips" className="text-xs font-bold text-[var(--primary)] hover:underline">
+              <Link href="/trips" className="text-xs font-bold text-[var(--accent)] hover:underline">
                 {t('itineraries.viewAll')}
               </Link>
             </div>
@@ -247,17 +228,21 @@ export default function ProfilePage() {
 
           {/* ── Mundial 2026 ── */}
           <div
-            className="rounded-2xl p-6 flex items-center gap-5"
-            style={{ background: 'linear-gradient(130deg, var(--primary), var(--dark-blue))' }}
+            className="rounded-2xl p-6 flex items-center gap-5 relative overflow-hidden"
+            style={{ background: 'linear-gradient(135deg, #0a0f1e, var(--dark-blue))' }}
           >
-            <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-white shrink-0">
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className="absolute right-0 top-0 w-40 h-40 rounded-full bg-[var(--secondary)]/5 -translate-y-1/2 translate-x-1/3" />
+              <div className="absolute left-0 bottom-0 w-24 h-24 bg-[var(--green)]/8 blur-2xl" />
+            </div>
+            <div className="w-12 h-12 rounded-xl bg-[var(--secondary)]/15 flex items-center justify-center text-[var(--secondary)] shrink-0 relative z-10">
               <TrophyIcon sx={{ fontSize: 26 }} />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 relative z-10">
               <p className="text-white font-black text-base leading-snug">{t('mundial.title')}</p>
               <p className="text-white/55 text-sm mt-0.5">{t('mundial.subtitle')}</p>
             </div>
-            <div className="bg-[var(--secondary)] text-[var(--primary)] font-black text-xs px-4 py-2 rounded-xl whitespace-nowrap shadow-md">
+            <div className="bg-[var(--green)] hover:bg-[var(--dark-green)] text-white font-black text-xs px-4 py-2 rounded-xl whitespace-nowrap shadow-md relative z-10 transition-colors cursor-default">
               {t('mundial.badge')}
             </div>
           </div>

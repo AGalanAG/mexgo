@@ -144,12 +144,12 @@ const CATEGORY_COLORS: Record<string, string> = {
   'Bienestar':              'bg-pink-50 text-pink-700 border-pink-100',
   'Turismo':                'bg-green-50 text-green-700 border-green-100',
   'Comunidad':              'bg-yellow-50 text-yellow-700 border-yellow-100',
-  'Certificación':          'bg-[var(--coppel-blue)]/8 text-[var(--coppel-blue)] border-[var(--coppel-blue)]/20',
+  'Certificación':          'bg-[var(--primary)]/8 text-[var(--primary)] border-[var(--primary)]/20',
 };
 
 const STATUS_META = {
   done:   { label: 'Completado',  bar: 'bg-[var(--green)]',         text: 'text-[var(--green)]',        badge: 'bg-[var(--green)]/12 text-[var(--green)]' },
-  active: { label: 'En curso',    bar: 'bg-[var(--coppel-blue)]',   text: 'text-[var(--coppel-blue)]',  badge: 'bg-[var(--coppel-blue)]/12 text-[var(--coppel-blue)]' },
+  active: { label: 'En curso',    bar: 'bg-[var(--primary)]',   text: 'text-[var(--primary)]',  badge: 'bg-[var(--primary)]/12 text-[var(--primary)]' },
   locked: { label: 'Bloqueado',   bar: 'bg-gray-200',               text: 'text-gray-300',              badge: 'bg-gray-100 text-gray-400' },
 };
 
@@ -172,7 +172,7 @@ export default function LearningPage() {
 
           {/* ── Page header ── */}
           <div className="flex items-start gap-3">
-            <Link href="/business/dashboard" className="mt-1 text-[var(--coppel-blue)] hover:opacity-70 transition-opacity shrink-0">
+            <Link href="/business/dashboard" className="mt-1 text-[var(--primary)] hover:opacity-70 transition-opacity shrink-0">
               <ArrowBackIcon sx={{ fontSize: 22 }} />
             </Link>
             <div>
@@ -188,7 +188,7 @@ export default function LearningPage() {
           {/* ── Progress banner ── */}
           <div
             className="rounded-3xl p-6 md:p-8 shadow-lg relative overflow-hidden"
-            style={{ background: 'linear-gradient(130deg, var(--coppel-blue), var(--dark-blue))' }}
+            style={{ background: 'linear-gradient(130deg, var(--primary), var(--dark-blue))' }}
           >
             <div className="absolute right-0 top-0 w-56 h-56 rounded-full bg-white/5 -translate-y-1/3 translate-x-1/3" />
             <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-6">
@@ -235,7 +235,7 @@ export default function LearningPage() {
                 onClick={() => setFilter(tab.key)}
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
                   filter === tab.key
-                    ? 'bg-[var(--coppel-blue)] text-white border-[var(--coppel-blue)] shadow-md shadow-[var(--coppel-blue)]/20'
+                    ? 'bg-[var(--primary)] text-white border-[var(--primary)] shadow-md shadow-[var(--primary)]/20'
                     : 'bg-white text-gray-500 border-gray-100 hover:border-gray-200'
                 }`}
               >
@@ -260,7 +260,7 @@ export default function LearningPage() {
                   className={`group bg-white rounded-3xl border-2 flex flex-col overflow-hidden transition-all duration-200 ${
                     isLocked
                       ? 'border-gray-100 opacity-65'
-                      : 'border-gray-100 hover:border-[var(--coppel-blue)]/30 hover:shadow-lg hover:-translate-y-1'
+                      : 'border-gray-100 hover:border-[var(--primary)]/30 hover:shadow-lg hover:-translate-y-1'
                   }`}
                 >
                   {/* Color top bar */}
@@ -301,7 +301,7 @@ export default function LearningPage() {
                       <button className={`w-full py-2.5 rounded-xl text-xs font-black transition-all ${
                         mod.status === 'done'
                           ? 'bg-[var(--green)]/10 text-[var(--green)] hover:bg-[var(--green)]/20'
-                          : 'bg-[var(--coppel-blue)] text-white hover:brightness-110 shadow-md shadow-[var(--coppel-blue)]/20'
+                          : 'bg-[var(--primary)] text-white hover:brightness-110 shadow-md shadow-[var(--primary)]/20'
                       }`}>
                         {mod.status === 'done' ? 'Ver de nuevo' : 'Iniciar módulo'}
                       </button>

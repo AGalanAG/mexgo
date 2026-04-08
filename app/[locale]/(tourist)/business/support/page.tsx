@@ -53,8 +53,8 @@ const CONTACT_CHANNELS = [
     desc: 'soporte@olamexicomex.go.mx — Respuesta en 24-48h',
     cta: 'Enviar correo',
     href: 'mailto:soporte@olamexicomex.go.mx',
-    color: 'text-[var(--coppel-blue)] bg-[var(--coppel-blue)]/10 border-[var(--coppel-blue)]/20',
-    ctaColor: 'bg-[var(--coppel-blue)] text-white',
+    color: 'text-[var(--primary)] bg-[var(--primary)]/10 border-[var(--primary)]/20',
+    ctaColor: 'bg-[var(--primary)] text-white',
   },
   {
     icon: <ChatIcon sx={{ fontSize: 28 }} />,
@@ -80,7 +80,7 @@ export default function SupportPage() {
 
           {/* Header */}
           <div className="flex items-center gap-3">
-            <Link href="/business/dashboard" className="text-[var(--coppel-blue)] hover:opacity-70 transition-opacity">
+            <Link href="/business/dashboard" className="text-[var(--primary)] hover:opacity-70 transition-opacity">
               <ArrowBackIcon sx={{ fontSize: 22 }} />
             </Link>
             <div>
@@ -92,7 +92,7 @@ export default function SupportPage() {
           {/* Hero */}
           <div
             className="rounded-3xl p-8 text-white shadow-lg relative overflow-hidden"
-            style={{ background: 'linear-gradient(135deg, var(--coppel-blue), var(--dark-blue))' }}
+            style={{ background: 'linear-gradient(135deg, var(--primary), var(--dark-blue))' }}
           >
             <div className="absolute right-0 top-0 w-48 h-48 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/2" />
             <div className="relative z-10 flex items-center gap-5">
@@ -145,7 +145,7 @@ export default function SupportPage() {
                 <div
                   key={i}
                   className={`bg-white rounded-2xl border-2 overflow-hidden transition-all ${
-                    openFaq === i ? 'border-[var(--coppel-blue)]/30 shadow-sm' : 'border-gray-100'
+                    openFaq === i ? 'border-[var(--primary)]/30 shadow-sm' : 'border-gray-100'
                   }`}
                 >
                   <button
@@ -154,7 +154,7 @@ export default function SupportPage() {
                   >
                     <span className="font-bold text-sm text-gray-900 leading-snug">{faq.q}</span>
                     {openFaq === i
-                      ? <ExpandLessIcon className="text-[var(--coppel-blue)] shrink-0" sx={{ fontSize: 20 }} />
+                      ? <ExpandLessIcon className="text-[var(--primary)] shrink-0" sx={{ fontSize: 20 }} />
                       : <ExpandMoreIcon className="text-gray-300 shrink-0" sx={{ fontSize: 20 }} />
                     }
                   </button>

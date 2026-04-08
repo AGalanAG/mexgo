@@ -2,11 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Link } from '@/i18n/routing'
-import type { ChatMessagePayload, ChatResponse, ItineraryStop, NegocioConScore, TouristProfile } from '@/types/types'
+import type { ChatMessagePayload, ChatResponse, ItineraryStop, TouristProfile } from '@/types/types'
 import { MOCK_TOURIST_PROFILE } from '@/lib/mockPerfil'
 
 type RichMessage = ChatMessagePayload & {
-  recomendaciones?: NegocioConScore[]
   eventoAgregado?: ItineraryStop
   eventoEditado?: ItineraryStop
   eventoEliminado?: { id: string; label?: string; eliminado: boolean }
@@ -111,7 +110,6 @@ export default function ChatUI() {
       const msgModelo: RichMessage = {
         role: 'model',
         text: data.respuesta,
-        recomendaciones: data.negociosRecomendados,
         eventoAgregado: data.eventoAgregado,
         eventoEditado: data.eventoEditado,
         eventoEliminado: data.eventoEliminado,
@@ -174,31 +172,6 @@ export default function ChatUI() {
               {m.text}
             </div>
 
-            {/* Cards de recomendaciones */}
-            {m.recomendaciones && m.recomendaciones.length > 0 && (
-              <div className="w-full max-w-sm space-y-2">
-                {m.recomendaciones.map(n => (
-                  <Link
-                    key={n.id}
-                    href={`/discover/${n.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 bg-white border border-gray-200 rounded-2xl p-3 shadow-sm hover:shadow-md hover:border-[var(--primary)] transition-all group"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/10 flex items-center justify-center shrink-0 text-lg">
-                      🏪
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-sm text-[var(--primary)] truncate">{n.businessName}</p>
-                      <p className="text-xs text-[var(--text-secondary)] truncate">{n.neighborhood}, {n.boroughCode}</p>
-                    </div>
-                    <span className="text-[var(--primary)] text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                      Ver →
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            )}
 
             {/* Card evento agregado */}
             {m.eventoAgregado && (

@@ -82,8 +82,8 @@ const Field = ({ label, required, children }: { label: string; required?: boolea
   </div>
 );
 
-const inputCls = "w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none transition-all text-gray-900 bg-gray-50/50 placeholder:text-gray-400 text-sm";
-const selectCls = "w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#1C42E8] text-gray-900 bg-gray-50/50 cursor-pointer text-sm";
+const inputCls = "w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#004891] outline-none transition-all text-gray-900 bg-gray-50/50 placeholder:text-gray-400 text-sm";
+const selectCls = "w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#004891] text-gray-900 bg-gray-50/50 cursor-pointer text-sm";
 
 const QuestionnaireBusiness: React.FC = () => {
   const t = useTranslations("Questionnaire");
@@ -145,7 +145,7 @@ const QuestionnaireBusiness: React.FC = () => {
             <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
               {t("business.title")}
             </span>
-            <h1 className="text-lg font-black text-[#1C42E8] leading-tight">
+            <h1 className="text-lg font-black text-[#004891] leading-tight">
               {t("business.subtitle")}
             </h1>
             <p className="text-xs text-gray-400 font-medium">{STEP_LABELS[step - 1]}</p>
@@ -158,7 +158,7 @@ const QuestionnaireBusiness: React.FC = () => {
             >
               Saltar (demo) →
             </button>
-            <span className="text-sm font-bold text-[#1C42E8]">
+            <span className="text-sm font-bold text-[#004891]">
               {t('steps', { step, total: totalSteps })}
             </span>
           </div>
@@ -168,7 +168,7 @@ const QuestionnaireBusiness: React.FC = () => {
             <div
               key={s}
               className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${
-                s < step ? "bg-[#1C42E8]" : s === step ? "bg-[#E8C247]" : "bg-gray-100"
+                s < step ? "bg-[#004891]" : s === step ? "bg-[#E8C247]" : "bg-gray-100"
               }`}
             />
           ))}
@@ -182,7 +182,7 @@ const QuestionnaireBusiness: React.FC = () => {
         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
         {step === 1 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-black text-[#1C42E8] mb-6">Datos del Propietario</h2>
+            <h2 className="text-2xl font-black text-[#004891] mb-6">Datos del Propietario</h2>
 
             <Field label="1. Nombre Completo (exactamente como aparece en su identificación oficial)" required>
               <input
@@ -229,7 +229,7 @@ const QuestionnaireBusiness: React.FC = () => {
         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
         {step === 2 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-black text-[#1C42E8] mb-6">Ubicación y Sede</h2>
+            <h2 className="text-2xl font-black text-[#004891] mb-6">Ubicación y Sede</h2>
 
             <Field label="6. ¿A qué alcaldía pertenece tu negocio?" required>
               <select
@@ -262,7 +262,7 @@ const QuestionnaireBusiness: React.FC = () => {
                     onClick={() => set("sede_previa", sede.id)}
                     className={`p-4 rounded-2xl border-2 transition-all text-left flex gap-4 items-start cursor-pointer touch-manipulation ${
                       formData.sede_previa === sede.id
-                        ? "border-[#1C42E8] bg-[#1C42E8]/5 ring-2 ring-[#1C42E8]/10"
+                        ? "border-[#004891] bg-[#004891]/5 ring-2 ring-[#004891]/10"
                         : "border-gray-100 bg-gray-50/30 hover:border-gray-200"
                     }`}
                   >
@@ -283,7 +283,7 @@ const QuestionnaireBusiness: React.FC = () => {
         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
         {step === 3 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-black text-[#1C42E8] mb-6">Tu Negocio</h2>
+            <h2 className="text-2xl font-black text-[#004891] mb-6">Tu Negocio</h2>
 
             <Field label="8. ¿Cuántas mujeres y cuántos hombres son empleados en tu negocio?" required>
               <div className="grid grid-cols-2 gap-3">
@@ -331,7 +331,7 @@ const QuestionnaireBusiness: React.FC = () => {
                     onClick={() => set("antiguedad", opt)}
                     className={`p-3 rounded-2xl border-2 transition-all text-sm font-semibold text-left cursor-pointer ${
                       formData.antiguedad === opt
-                        ? "border-[#1C42E8] bg-[#1C42E8]/5 text-[#1C42E8]"
+                        ? "border-[#004891] bg-[#004891]/5 text-[#004891]"
                         : "border-gray-100 text-gray-700 hover:border-gray-200"
                     }`}
                   >
@@ -363,7 +363,7 @@ const QuestionnaireBusiness: React.FC = () => {
         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
         {step === 4 && (
           <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-black text-[#1C42E8] mb-6">Operación y Legal</h2>
+            <h2 className="text-2xl font-black text-[#004891] mb-6">Operación y Legal</h2>
 
             <Field label="14. Selecciona todas las que apliquen ¿Cuál de las siguientes opciones describe mejor la manera en la que opera tu negocio?" required>
               <div className="grid gap-2 mt-1">
@@ -404,7 +404,7 @@ const QuestionnaireBusiness: React.FC = () => {
                     onClick={() => set("sat_status", opt.id)}
                     className={`p-4 rounded-2xl border-2 transition-all text-left text-sm font-medium cursor-pointer ${
                       formData.sat_status === opt.id
-                        ? "border-[#1C42E8] bg-[#1C42E8]/5 text-[#1C42E8]"
+                        ? "border-[#004891] bg-[#004891]/5 text-[#004891]"
                         : "border-gray-100 text-gray-700 hover:border-gray-200"
                     }`}
                   >
@@ -427,7 +427,7 @@ const QuestionnaireBusiness: React.FC = () => {
         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
         {step === 5 && (
           <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-2xl font-black text-[#1C42E8] mb-6">Proyección y Capacitación</h2>
+            <h2 className="text-2xl font-black text-[#004891] mb-6">Proyección y Capacitación</h2>
 
             <Field label="18. ¿Cómo consideras que podrías adaptar e impulsar tu negocio de cara al Mundial de Fútbol 2026?" required>
               <textarea
@@ -470,7 +470,7 @@ const QuestionnaireBusiness: React.FC = () => {
                     onClick={() => set("sede_presencial", sede.id)}
                     className={`p-4 rounded-2xl border-2 transition-all text-left flex gap-4 items-start cursor-pointer touch-manipulation ${
                       formData.sede_presencial === sede.id
-                        ? "border-[#1C42E8] bg-[#1C42E8]/5 ring-2 ring-[#1C42E8]/10"
+                        ? "border-[#004891] bg-[#004891]/5 ring-2 ring-[#004891]/10"
                         : "border-gray-100 bg-gray-50/30 hover:border-gray-200"
                     }`}
                   >
@@ -496,7 +496,7 @@ const QuestionnaireBusiness: React.FC = () => {
             <button
               type="button"
               onClick={prevStep}
-              className="flex-1 p-4 rounded-2xl border-2 border-[#1C42E8] text-[#1C42E8] font-bold transition-all active:scale-95 cursor-pointer touch-manipulation hover:bg-[#1C42E8]/5"
+              className="flex-1 p-4 rounded-2xl border-2 border-[#004891] text-[#004891] font-bold transition-all active:scale-95 cursor-pointer touch-manipulation hover:bg-[#004891]/5"
             >
               {t("back")}
             </button>
@@ -508,7 +508,7 @@ const QuestionnaireBusiness: React.FC = () => {
             className={`flex-[2] p-4 rounded-2xl font-bold text-white transition-all active:scale-95 shadow-md cursor-pointer touch-manipulation ${
               isNextDisabled()
                 ? "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none"
-                : "bg-[#1C42E8] hover:shadow-lg shadow-[#1C42E8]/25"
+                : "bg-[#004891] hover:shadow-lg shadow-[#004891]/25"
             }`}
           >
             {step === totalSteps ? t("business.sendRequest") : t("next")}
