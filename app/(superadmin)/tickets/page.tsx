@@ -46,7 +46,7 @@ export default function TicketsPage() {
                 <div className="flex items-center gap-4">
                   <div className="flex flex-col items-end">
                     <span className="text-xs text-[var(--grey)] mb-1">Prioridad</span>
-                    <Badge variant={priorityColors[ticket.priority]}>{ticket.priority}</Badge>
+                    <Badge variant={priorityColors[ticket.priority as keyof typeof priorityColors]}>{ticket.priority}</Badge>
                   </div>
                   <div className="flex flex-col items-end">
                     <span className="text-xs text-[var(--grey)] mb-1">Estado</span>
