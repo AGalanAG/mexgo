@@ -1,31 +1,34 @@
-import React from 'react';
+"use client";
 
-const Navbar: React.FC = () => {
+import React from 'react';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ModeNightIcon from '@mui/icons-material/ModeNight';
+
+export default function Navbar() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-surface shadow-sm h-16 flex items-center">
-      <div className="container-responsive flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          {/* Logo Placeholder */}
-          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-secondary font-bold text-xl">M</span>
-          </div>
-          <span className="text-primary font-bold text-xl hidden sm:block">MexGo</span>
-        </div>
-        
-        <div className="flex gap-4 sm:gap-6">
-          <button className="text-primary font-semibold hover:text-accent transition-colors">
-            Descubrir
-          </button>
-          <button className="text-primary font-semibold hover:text-accent transition-colors">
-            Itinerario
-          </button>
-          <button className="text-primary font-semibold hover:text-accent transition-colors">
-            Más
-          </button>
-        </div>
+    <nav className="absolute top-0 left-0 w-full p-6 flex justify-between items-center text-white z-50 max-w-7xl mx-auto left-1/2 -translate-x-1/2">
+      {/* Logo */}
+      <div className="font-bold text-2xl leading-tight cursor-pointer">
+        Mex<br />GO
+      </div>
+
+      {/* Menú Central */}
+      <div className="hidden md:flex gap-8 font-medium">
+        <a href="#" className="hover:text-gray-300 transition-colors">Discover</a>
+        <a href="#" className="hover:text-gray-300 transition-colors">Trips</a>
+        <a href="#" className="hover:text-gray-300 transition-colors">More</a>
+      </div>
+
+      {/* Iconos MUI */}
+      <div className="flex gap-5 items-center">
+    
+        <button className="hover:text-gray-300 transition-colors">
+          <AccountCircleIcon fontSize="medium" />
+        </button>
+        <button className="hover:text-gray-300 transition-colors">
+          <ModeNightIcon fontSize="medium" />
+        </button>
       </div>
     </nav>
   );
-};
-
-export default Navbar;
+}
