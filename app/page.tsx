@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import Navbar from '@/components/tourist/Navbar';
 
 export default function Home() {
@@ -39,9 +40,9 @@ export default function Home() {
             Every street in Mexico City has a story to tell.
           </p>
 
-          <button className="bg-[var(--green)] hover:bg-[var(--dark-green)] text-white px-8 py-3 rounded-md font-bold transition-colors">
+          <Link href="/discover" className="inline-block bg-[var(--green)] hover:bg-[var(--dark-green)] text-white px-8 py-3 rounded-md font-bold transition-colors">
             Discover more
-          </button>
+          </Link>
         </div>
       </section>
 
