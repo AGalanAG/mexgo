@@ -61,12 +61,12 @@
             "desc": "Sacrifice proximity for an activity more in line with your tastes."
           }
         },
-        "olaMexicoTip": "The Ola México seal highlights local businesses promoted by Fundación Coppel."
+        "olaMexicoTip": "Fundación Coppel supports local businesses for the 2026 World Cup."
       }
     },
     "business": {
       "title": "Business Registration",
-      "subtitle": "Ola México Seal",
+      "subtitle": "MexGO Business",
       "sendRequest": "Send Request",
       "step1": {
         "title": "Owner Data",

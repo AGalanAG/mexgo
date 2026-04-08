@@ -61,12 +61,12 @@
             "desc": "Sacrificar cercanía por una actividad más acorde a tus gustos."
           }
         },
-        "olaMexicoTip": "El sello Ola México destaca negocios locales impulsados por Fundación Coppel."
+        "olaMexicoTip": "Fundación Coppel impulsa negocios locales para el Mundial 2026."
       }
     },
     "business": {
       "title": "Registro de Negocio",
-      "subtitle": "Sello Ola México",
+      "subtitle": "MexGO Negocios",
       "sendRequest": "Enviar Solicitud",
       "step1": {
         "title": "Datos del Propietario",

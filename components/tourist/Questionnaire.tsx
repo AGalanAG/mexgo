@@ -91,18 +91,28 @@ const Questionnaire: React.FC = () => {
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <span className="text-sm font-bold text-[#1C42E8]">Paso {step} de {totalSteps}</span>
-          <div className="flex space-x-1">
-            {[1, 2, 3, 4].map((s) => (
-              <div
-                key={s}
-                className={`h-2 w-10 rounded-full transition-all duration-300 ${
-                  s < step ? "bg-[#1C42E8]" : s === step ? "bg-[#E8C247]" : "bg-gray-200"
-                }`}
-              />
-            ))}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => router.push('/trips')}
+              className="text-xs font-bold text-gray-300 hover:text-gray-500 border border-gray-200 hover:border-gray-300 px-3 py-1.5 rounded-xl transition-all"
+            >
+              Saltar (demo) →
+            </button>
+            <div className="flex space-x-1">
+              {[1, 2, 3, 4].map((s) => (
+                <div
+                  key={s}
+                  className={`h-2 w-10 rounded-full transition-all duration-300 ${
+                    s < step ? "bg-[#1C42E8]" : s === step ? "bg-[#E8C247]" : "bg-gray-200"
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
+
 
       {/* Step 1: Perfil y Origen */}
       {step === 1 && (
@@ -285,10 +295,7 @@ const Questionnaire: React.FC = () => {
               </button>
             ))}
           </div>
-          <div className="p-4 bg-[#DF757F]/10 rounded-2xl border border-[#DF757F]/20 text-[#DF757F] text-sm italic font-medium flex gap-3">
-            <span className="shrink-0 text-lg">💡</span>
-            <p>El sello Ola México destaca negocios locales impulsados por Fundación Coppel.</p>
-          </div>
+
         </div>
       )}
 

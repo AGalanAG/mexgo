@@ -41,7 +41,7 @@ function RegisterContent() {
       setIsLoading(false);
       setIsSuccess(true);
       setTimeout(() => {
-        router.push(type === 'business' ? '/profile' : '/onboarding');
+        router.push(type === 'business' ? '/onboarding-business' : '/onboarding');
       }, 2000);
     }, 1500);
   };
