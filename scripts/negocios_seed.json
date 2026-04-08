@@ -1,0 +1,452 @@
+[
+  {
+    "id": 1,
+    "nombre": "Hostal 1",
+    "lat": 19.429061094513763,
+    "lng": -99.12851644546586,
+    "categoria": "Taller Local",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 2,
+    "nombre": "Cafetería 2",
+    "lat": 20.68436766764735,
+    "lng": -103.46636814548098,
+    "categoria": "Cafetería",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 3,
+    "nombre": "Taller Local 3",
+    "lat": 19.43036602591536,
+    "lng": -99.13712556128931,
+    "categoria": "Hostal",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 4,
+    "nombre": "Taller Local 4",
+    "lat": 19.306366013360964,
+    "lng": -99.1482043836805,
+    "categoria": "Hostal",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 5,
+    "nombre": "Fonda 5",
+    "lat": 19.304204383235376,
+    "lng": -99.15047802130904,
+    "categoria": "Taller Local",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 6,
+    "nombre": "Taller Local 6",
+    "lat": 19.42848306164851,
+    "lng": -99.13301007406109,
+    "categoria": "Artesanías",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 7,
+    "nombre": "Artesanías 7",
+    "lat": 19.301835552907,
+    "lng": -99.15208293842903,
+    "categoria": "Hostal",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 8,
+    "nombre": "Cafetería 8",
+    "lat": 20.679816804943204,
+    "lng": -103.46724036457319,
+    "categoria": "Hostal",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 9,
+    "nombre": "Artesanías 9",
+    "lat": 20.681413913891653,
+    "lng": -103.46502771449978,
+    "categoria": "Fonda",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 10,
+    "nombre": "Taller Local 10",
+    "lat": 19.429749047767526,
+    "lng": -99.13311553386701,
+    "categoria": "Cafetería",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 11,
+    "nombre": "Taller Local 11",
+    "lat": 19.43076728309106,
+    "lng": -99.13647690883357,
+    "categoria": "Taller Local",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 12,
+    "nombre": "Artesanías 12",
+    "lat": 19.436073472366534,
+    "lng": -99.1287260402675,
+    "categoria": "Artesanías",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 13,
+    "nombre": "Cafetería 13",
+    "lat": 19.429060664673166,
+    "lng": -99.13567310756352,
+    "categoria": "Fonda",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 14,
+    "nombre": "Fonda 14",
+    "lat": 19.307250255099838,
+    "lng": -99.14850903627449,
+    "categoria": "Taller Local",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 15,
+    "nombre": "Cafetería 15",
+    "lat": 20.679354172880075,
+    "lng": -103.45776410222796,
+    "categoria": "Taller Local",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 16,
+    "nombre": "Fonda 16",
+    "lat": 19.307147818524566,
+    "lng": -99.15198535415507,
+    "categoria": "Hostal",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 17,
+    "nombre": "Cafetería 17",
+    "lat": 19.306231199690746,
+    "lng": -99.15077470130005,
+    "categoria": "Fonda",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 18,
+    "nombre": "Artesanías 18",
+    "lat": 19.30482609952378,
+    "lng": -99.15456981235606,
+    "categoria": "Fonda",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 19,
+    "nombre": "Hostal 19",
+    "lat": 19.433227358373603,
+    "lng": -99.13110782460471,
+    "categoria": "Fonda",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 20,
+    "nombre": "Hostal 20",
+    "lat": 19.305927667805218,
+    "lng": -99.149842432166,
+    "categoria": "Taller Local",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 21,
+    "nombre": "Taller Local 21",
+    "lat": 19.429539548100262,
+    "lng": -99.13454076982818,
+    "categoria": "Cafetería",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 22,
+    "nombre": "Hostal 22",
+    "lat": 20.676875877221295,
+    "lng": -103.45874833308832,
+    "categoria": "Cafetería",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 23,
+    "nombre": "Artesanías 23",
+    "lat": 19.30210108359127,
+    "lng": -99.14959024157227,
+    "categoria": "Artesanías",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 24,
+    "nombre": "Hostal 24",
+    "lat": 19.30282614306105,
+    "lng": -99.15372639831864,
+    "categoria": "Cafetería",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 25,
+    "nombre": "Hostal 25",
+    "lat": 19.437418537764515,
+    "lng": -99.13254825340546,
+    "categoria": "Artesanías",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 26,
+    "nombre": "Hostal 26",
+    "lat": 20.68225594483502,
+    "lng": -103.46328898413917,
+    "categoria": "Taller Local",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 27,
+    "nombre": "Fonda 27",
+    "lat": 20.685388028498526,
+    "lng": -103.45894729990016,
+    "categoria": "Hostal",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 28,
+    "nombre": "Fonda 28",
+    "lat": 19.300578332055295,
+    "lng": -99.15325023533427,
+    "categoria": "Artesanías",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 29,
+    "nombre": "Fonda 29",
+    "lat": 19.30746060107313,
+    "lng": -99.14927648773117,
+    "categoria": "Taller Local",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 30,
+    "nombre": "Cafetería 30",
+    "lat": 19.298842500847496,
+    "lng": -99.1508903114476,
+    "categoria": "Taller Local",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 31,
+    "nombre": "Cafetería 31",
+    "lat": 20.681402566188456,
+    "lng": -103.45822545322696,
+    "categoria": "Fonda",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 32,
+    "nombre": "Hostal 32",
+    "lat": 19.30329553425467,
+    "lng": -99.14793722140034,
+    "categoria": "Fonda",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 33,
+    "nombre": "Hostal 33",
+    "lat": 19.300565905442234,
+    "lng": -99.150060849096,
+    "categoria": "Hostal",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 34,
+    "nombre": "Artesanías 34",
+    "lat": 19.302535079727377,
+    "lng": -99.15495405341315,
+    "categoria": "Fonda",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 35,
+    "nombre": "Fonda 35",
+    "lat": 19.433564834244315,
+    "lng": -99.13399582106027,
+    "categoria": "Cafetería",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 36,
+    "nombre": "Fonda 36",
+    "lat": 20.682208784070244,
+    "lng": -103.45914339761264,
+    "categoria": "Taller Local",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 37,
+    "nombre": "Hostal 37",
+    "lat": 19.30330230841099,
+    "lng": -99.1478541300764,
+    "categoria": "Artesanías",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 38,
+    "nombre": "Taller Local 38",
+    "lat": 20.676463981981662,
+    "lng": -103.46213417383956,
+    "categoria": "Hostal",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 39,
+    "nombre": "Artesanías 39",
+    "lat": 19.299177775037272,
+    "lng": -99.15198588150294,
+    "categoria": "Taller Local",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 40,
+    "nombre": "Fonda 40",
+    "lat": 19.307118949566746,
+    "lng": -99.14960684890985,
+    "categoria": "Cafetería",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 41,
+    "nombre": "Fonda 41",
+    "lat": 20.68402641777587,
+    "lng": -103.46045767744795,
+    "categoria": "Cafetería",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 42,
+    "nombre": "Hostal 42",
+    "lat": 20.68317523198862,
+    "lng": -103.4658154712297,
+    "categoria": "Taller Local",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 43,
+    "nombre": "Artesanías 43",
+    "lat": 19.431902218293352,
+    "lng": -99.13314364554662,
+    "categoria": "Artesanías",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 44,
+    "nombre": "Artesanías 44",
+    "lat": 19.431626923669214,
+    "lng": -99.13524854717816,
+    "categoria": "Cafetería",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 45,
+    "nombre": "Artesanías 45",
+    "lat": 20.67780579411389,
+    "lng": -103.46387407504892,
+    "categoria": "Taller Local",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 46,
+    "nombre": "Fonda 46",
+    "lat": 19.301235541715382,
+    "lng": -99.1517789033436,
+    "categoria": "Taller Local",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 47,
+    "nombre": "Cafetería 47",
+    "lat": 20.677127858104168,
+    "lng": -103.45872573928587,
+    "categoria": "Artesanías",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 48,
+    "nombre": "Fonda 48",
+    "lat": 20.678186831071603,
+    "lng": -103.46136599244267,
+    "categoria": "Artesanías",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 49,
+    "nombre": "Fonda 49",
+    "lat": 19.304913627558083,
+    "lng": -99.15096895889306,
+    "categoria": "Cafetería",
+    "verificado_ola_mexico": true,
+    "saturacion_actual": 0
+  },
+  {
+    "id": 50,
+    "nombre": "Fonda 50",
+    "lat": 19.3077246914495,
+    "lng": -99.14714554353138,
+    "categoria": "Fonda",
+    "verificado_ola_mexico": false,
+    "saturacion_actual": 0
+  }
+]
