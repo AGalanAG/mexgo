@@ -8,5 +8,6 @@ export const MOCK_TOURIST_PROFILE: TouristProfile = {
   city: 'CDMX',
   borough: 'Cuauhtémoc',
   trip_motives: ['Turismo Cultural y Patrimonio', 'Gastronomía'],
+  accessibility_needs: ['none'],
   priority_factor: 'pref',
 }

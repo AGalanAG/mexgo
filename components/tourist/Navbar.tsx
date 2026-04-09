@@ -12,6 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import { useTheme } from 'next-themes';
 import { useTranslations, useLocale } from 'next-intl';
+import { clearSession, getStoredSession } from '@/lib/client-auth';
 
 export default function Navbar() {
   const t = useTranslations('Navbar');
@@ -19,6 +20,12 @@ export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const { setTheme } = useTheme();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  React.useEffect(() => {
+    const session = getStoredSession();
+    setIsAuthenticated(Boolean(session?.accessToken));
+  }, []);
 
   const [themeAnchor,   setThemeAnchor]   = useState<null | HTMLElement>(null);
   const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
@@ -51,22 +58,13 @@ export default function Navbar() {
 
         {/* Menú Central */}
         <div className="hidden md:flex gap-8 font-semibold text-sm">
-          <Link
-            href="/discover"
-            className="hover:text-[var(--secondary)] transition-colors"
-          >
+          <Link href="/discover" className="hover:text-[var(--secondary)] transition-colors">
             {t('discover')}
           </Link>
-          <Link
-            href="/trips"
-            className="hover:text-[var(--secondary)] transition-colors"
-          >
+          <Link href="/trips" className="hover:text-[var(--secondary)] transition-colors">
             {t('trips')}
           </Link>
-          <Link
-            href="/chat"
-            className="hover:text-[var(--secondary)] transition-colors"
-          >
+          <Link href="/chat" className="hover:text-[var(--secondary)] transition-colors">
             {t('chat')}
           </Link>
         </div>
@@ -116,7 +114,7 @@ export default function Navbar() {
             </MenuItem>
             <Divider />
             <MenuItem
-              onClick={() => { handleClose(); router.push('/'); }}
+              onClick={() => { handleClose(); clearSession(); setIsAuthenticated(false); router.push('/'); }}
               sx={{ fontSize: 14, fontWeight: 700, color: 'error.main', gap: 1.5 }}
             >
               <LogoutIcon fontSize="small" /> Cerrar sesión

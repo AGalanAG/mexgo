@@ -3,6 +3,7 @@
 export type RoleCode =
   | 'TURISTA'
   | 'ENCARGADO_NEGOCIO'
+  | 'EMPLEADO_NEGOCIO'
   | 'ADMIN'
   | 'SUPERADMIN'
 
@@ -99,6 +100,7 @@ export interface BusinessRequest {
   operationModesOther?: string
   satStatus: SatStatus
   socialLinks: string[]
+  accessibilityNeeds: string[]
   adaptationForWorldCup: string
   supportUsage: string
   trainingCampusPreference: TrainingCampus
@@ -218,6 +220,7 @@ export interface TouristProfile {
   city: string
   borough: string
   trip_motives: string[]
+  accessibility_needs: string[]
   priority_factor: string
 }
 

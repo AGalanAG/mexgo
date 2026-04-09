@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+import { assignRoleToUser, normalizeRoleCode } from '@/lib/auth-helpers';
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
 import { getSupabaseAdmin } from '@/lib/supabase';
 
@@ -10,6 +11,8 @@ interface RegisterBody {
   fullName?: unknown;
   language?: unknown;
   countryOfOrigin?: unknown;
+  roleCode?: unknown;
+  adminRegistrationToken?: unknown;
 }
 
 function isValidEmail(value: string) {
@@ -27,6 +30,11 @@ function getAnonClient() {
   return createClient(supabaseUrl, supabaseAnonKey);
 }
 
+async function cleanupAuthUser(userId: string) {
+  const { error } = await getSupabaseAdmin().auth.admin.deleteUser(userId);
+  return { ok: !error, error };
+}
+
 export async function POST(request: NextRequest) {
   let body: RegisterBody;
 
@@ -36,25 +44,57 @@ export async function POST(request: NextRequest) {
     return apiError('VALIDATION_ERROR', 'Body JSON invalido', 400);
   }
 
-  const { email, password, fullName, language, countryOfOrigin } = body;
+  const { email, password, fullName, language, countryOfOrigin, roleCode, adminRegistrationToken } = body;
 
-  if (
-    !isNonEmptyString(email) ||
-    !isNonEmptyString(password) ||
-    !isNonEmptyString(fullName) ||
-    !isNonEmptyString(language) ||
-    !isNonEmptyString(countryOfOrigin)
-  ) {
+  const normalizedRoleCode = normalizeRoleCode(roleCode ?? 'TURISTA');
+
+  if (!isNonEmptyString(email) || !isNonEmptyString(password) || !isNonEmptyString(fullName)) {
     return apiError(
       'VALIDATION_ERROR',
-      'email, password, fullName, language y countryOfOrigin son obligatorios',
+      'email, password y fullName son obligatorios',
       400,
     );
+  }
+
+  if (!normalizedRoleCode || normalizedRoleCode === 'SUPERADMIN') {
+    return apiError(
+      'VALIDATION_ERROR',
+      'roleCode invalido. Valores permitidos: TURISTA, ENCARGADO_NEGOCIO, EMPLEADO_NEGOCIO, ADMIN',
+      400,
+    );
+  }
+
+  if (normalizedRoleCode === 'ADMIN') {
+    const expectedAdminToken = process.env.AUTH_ADMIN_REGISTRATION_TOKEN;
+    if (!isNonEmptyString(expectedAdminToken)) {
+      return apiError(
+        'INTERNAL_ERROR',
+        'No esta configurado AUTH_ADMIN_REGISTRATION_TOKEN para registro ADMIN',
+        500,
+      );
+    }
+
+    if (!isNonEmptyString(adminRegistrationToken) || adminRegistrationToken !== expectedAdminToken) {
+      return apiError('FORBIDDEN', 'Token de registro ADMIN invalido', 403);
+    }
   }
 
   const normalizedEmail = email.trim().toLowerCase();
   if (!isValidEmail(normalizedEmail)) {
     return apiError('VALIDATION_ERROR', 'email tiene formato invalido', 400);
+  }
+
+  const resolvedLanguage = isNonEmptyString(language) ? language.trim() : 'es';
+  const resolvedCountryOfOrigin = isNonEmptyString(countryOfOrigin) ? countryOfOrigin.trim() : 'MX';
+
+  if (normalizedRoleCode === 'TURISTA') {
+    if (!isNonEmptyString(language) || !isNonEmptyString(countryOfOrigin)) {
+      return apiError(
+        'VALIDATION_ERROR',
+        'language y countryOfOrigin son obligatorios para rol TURISTA',
+        400,
+      );
+    }
   }
 
   const anonClient = getAnonClient();
@@ -88,6 +128,7 @@ export async function POST(request: NextRequest) {
     await getSupabaseAdmin().auth.admin.getUserById(userId);
 
   if (adminUserError || !adminUserData.user) {
+    await cleanupAuthUser(userId);
     return apiError(
       'INTERNAL_ERROR',
       'El usuario no existe en auth.users del proyecto configurado en service role. Revisa que NEXT_PUBLIC_SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY pertenezcan al mismo proyecto.',
@@ -98,43 +139,26 @@ export async function POST(request: NextRequest) {
   const { error: profileError } = await getSupabaseAdmin().from('users_profile').upsert({
     id: userId,
     full_name: fullName,
-    language_code: language,
-    country_of_origin: countryOfOrigin,
+    language_code: resolvedLanguage,
+    country_of_origin: resolvedCountryOfOrigin,
     email_verified: false,
   });
 
   if (profileError) {
+    await cleanupAuthUser(userId);
     return apiError('INTERNAL_ERROR', profileError.message, 500);
   }
 
-  const { data: roleRows, error: roleError } = await getSupabaseAdmin()
-    .from('roles')
-    .select('id')
-    .eq('code', 'TURISTA')
-    .limit(1);
-
-  if (roleError || !roleRows || roleRows.length === 0) {
-    return apiError('INTERNAL_ERROR', 'No se encontro rol TURISTA', 500);
-  }
-
-  const turistaRoleId = roleRows[0].id;
-
-  const { error: userRoleError } = await getSupabaseAdmin().from('user_roles').upsert(
-    {
-      user_id: userId,
-      role_id: turistaRoleId,
-      created_by: userId,
-    },
-    { onConflict: 'user_id,role_id' },
-  );
-
-  if (userRoleError) {
-    return apiError('INTERNAL_ERROR', userRoleError.message, 500);
+  const roleAssignment = await assignRoleToUser(userId, normalizedRoleCode, userId);
+  if (!roleAssignment.ok) {
+    await cleanupAuthUser(userId);
+    return apiError('INTERNAL_ERROR', roleAssignment.error, 500);
   }
 
   return apiOk(
     {
       userId,
+      roleCode: normalizedRoleCode,
       emailVerificationSent: true,
     },
     201,
