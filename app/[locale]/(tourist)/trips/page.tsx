@@ -13,9 +13,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import MapboxMap, { MapMarker } from '@/components/tourist/MapboxMap';
 import { useTranslations } from 'next-intl';
-import { useRouter } from '@/i18n/routing'; // Navegación i18n
+import { useRouter } from '@/i18n/routing';
 import type { ItineraryStop } from '@/types/types';
-import { MOCK_BUSINESSES } from '@/lib/businesses';
 import { getStoredAccessToken } from '@/lib/client-auth';
 
 interface Stop {
@@ -25,6 +24,13 @@ interface Stop {
   lng: number;
   lat: number;
   businessProfileId?: string;
+}
+
+interface DirectoryBusiness {
+  businessId: string;
+  businessName: string;
+  latitude: number;
+  longitude: number;
 }
 
 function toStop(s: ItineraryStop): Stop {
@@ -57,8 +63,9 @@ function loadFromLS(): Stop[] {
 
 export default function TripsPage() {
   const t = useTranslations('Trips');
-  const router = useRouter(); // router restaurado
+  const router = useRouter();
   const [stops, setStops] = useState<Stop[]>([]);
+  const [directoryBusinesses, setDirectoryBusinesses] = useState<DirectoryBusiness[]>([]);
   const [hasLocationPermission, setHasLocationPermission] = useState(true);
 
   useEffect(() => {
@@ -73,13 +80,30 @@ export default function TripsPage() {
             const paradas = result.data as ItineraryStop[];
             setStops(paradas.map(toStop));
             localStorage.setItem(LS_KEY, JSON.stringify(paradas));
+          } else {
+            // API responded but not ok — fallback to localStorage
+            setStops(loadFromLS());
           }
         })
-        .catch(() => { /* mantener vacío si falla */ });
+        .catch(() => {
+          // Network failure — fallback to localStorage
+          setStops(loadFromLS());
+        });
+    } else {
+      // Guest mode — load from localStorage
+      setStops(loadFromLS());
     }
 
     const perm = localStorage.getItem('mexgo_location_permission');
     if (perm === 'denied') setHasLocationPermission(false);
+
+    // Cargar negocios del directorio para el mapa
+    fetch('/api/directory/businesses')
+      .then(r => r.json())
+      .then(result => {
+        if (result.ok) setDirectoryBusinesses(result.data.items as DirectoryBusiness[]);
+      })
+      .catch(() => { /* ignore */ });
   }, []);
 
   const moveStop = (index: number, direction: 'up' | 'down') => {
@@ -111,6 +135,14 @@ export default function TripsPage() {
         saveToLS(itinerary.filter(s => s.id !== id));
       }
     } catch { /* ignore */ }
+
+    const token = getStoredAccessToken();
+    if (token) {
+      fetch(`/api/itinerary/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => { /* ignore */ });
+    }
   };
 
   const handleMarkerClick = (id: string) => {
@@ -118,28 +150,28 @@ export default function TripsPage() {
   };
 
   const markers: MapMarker[] = [
-    ...MOCK_BUSINESSES.map(b => {
-      const stopIndex = stops.findIndex(s => s.businessProfileId === b.id);
+    ...directoryBusinesses.map(b => {
+      const stopIndex = stops.findIndex(s => s.businessProfileId === b.businessId);
       const isInItinerary = stopIndex !== -1;
       return {
         lng: b.longitude,
         lat: b.latitude,
         label: isInItinerary ? `${stopIndex + 1}. ${b.businessName}` : b.businessName,
         color: isInItinerary ? '#22c55e' : '#004891',
-        businessProfileId: b.id,
-        onClick: handleMarkerClick
+        businessProfileId: b.businessId,
+        onClick: handleMarkerClick,
       };
     }),
     ...stops
-      .filter(s => !MOCK_BUSINESSES.some(b => b.id === s.businessProfileId))
+      .filter(s => !directoryBusinesses.some(b => b.businessId === s.businessProfileId))
       .map(s => ({
         lng: s.lng,
         lat: s.lat,
         label: `${stops.indexOf(s) + 1}. ${s.name}`,
         color: '#22c55e',
         businessProfileId: s.businessProfileId,
-        onClick: handleMarkerClick
-      }))
+        onClick: handleMarkerClick,
+      })),
   ];
 
   return (

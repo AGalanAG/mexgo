@@ -11,6 +11,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { motion } from 'framer-motion';
 import MapboxMap from '@/components/tourist/MapboxMap';
+import { getStoredAccessToken } from '@/lib/client-auth';
 
 /**
  * Interface for place details
@@ -35,43 +36,58 @@ export default function PlaceDetailPage() {
   const [adding, setAdding] = useState(false);
   const [addError, setAddError] = useState('');
 
-  function handleAddToItinerary() {
+  async function handleAddToItinerary() {
     if (!place) return;
-    try {
-      setAdding(true);
-      setAddError('');
-      
-      const raw = localStorage.getItem('mexgo_itinerary');
-      const itinerary: ItineraryStop[] = raw ? JSON.parse(raw) : [];
+    setAdding(true);
+    setAddError('');
 
-      // Validar si ya existe para evitar duplicados
-      const alreadyIn = itinerary.some(s => s.businessProfileId === place.id);
-      if (alreadyIn) {
-        router.push('/trips');
-        return;
+    try {
+      const token = getStoredAccessToken();
+      const today = new Date().toISOString().split('T')[0];
+
+      if (token) {
+        const res = await fetch('/api/itinerary', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ negocio_id: place.id, nombre: place.name, dia: today, hora: '10:00' }),
+        });
+        if (!res.ok) {
+          const data = await res.json() as { error?: { message?: string } };
+          setAddError(data.error?.message || 'No se pudo agregar');
+          setAdding(false);
+          return;
+        }
+        // Keep localStorage in sync so ChatUI / Gemini sees the new stop
+        const resData = await res.json() as { ok: boolean; data?: ItineraryStop };
+        if (resData.ok && resData.data) {
+          const raw = localStorage.getItem('mexgo_itinerary');
+          const itinerary: ItineraryStop[] = raw ? JSON.parse(raw) : [];
+          localStorage.setItem('mexgo_itinerary', JSON.stringify([...itinerary, resData.data]));
+        }
+      } else {
+        // Sin token: solo localStorage
+        const raw = localStorage.getItem('mexgo_itinerary');
+        const itinerary: ItineraryStop[] = raw ? JSON.parse(raw) : [];
+        if (itinerary.some(s => s.businessProfileId === place.id)) {
+          router.push('/trips');
+          return;
+        }
+        const newStop: ItineraryStop = {
+          id: `stop-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          itineraryId: 'local',
+          routeDate: today,
+          stopOrder: itinerary.length + 1,
+          stopType: 'BUSINESS',
+          businessProfileId: place.id,
+          label: place.name,
+          startTime: '10:00',
+          latitude: Number(place.lat),
+          longitude: Number(place.lng),
+          createdAt: new Date().toISOString(),
+        };
+        localStorage.setItem('mexgo_itinerary', JSON.stringify([...itinerary, newStop]));
       }
 
-      const today = new Date().toISOString().split('T')[0];
-      const newStop: ItineraryStop = {
-        id: `stop-${Date.now()}`,
-        itineraryId: 'local',
-        routeDate: today,
-        stopOrder: itinerary.length + 1,
-        stopType: 'BUSINESS',
-        businessProfileId: place.id,
-        label: place.name,
-        startTime: '10:00',
-        latitude: Number(place.lat),
-        longitude: Number(place.lng),
-        createdAt: new Date().toISOString(),
-      };
-
-      const updatedItinerary = [...itinerary, newStop];
-      localStorage.setItem('mexgo_itinerary', JSON.stringify(updatedItinerary));
-      
-      // Forzar un evento de storage para que otras pestañas/componentes se enteren si es necesario
-      window.dispatchEvent(new Event('storage'));
-      
       router.push('/trips');
     } catch (err) {
       console.error('Error adding to itinerary:', err);
@@ -81,27 +97,63 @@ export default function PlaceDetailPage() {
   }
 
   useEffect(() => {
+    function applyNegocio(found: NegocioConScore) {
+      setPlace({
+        id: found.id,
+        name: found.businessName,
+        rating: 4.5,
+        user_ratings_total: found.score ?? 0,
+        address: `${found.neighborhood}, ${found.boroughCode}`,
+        description: found.businessDescription,
+        opening_hours: found.operationDaysHours
+          ? found.operationDaysHours.split(',').map(h => h.trim())
+          : ['Horario no disponible'],
+        photos: found.coverImageUrl
+          ? [found.coverImageUrl]
+          : ['https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&q=80'],
+        lng: found.longitude,
+        lat: found.latitude,
+      });
+    }
+
+    // Try localStorage first (fast path)
     const stored = localStorage.getItem('mexgo_recommendations');
-    if (!stored) return;
-    const recommendations: NegocioConScore[] = JSON.parse(stored);
-    const found = recommendations.find(r => r.id === id);
-    if (!found) return;
-    setPlace({
-      id: found.id,
-      name: found.businessName,
-      rating: 4.5,
-      user_ratings_total: found.estimatedWalkMinutes,
-      address: `${found.neighborhood}, ${found.boroughCode}`,
-      description: found.businessDescription,
-      opening_hours: found.operationDaysHours
-        ? found.operationDaysHours.split(',').map(h => h.trim())
-        : ['Horario no disponible'],
-      photos: found.coverImageUrl
-        ? [found.coverImageUrl]
-        : ['https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&q=80'],
-      lng: found.longitude,
-      lat: found.latitude,
-    });
+    if (stored) {
+      const recommendations: NegocioConScore[] = JSON.parse(stored);
+      const found = recommendations.find(r => r.id === id);
+      if (found) { applyNegocio(found); return; }
+    }
+
+    // Fallback: fetch from API when navigating directly to this URL
+    fetch('/api/directory/businesses')
+      .then(r => r.json())
+      .then((payload: { ok: boolean; data?: { items?: Array<{ businessId: string; businessName: string; businessDescription: string; borough: string; neighborhood: string; latitude: number; longitude: number; operationDaysHours: string | null; coverImageUrl: string | null; publicScore?: number }> } }) => {
+        if (!payload.ok) return;
+        const item = (payload.data?.items ?? []).find(b => b.businessId === id);
+        if (!item) return;
+        applyNegocio({
+          id: item.businessId,
+          businessRequestId: item.businessId,
+          ownerUserId: 'public-directory',
+          businessName: item.businessName,
+          businessDescription: item.businessDescription,
+          boroughCode: item.borough,
+          neighborhood: item.neighborhood,
+          latitude: Number(item.latitude),
+          longitude: Number(item.longitude),
+          locationSource: 'directory',
+          operationDaysHours: item.operationDaysHours ?? 'Horario no disponible',
+          socialLinks: [],
+          coverImageUrl: item.coverImageUrl ?? undefined,
+          isActive: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          score: Number(item.publicScore ?? 0),
+          reasons: [],
+          estimatedWalkMinutes: 10,
+        });
+      })
+      .catch(() => { /* leave spinner */ });
   }, [id]);
 
   if (!place) {

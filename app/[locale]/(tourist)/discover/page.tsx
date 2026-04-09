@@ -163,10 +163,22 @@ export default function DiscoverPage() {
         }
       } catch {
         if (!cancelled && !append) {
-          setRecommendations([]);
-          setTotalResults(0);
+          // Try to show cached data instead of wiping it
+          const cached = localStorage.getItem('mexgo_recommendations');
+          if (cached) {
+            try {
+              const parsed: NegocioConScore[] = JSON.parse(cached);
+              setRecommendations(parsed);
+              setTotalResults(parsed.length);
+            } catch {
+              setRecommendations([]);
+              setTotalResults(0);
+            }
+          } else {
+            setRecommendations([]);
+            setTotalResults(0);
+          }
           setCurrentPage(1);
-          localStorage.setItem('mexgo_recommendations', JSON.stringify([]));
         }
       } finally {
         if (!cancelled) {
