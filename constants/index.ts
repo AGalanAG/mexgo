@@ -15,6 +15,7 @@ PERFIL DEL TURISTA:
 - Duración del viaje: ${perfil.stay_duration}
 - Ciudad/zona: ${perfil.city} — ${perfil.borough}
 - Intereses: ${perfil.trip_motives.join(', ')}
+- Necesidades de accesibilidad: ${perfil.accessibility_needs.length > 0 ? perfil.accessibility_needs.join(', ') : 'No especificadas'}
 - Prioridad: ${perfil.priority_factor === 'prox' ? 'proximidad al destino' : 'preferencia de actividad sobre cercanía'}
 `
     : ''

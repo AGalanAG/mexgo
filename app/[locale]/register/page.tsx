@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { useLogin } from '@/context/LoginContext';
+import { saveSession } from '@/lib/client-auth';
 
 function RegisterContent() {
   const t = useTranslations('Register');
@@ -21,7 +22,7 @@ function RegisterContent() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [error, setError] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -31,74 +32,76 @@ function RegisterContent() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    if (error) setError('');
+    if (errorMessage) setErrorMessage('');
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.email || !formData.password || !formData.name) return;
 
     setIsLoading(true);
-    setError('');
+    setErrorMessage('');
 
     try {
-      const res = await fetch('/api/auth/register', {
+      const roleCode = type === 'business' ? 'ENCARGADO_NEGOCIO' : 'TURISTA';
+
+      const registerResponse = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
           fullName: formData.name,
+          roleCode,
           language: 'es',
           countryOfOrigin: 'MX',
         }),
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        if (data?.error?.code === 'CONFLICT') {
-          setError('Este email ya está registrado');
-          setIsLoading(false);
-          return;
-        }
-        if (data?.error?.code === 'RATE_LIMITED') {
-          setError('Demasiados intentos. Espera un momento.');
-          setIsLoading(false);
-          return;
-        }
-        // Otros errores de infraestructura: continuar para el demo
+      const registerResult = await registerResponse.json();
+      if (!registerResponse.ok || !registerResult?.ok) {
+        throw new Error(registerResult?.error?.message || 'No fue posible completar el registro');
       }
-    } catch {
-      // Error de red: continuar para el demo
-    }
 
-    localStorage.setItem('mexgo_session', JSON.stringify({
-      name: formData.name,
-      email: formData.email,
-    }));
+      const loginResponse = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
-    // Solicitar permiso de ubicación para el demo
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          localStorage.setItem('mexgo_location_permission', 'granted');
-          localStorage.setItem('mexgo_last_location', JSON.stringify({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          }));
-        },
-        () => {
-          localStorage.setItem('mexgo_location_permission', 'denied');
+      const loginResult = await loginResponse.json();
+      if (!loginResponse.ok || !loginResult?.ok) {
+        throw new Error(loginResult?.error?.message || 'Registro correcto, pero fallo el inicio de sesion automatico');
+      }
+
+      const session = loginResult.data?.session;
+      saveSession({
+        accessToken: session.accessToken,
+        refreshToken: session.refreshToken,
+        expiresAt: session.expiresAt,
+        tokenType: session.tokenType,
+        user: loginResult.data?.user,
+        roleCodes: loginResult.data?.roleCodes,
+        primaryRole: loginResult.data?.primaryRole,
+      });
+
+      setIsLoading(false);
+      setIsSuccess(true);
+      setTimeout(() => {
+        if (type === 'business') {
+          window.location.assign('/profile');
+          return;
         }
-      );
-    }
 
-    setIsLoading(false);
-    setIsSuccess(true);
-    setTimeout(() => {
-      router.push(type === 'business' ? '/onboarding-business' : '/onboarding');
-    }, 1500);
+        router.push('/onboarding');
+      }, 2000);
+    } catch (error) {
+      setIsLoading(false);
+      setErrorMessage(error instanceof Error ? error.message : 'No fue posible crear la cuenta');
+    }
   };
 
   const colorClass = type === 'business' ? 'bg-[var(--coppel-blue)]' : 'bg-[var(--green)]';
@@ -124,13 +127,7 @@ function RegisterContent() {
               <p className="text-gray-500 text-sm">{t('subtitle')}</p>
             </div>
 
-            {error && (
-              <div className="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleRegister} className="space-y-4">
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider pl-1">{t('form.name')}</label>
                 <Input 
@@ -182,6 +179,12 @@ function RegisterContent() {
                   </span>
                 ) : t('form.submit')}
               </Button>
+
+              {errorMessage && (
+                <p className="text-sm text-red-500 font-medium">
+                  {errorMessage}
+                </p>
+              )}
 
               <div className="relative my-8">
                 <div className="absolute inset-0 flex items-center">

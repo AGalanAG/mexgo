@@ -22,6 +22,18 @@
         "ageOptions": {
           "yes": "Si",
           "no": "No"
+        },
+        "accessibilityLabel": "¿Tienes alguna necesidad de accesibilidad o capacidad diferente?",
+        "accessibilityHint": "Selecciona todas las que apliquen. Si no aplica, elige \"Ninguna\".",
+        "accessibilityOptions": {
+          "none": "Ninguna",
+          "deaf": "Sordera",
+          "mute": "Mudez",
+          "deaf_mute": "Sordomudez",
+          "low_vision": "Baja visión",
+          "blindness": "Ceguera",
+          "mobility": "Movilidad reducida",
+          "other": "Otra condición"
         }
       },
       "step2": {

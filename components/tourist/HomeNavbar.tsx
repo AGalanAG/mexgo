@@ -12,14 +12,29 @@ import { useTheme } from 'next-themes';
 import { useLogin } from '@/context/LoginContext';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter, usePathname, Link } from '@/i18n/routing';
+import { clearSession, getStoredSession } from '@/lib/client-auth';
+import { useSearchParams } from 'next/navigation';
 
 export default function HomeNavbar() {
   const t = useTranslations('Navbar');
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { setTheme } = useTheme();
   const { openLogin, openRegister } = useLogin();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  React.useEffect(() => {
+    const session = getStoredSession();
+    setIsAuthenticated(Boolean(session?.accessToken));
+  }, []);
+
+  React.useEffect(() => {
+    if (searchParams.get('login') === '1') {
+      openLogin();
+    }
+  }, [openLogin, searchParams]);
 
   const [langAnchor,    setLangAnchor]    = useState<null | HTMLElement>(null);
   const [themeAnchor,   setThemeAnchor]   = useState<null | HTMLElement>(null);
@@ -50,53 +65,40 @@ export default function HomeNavbar() {
         <Link href="#"         className="hover:text-gray-300 transition-colors">{t('more')}</Link>
       </div>
 
-      {/* Acciones */}
-      <div className="flex gap-4 items-center">
-
-        {/* ── Desktop: botones de texto ── */}
-        <div className="hidden md:flex gap-4 items-center">
-          <button
-            onClick={openLogin}
-            className="text-sm font-medium hover:text-gray-300 transition-colors"
-          >
-            {t('login')}
-          </button>
-          <button
-            onClick={openRegister}
-            className="text-sm font-medium bg-white/10 hover:bg-white/20 border border-white/25 px-4 py-1.5 rounded-full transition-all"
-          >
-            {t('register')}
-          </button>
-        </div>
-
-        {/* ── Mobile: ícono de cuenta que abre menú ── */}
-        <button
-          className="md:hidden p-1 hover:text-gray-300 transition-colors"
-          onClick={(e) => setAccountAnchor(e.currentTarget)}
-          aria-label="Cuenta"
-        >
-          <PersonOutlinedIcon fontSize="medium" />
-        </button>
-        <Menu
-          anchorEl={accountAnchor}
-          open={Boolean(accountAnchor)}
-          onClose={handleClose}
-          slotProps={{ paper: { sx: { mt: 1, borderRadius: 2, minWidth: 180 } } }}
-        >
-          <MenuItem
-            onClick={() => { handleClose(); openLogin(); }}
-            sx={{ fontSize: 14, fontWeight: 700, gap: 1.5 }}
-          >
-            <LoginIcon fontSize="small" /> {t('login')}
-          </MenuItem>
-          <Divider />
-          <MenuItem
-            onClick={() => { handleClose(); openRegister(); }}
-            sx={{ fontSize: 14, fontWeight: 700, gap: 1.5 }}
-          >
-            <AppRegistrationIcon fontSize="small" /> {t('register')}
-          </MenuItem>
-        </Menu>
+      {/* Iconos y Botones */}
+      <div className="flex gap-5 items-center">
+        {!isAuthenticated ? (
+          <>
+            <button 
+              onClick={openLogin}
+              className="text-sm font-medium hover:text-gray-300 transition-colors"
+            >
+              {t('login')}
+            </button>
+            <button 
+              onClick={openRegister}
+              className="text-sm font-medium hover:text-gray-300 transition-colors hidden sm:block"
+            >
+              {t('register')}
+            </button>
+          </>
+        ) : (
+          <>
+            <Link href="/profile" className="text-sm font-medium hover:text-gray-300 transition-colors">
+              Perfil
+            </Link>
+            <button
+              onClick={() => {
+                clearSession();
+                setIsAuthenticated(false);
+                router.push('/');
+              }}
+              className="text-sm font-medium hover:text-gray-300 transition-colors hidden sm:block"
+            >
+              Salir
+            </button>
+          </>
+        )}
 
         {/* Idioma */}
         <button

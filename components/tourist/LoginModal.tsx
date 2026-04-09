@@ -2,6 +2,11 @@
 
 import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
+import { useRouter } from '@/i18n/routing';
+import { useLocale } from 'next-intl';
+
+import { saveSession } from '@/lib/client-auth';
+import { useLogin } from '@/context/LoginContext';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -9,7 +14,75 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+  const router = useRouter();
+  const locale = useLocale();
+  const { openRegister } = useLogin();
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
+
   if (!isOpen) return null;
+
+  const handleLogin = async () => {
+    if (!email.trim() || !password) {
+      setErrorMessage('Email y password son obligatorios');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setErrorMessage('');
+
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result?.ok) {
+        throw new Error(result?.error?.message || 'Credenciales invalidas');
+      }
+
+      const session = result.data?.session;
+      saveSession({
+        accessToken: session.accessToken,
+        refreshToken: session.refreshToken,
+        expiresAt: session.expiresAt,
+        tokenType: session.tokenType,
+        user: result.data?.user,
+        roleCodes: result.data?.roleCodes,
+        primaryRole: result.data?.primaryRole,
+      });
+
+      onClose();
+
+      const primaryRole = result.data?.primaryRole;
+      if (primaryRole === 'ENCARGADO_NEGOCIO' || primaryRole === 'EMPLEADO_NEGOCIO') {
+        window.location.assign('/profile');
+        return;
+      }
+
+      if (primaryRole === 'ADMIN' || primaryRole === 'SUPERADMIN') {
+        window.location.assign('/requests');
+        return;
+      }
+
+      router.push('/profile');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'No fue posible iniciar sesion');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleLogin();
+    }
+  };
 
   return (
     <div
@@ -56,6 +129,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 placeholder="username@gmail.com"
                 className="w-full px-4 py-3 rounded-xl text-sm bg-white/90 text-gray-700 placeholder-gray-400 outline-none focus:ring-2 focus:ring-white/60 transition-all"
                 style={{ border: 'none' }}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={onKeyDown}
               />
             </div>
 
@@ -67,6 +143,9 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 placeholder="Password"
                 className="w-full px-4 py-3 rounded-xl text-sm bg-white/90 text-gray-700 placeholder-gray-400 outline-none focus:ring-2 focus:ring-white/60 transition-all"
                 style={{ border: 'none' }}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={onKeyDown}
               />
             </div>
 
@@ -79,14 +158,20 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
             {/* Botón Sign in */}
             <button
+              onClick={handleLogin}
+              disabled={isSubmitting}
               className="w-full py-3.5 rounded-xl font-bold text-white text-sm transition-all duration-200 hover:opacity-90 active:scale-[0.98] mt-2"
               style={{
                 background: '#1a3461',
                 boxShadow: '0 4px 15px rgba(26, 52, 97, 0.4)',
               }}
             >
-              Sign in
+              {isSubmitting ? 'Entrando...' : 'Sign in'}
             </button>
+
+            {errorMessage && (
+              <p className="text-xs text-red-200 font-semibold">{errorMessage}</p>
+            )}
           </div>
 
           {/* Divider */}
@@ -115,7 +200,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <div className="mt-6 text-center">
             <p className="text-xs text-white/60">
               Don't have an account yet?{' '}
-              <button className="text-green-400 font-bold hover:text-green-300 hover:underline transition-colors">
+              <button
+                onClick={() => {
+                  onClose();
+                  openRegister();
+                }}
+                className="text-green-400 font-bold hover:text-green-300 hover:underline transition-colors"
+              >
                 Register for free
               </button>
             </p>

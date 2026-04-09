@@ -12,6 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import { useTheme } from 'next-themes';
 import { useTranslations, useLocale } from 'next-intl';
+import { clearSession, getStoredSession } from '@/lib/client-auth';
 
 interface NavbarProps {
   variant?: 'dark' | 'light';
@@ -24,6 +25,12 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { setTheme } = useTheme();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  React.useEffect(() => {
+    const session = getStoredSession();
+    setIsAuthenticated(Boolean(session?.accessToken));
+  }, []);
 
   const [themeAnchor, setThemeAnchor] = useState<null | HTMLElement>(null);
   const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
@@ -78,34 +85,27 @@ export default function Navbar({ variant = 'dark' }: NavbarProps) {
         </button>
 
         {/* Perfil */}
-        <button
-          onClick={(e) => setProfileAnchor(e.currentTarget)}
-          className="hover:opacity-70 transition-opacity"
-        >
-          <AccountCircleIcon fontSize="medium" />
-        </button>
-        <Menu
-          anchorEl={profileAnchor}
-          open={Boolean(profileAnchor)}
-          onClose={handleClose}
-          slotProps={{ paper: { sx: { mt: 1, borderRadius: 2, minWidth: 180 } } }}
-        >
-          <MenuItem
-            onClick={handleClose}
-            component={Link}
-            href="/profile"
-            sx={{ fontSize: 14, fontWeight: 700, gap: 1.5 }}
-          >
-            <PersonIcon fontSize="small" /> Mi perfil
-          </MenuItem>
-          <Divider />
-          <MenuItem
-            onClick={() => { handleClose(); router.push('/'); }}
-            sx={{ fontSize: 14, fontWeight: 700, color: 'error.main', gap: 1.5 }}
-          >
-            <LogoutIcon fontSize="small" /> Cerrar sesión
-          </MenuItem>
-        </Menu>
+        {isAuthenticated ? (
+          <>
+            <Link href="/profile" className="hover:opacity-70 transition-opacity">
+              <AccountCircleIcon fontSize="medium" />
+            </Link>
+            <button
+              onClick={() => {
+                clearSession();
+                setIsAuthenticated(false);
+                router.push('/');
+              }}
+              className="text-xs font-bold uppercase tracking-wider hover:opacity-70 transition-opacity"
+            >
+              Salir
+            </button>
+          </>
+        ) : (
+          <Link href="/" className="hover:opacity-70 transition-opacity">
+            <AccountCircleIcon fontSize="medium" />
+          </Link>
+        )}
 
         {/* Dark Mode */}
         <button

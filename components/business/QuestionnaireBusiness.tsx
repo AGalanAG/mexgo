@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { getStoredAccessToken } from "@/lib/client-auth";
 import { useRouter } from "@/i18n/routing";
-import { useTranslations } from "next-intl";
 
 const ALCALDIAS = [
   "Álvaro Obregón", "Azcapotzalco", "Benito Juárez", "Coyoacán", "Cuajimalpa",
@@ -27,20 +27,31 @@ const SAT_STATUS = [
   { id: "no_no_interesa", label: "No y no me interesa" },
 ];
 
+const ACCESSIBILITY_NEEDS_OPTIONS = [
+  { id: 'none', label: 'Ninguna' },
+  { id: 'deaf', label: 'Sordera' },
+  { id: 'mute', label: 'Mudez' },
+  { id: 'deaf_mute', label: 'Sordomudez' },
+  { id: 'low_vision', label: 'Baja visión' },
+  { id: 'blindness', label: 'Ceguera' },
+  { id: 'mobility', label: 'Movilidad reducida' },
+  { id: 'other', label: 'Otra condición' },
+] as const;
+
 const SEDES_CAPACITACION = [
   {
     id: "HUB_AZTECA",
-    label: "HUB Azteca",
-    sublabel: "Al lado del Estadio Azteca",
-    desc: "C. San Julio 6, Sta. Úrsula Coapa, Coyoacán, 04600 Ciudad de México, CDMX",
-    icon: "🏟️",
+    label: "HUB AZTECA",
+    sublabel: "A un costado del Estadio Azteca",
+    desc: "C. San Julio 6 Circuito Estadio Azteca, Santa Úrsula, Coyoacán 04600",
+    icon: "Sede 1",
   },
   {
     id: "MIDE",
     label: "MIDE",
-    sublabel: "Cerca al Centro Histórico",
-    desc: "Calle de Tacuba 17, Centro Histórico, Alcaldía Cuauhtémoc, Ciudad de México, C.P. 06000",
-    icon: "🏛️",
+    sublabel: "Museo Interactivo de Economía",
+    desc: "C. de Tacuba 17, Centro, Cuauhtémoc, 06000 Ciudad de México, CDMX",
+    icon: "Sede 2",
   },
 ];
 
@@ -49,6 +60,7 @@ interface FormState {
   nombre_completo: string;
   edad: string;
   genero: string;
+  accessibility_needs: string[];
   // Step 2
   alcaldia: string;
   colonia_y_maps: string;
@@ -70,6 +82,8 @@ interface FormState {
   adaptacion_mundial: string;
   uso_apoyo: string;
   sede_presencial: string;
+  correo_electronico: string;
+  whatsapp: string;
 }
 
 // Reusable styled input
@@ -86,18 +100,19 @@ const inputCls = "w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[
 const selectCls = "w-full p-4 border-2 border-gray-100 rounded-2xl outline-none focus:border-[#004891] text-gray-900 bg-gray-50/50 cursor-pointer text-sm";
 
 const QuestionnaireBusiness: React.FC = () => {
-  const t = useTranslations("Questionnaire");
   const router = useRouter();
   const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const totalSteps = 5;
 
   const [formData, setFormData] = useState<FormState>({
-    nombre_completo: "", edad: "", genero: "",
+    nombre_completo: "", edad: "", genero: "", accessibility_needs: [],
     alcaldia: "", colonia_y_maps: "", sede_previa: "",
     mujeres_empleadas: "", hombres_empleados: "",
     nombre_negocio: "", descripcion_negocio: "", antiguedad: "", tiempo_continuo: "", horarios: "",
     formas_operacion: [], otra_forma_venta: "", sat_status: "", redes_sociales: "",
     adaptacion_mundial: "", uso_apoyo: "", sede_presencial: "",
+    correo_electronico: "", whatsapp: "",
   });
 
   const set = (field: keyof FormState, value: string) =>
@@ -111,21 +126,40 @@ const QuestionnaireBusiness: React.FC = () => {
         : [...prev.formas_operacion, opt],
     }));
 
+  const toggleAccessibilityNeed = (need: string) =>
+    setFormData((prev) => {
+      if (need === 'none') {
+        return { ...prev, accessibility_needs: ['none'] };
+      }
+
+      const withoutNone = prev.accessibility_needs.filter((item) => item !== 'none');
+      const accessibility_needs = withoutNone.includes(need)
+        ? withoutNone.filter((item) => item !== need)
+        : [...withoutNone, need];
+
+      return { ...prev, accessibility_needs };
+    });
+
   const nextStep = () => { setStep((p) => Math.min(p + 1, totalSteps)); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const prevStep = () => { setStep((p) => Math.max(p - 1, 1)); window.scrollTo({ top: 0, behavior: "smooth" }); };
 
   const isNextDisabled = () => {
-    if (step === 1) return !formData.nombre_completo || !formData.edad || !formData.genero;
-    if (step === 2) return !formData.alcaldia || !formData.colonia_y_maps || !formData.sede_previa;
-    if (step === 3) return !formData.nombre_negocio || !formData.descripcion_negocio || !formData.antiguedad || !formData.tiempo_continuo || !formData.horarios;
-    if (step === 4) return formData.formas_operacion.length === 0 || !formData.sat_status || !formData.redes_sociales;
-    if (step === 5) return !formData.adaptacion_mundial || !formData.uso_apoyo || !formData.sede_presencial;
+    if (step === 1) {
+      return !formData.nombre_completo || !formData.edad || !formData.genero || formData.accessibility_needs.length === 0 || !formData.correo_electronico || !formData.whatsapp;
+    }
+    if (step === 2) {
+      return !formData.alcaldia || !formData.colonia_y_maps || !formData.sede_previa;
+    }
+    if (step === 3) {
+      return !formData.mujeres_empleadas || !formData.hombres_empleados || !formData.nombre_negocio || !formData.descripcion_negocio || !formData.antiguedad || !formData.tiempo_continuo || !formData.horarios;
+    }
+    if (step === 4) {
+      return formData.formas_operacion.length === 0 || !formData.sat_status || !formData.redes_sociales;
+    }
+    if (step === 5) {
+      return !formData.adaptacion_mundial || !formData.uso_apoyo || !formData.sede_presencial;
+    }
     return false;
-  };
-
-  const handleFinish = () => {
-    console.log("Business Form Data:", formData);
-    router.push("/business/dashboard");
   };
 
   const STEP_LABELS = [
@@ -136,6 +170,78 @@ const QuestionnaireBusiness: React.FC = () => {
     "Proyección",
   ];
 
+  const parseGoogleMapsUrl = (raw: string) => {
+    const match = raw.match(/https?:\/\/\S+/i);
+    return match ? match[0] : null;
+  };
+
+  const handleSubmit = async () => {
+    const accessToken = getStoredAccessToken();
+    if (!accessToken) {
+      alert("Inicia sesion para enviar tu solicitud.");
+      return;
+    }
+
+    const socialLinks = formData.redes_sociales
+      .split(/[,\n]/)
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
+
+    const payload = {
+      owner_full_name: formData.nombre_completo,
+      owner_age: Number(formData.edad),
+      owner_gender: formData.genero,
+      owner_email: formData.correo_electronico,
+      owner_whatsapp: formData.whatsapp,
+      borough_code: formData.alcaldia,
+      neighborhood: formData.colonia_y_maps,
+      google_maps_url: parseGoogleMapsUrl(formData.colonia_y_maps),
+      operation_days_hours: formData.horarios,
+      business_name: formData.nombre_negocio,
+      business_description: formData.descripcion_negocio,
+      business_start_range: formData.antiguedad,
+      continuous_operation_time: formData.tiempo_continuo,
+      operation_modes: formData.formas_operacion,
+      operation_modes_other: formData.otra_forma_venta || null,
+      employees_women_count: Number(formData.mujeres_empleadas),
+      employees_men_count: Number(formData.hombres_empleados),
+      sat_status: formData.sat_status,
+      social_links: socialLinks,
+      accessibility_needs: formData.accessibility_needs,
+      adaptation_for_world_cup: formData.adaptacion_mundial,
+      support_usage: formData.uso_apoyo,
+      training_campus_preference: formData.sede_presencial,
+      additional_comments: `Sede previa sugerida: ${formData.sede_previa}`,
+    };
+
+    try {
+      setIsSubmitting(true);
+
+      const response = await fetch("/api/requests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result?.ok) {
+        const errorMessage = result?.error?.message || "No fue posible enviar la solicitud";
+        throw new Error(errorMessage);
+      }
+
+      alert("Solicitud enviada correctamente.");
+      router.push("/business/dashboard");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Error inesperado al enviar solicitud";
+      alert(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="mx-auto max-w-2xl w-full bg-white p-6 md:p-10 font-sans shadow-xl rounded-3xl relative border border-gray-100 mb-10 text-black">
       {/* ── Header / Progress ── */}
@@ -143,10 +249,10 @@ const QuestionnaireBusiness: React.FC = () => {
         <div className="flex justify-between items-center mb-4">
           <div className="space-y-0.5">
             <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-              {t("business.title")}
+              Registro de Negocio
             </span>
             <h1 className="text-lg font-black text-[#004891] leading-tight">
-              {t("business.subtitle")}
+              Cuestionario de Solicitud
             </h1>
             <p className="text-xs text-gray-400 font-medium">{STEP_LABELS[step - 1]}</p>
           </div>
@@ -159,7 +265,7 @@ const QuestionnaireBusiness: React.FC = () => {
               Saltar (demo) →
             </button>
             <span className="text-sm font-bold text-[#004891]">
-              {t('steps', { step, total: totalSteps })}
+              Paso {step} de {totalSteps}
             </span>
           </div>
         </div>
@@ -199,9 +305,8 @@ const QuestionnaireBusiness: React.FC = () => {
                 <input
                   type="number"
                   min={18}
-                  max={99}
-                  className={inputCls}
-                  placeholder="30"
+                  max={120}
+                  className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30"
                   value={formData.edad}
                   onChange={(e) => set("edad", e.target.value)}
                 />
@@ -220,7 +325,46 @@ const QuestionnaireBusiness: React.FC = () => {
               </Field>
             </div>
 
+            <Field label="4. ¿Tienes alguna necesidad de accesibilidad o capacidad diferente?" required>
+              <p className="text-xs text-gray-500 mb-2">Selecciona todas las que apliquen. Si no aplica, selecciona Ninguna.</p>
+              <div className="grid gap-2 mt-1">
+                {ACCESSIBILITY_NEEDS_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => toggleAccessibilityNeed(opt.id)}
+                    className={`p-3 rounded-2xl border-2 transition-all text-left text-sm font-medium cursor-pointer ${
+                      formData.accessibility_needs.includes(opt.id)
+                        ? "border-[#E8C247] bg-[#E8C247]/10 text-gray-900"
+                        : "border-gray-100 text-gray-700 hover:border-gray-200"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </Field>
 
+            <div>
+              <label className="block text-sm font-semibold mb-2 text-gray-900">Correo electrónico</label>
+              <input
+                type="email"
+                placeholder="ejemplo@correo.com"
+                className="w-full p-4 border-2 border-gray-100 rounded-2xl focus:border-[#1C42E8] outline-none text-gray-900 bg-gray-50/30"
+                value={formData.correo_electronico}
+                onChange={(e) => set("correo_electronico", e.target.value)}
+              />
+            </div>
+
+            <Field label="4. WhatsApp" required>
+              <input
+                type="tel"
+                className={inputCls}
+                placeholder="55 1234 5678"
+                value={formData.whatsapp}
+                onChange={(e) => set("whatsapp", e.target.value)}
+              />
+            </Field>
           </div>
         )}
 
@@ -498,23 +642,26 @@ const QuestionnaireBusiness: React.FC = () => {
               onClick={prevStep}
               className="flex-1 p-4 rounded-2xl border-2 border-[#004891] text-[#004891] font-bold transition-all active:scale-95 cursor-pointer touch-manipulation hover:bg-[#004891]/5"
             >
-              {t("back")}
+              Atrás
             </button>
           )}
           <button
             type="button"
-            onClick={step === totalSteps ? handleFinish : nextStep}
-            disabled={isNextDisabled()}
-            className={`flex-[2] p-4 rounded-2xl font-bold text-white transition-all active:scale-95 shadow-md cursor-pointer touch-manipulation ${
-              isNextDisabled()
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none"
-                : "bg-[#004891] hover:shadow-lg shadow-[#004891]/25"
+            onClick={
+              step === totalSteps
+                ? handleSubmit
+                : nextStep
+            }
+            disabled={isNextDisabled() || isSubmitting}
+            className={`flex-[2] p-4 rounded-2xl font-bold text-white transition-all active:scale-95 shadow-md shadow-[#1C42E8]/20 cursor-pointer touch-manipulation ${
+              isNextDisabled() || isSubmitting ? "bg-gray-300 cursor-not-allowed" : "bg-[#1C42E8] hover:shadow-lg"
             }`}
           >
-            {step === totalSteps ? t("business.sendRequest") : t("next")}
+            {step === totalSteps ? (isSubmitting ? "Enviando..." : "Enviar Solicitud") : "Siguiente"}
           </button>
         </div>
       </form>
+      
     </div>
   );
 };

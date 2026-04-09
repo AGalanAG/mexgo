@@ -22,6 +22,18 @@
         "ageOptions": {
           "yes": "Yes",
           "no": "No"
+        },
+        "accessibilityLabel": "Do you have any accessibility needs or disabilities?",
+        "accessibilityHint": "Select all that apply. If not applicable, choose \"None\".",
+        "accessibilityOptions": {
+          "none": "None",
+          "deaf": "Deafness",
+          "mute": "Mutism",
+          "deaf_mute": "Deaf-mute",
+          "low_vision": "Low vision",
+          "blindness": "Blindness",
+          "mobility": "Reduced mobility",
+          "other": "Other condition"
         }
       },
       "step2": {
