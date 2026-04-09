@@ -24,7 +24,7 @@ export default async function Home() {
       >
         {/* Filtro Rectangle 3 */}
         <div
-          className="absolute left-0 top-0 w-[1752px] h-[1161px] pointer-events-none z-0"
+          className="absolute inset-0 pointer-events-none z-0"
           style={{
             background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.81) -3.79%, rgba(158, 158, 158, 0) 73.81%, rgba(114, 114, 114, 0) 78.41%, rgba(14, 14, 14, 0.649064) 96.21%)'
           }}
