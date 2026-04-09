@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
+import { getSupabaseAnonKey, getSupabaseUrl } from '@/lib/supabase';
 
 interface OAuthStartBody {
   provider?: unknown;
@@ -15,8 +16,8 @@ function isValidProvider(value: unknown): value is OAuthProvider {
 }
 
 function getAnonClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseUrl = getSupabaseUrl();
+  const supabaseAnonKey = getSupabaseAnonKey();
 
   if (!supabaseUrl || !supabaseAnonKey) {
     return null;
