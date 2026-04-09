@@ -13,6 +13,7 @@ import {
   CameraAlt as CameraAltIcon,
 } from '@mui/icons-material';
 import { clearSession, getStoredAccessToken } from '@/lib/client-auth';
+import { DEMO_TOKEN, DEMO_TOURIST_NAME } from '@/constants/demo-data';
 
 const MOCK_TRIPS = [
   {
@@ -66,6 +67,13 @@ export default function ProfilePage() {
     }
 
     const loadProfile = async () => {
+      // Modo demo: no llamar a la API
+      if (accessToken === DEMO_TOKEN) {
+        setName(DEMO_TOURIST_NAME);
+        setIsLoading(false);
+        return;
+      }
+
       try {
         const response = await fetch('/api/tourist/profile', {
           headers: {
@@ -102,6 +110,12 @@ export default function ProfilePage() {
     if (!accessToken) {
       clearSession();
       window.location.assign('/es');
+      return;
+    }
+
+    // Modo demo: solo cerrar edición sin llamar a la API
+    if (accessToken === DEMO_TOKEN) {
+      setIsEditing(false);
       return;
     }
 
