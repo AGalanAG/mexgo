@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 
-import { getAuthenticatedUser, userHasRole } from '@/lib/auth-helpers';
+import { getAuthenticatedUser } from '@/lib/auth-helpers';
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
 import { getSupabaseAdmin } from '@/lib/supabase';
 
@@ -64,10 +64,9 @@ export async function PATCH(
     return apiError('NOT_FOUND', 'Negocio no encontrado', 404);
   }
 
-  const isAdmin = await userHasRole(user.id, 'ADMIN');
   const isOwner = business.owner_user_id === user.id;
 
-  if (!isAdmin && !isOwner) {
+  if (!isOwner) {
     return apiError('FORBIDDEN', 'No tienes permisos para editar este negocio', 403);
   }
 
@@ -133,10 +132,6 @@ export async function PATCH(
   }
 
   if (body.status !== undefined) {
-    if (!isAdmin) {
-      return apiError('FORBIDDEN', 'Solo ADMIN puede cambiar status', 403);
-    }
-
     if (!isNonEmptyString(body.status) || !ALLOWED_STATUS.has(body.status)) {
       return apiError('VALIDATION_ERROR', 'status invalido', 400);
     }

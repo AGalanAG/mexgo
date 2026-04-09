@@ -7,24 +7,18 @@ import { isDemoToken, DEMO_USER_ID } from '@/lib/demo';
 export type PlatformRoleCode =
   | 'TURISTA'
   | 'ENCARGADO_NEGOCIO'
-  | 'EMPLEADO_NEGOCIO'
-  | 'ADMIN'
-  | 'SUPERADMIN';
+  | 'EMPLEADO_NEGOCIO';
 
 const ROLE_PRIORITY: Record<PlatformRoleCode, number> = {
-  SUPERADMIN: 0,
-  ADMIN: 1,
-  ENCARGADO_NEGOCIO: 2,
-  EMPLEADO_NEGOCIO: 3,
-  TURISTA: 4,
+  ENCARGADO_NEGOCIO: 0,
+  EMPLEADO_NEGOCIO: 1,
+  TURISTA: 2,
 };
 
 const ROLE_DESCRIPTIONS: Record<PlatformRoleCode, string> = {
   TURISTA: 'Usuario turista de la plataforma',
   ENCARGADO_NEGOCIO: 'Encargado de negocio registrado',
   EMPLEADO_NEGOCIO: 'Empleado operativo de negocio',
-  ADMIN: 'Administrador funcional',
-  SUPERADMIN: 'Administrador tecnico',
 };
 
 export function normalizeRoleCode(value: unknown): PlatformRoleCode | null {
@@ -36,9 +30,7 @@ export function normalizeRoleCode(value: unknown): PlatformRoleCode | null {
   if (
     normalized === 'TURISTA' ||
     normalized === 'ENCARGADO_NEGOCIO' ||
-    normalized === 'EMPLEADO_NEGOCIO' ||
-    normalized === 'ADMIN' ||
-    normalized === 'SUPERADMIN'
+    normalized === 'EMPLEADO_NEGOCIO'
   ) {
     return normalized;
   }

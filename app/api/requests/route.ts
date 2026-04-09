@@ -31,14 +31,6 @@ interface BusinessRequestBody {
   additional_comments?: unknown;
 }
 
-function toOptionalString(value: unknown) {
-  if (!isNonEmptyString(value)) {
-    return null;
-  }
-
-  return value.trim();
-}
-
 function toStringArray(value: unknown) {
   if (!Array.isArray(value)) {
     return [] as string[];
@@ -48,15 +40,6 @@ function toStringArray(value: unknown) {
     .filter((item): item is string => typeof item === 'string')
     .map((item) => item.trim())
     .filter((item) => item.length > 0);
-}
-
-function toNonNegativeInt(value: unknown, fallback = 0) {
-  const numeric = typeof value === 'number' ? value : Number(value);
-  if (!Number.isFinite(numeric) || numeric < 0) {
-    return fallback;
-  }
-
-  return Math.trunc(numeric);
 }
 
 function toOwnerAge(value: unknown) {
@@ -75,9 +58,9 @@ export async function POST(request: NextRequest) {
     return apiError('AUTH_REQUIRED', 'Token Bearer requerido', 401);
   }
 
-  const hasRole = await userHasAnyRole(user.id, ['ENCARGADO_NEGOCIO', 'ADMIN']);
+  const hasRole = await userHasAnyRole(user.id, ['ENCARGADO_NEGOCIO']);
   if (!hasRole) {
-    return apiError('FORBIDDEN', 'Rol no autorizado para crear solicitud', 403);
+    return apiError('FORBIDDEN', 'Rol no autorizado para registrar negocio', 403);
   }
 
   let body: BusinessRequestBody;
@@ -112,57 +95,79 @@ export async function POST(request: NextRequest) {
     return apiError('VALIDATION_ERROR', 'owner_age debe estar entre 18 y 120', 400);
   }
 
+  const existingBusiness = await getSupabaseAdmin()
+    .from('business_profiles')
+    .select('id')
+    .eq('owner_user_id', user.id)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (existingBusiness.error) {
+    return apiError('INTERNAL_ERROR', existingBusiness.error.message, 500);
+  }
+
+  if (existingBusiness.data) {
+    return apiError('CONFLICT', 'El usuario ya tiene un negocio registrado', 409);
+  }
+
+  const operationModes = toStringArray(body.operation_modes);
+  const inferredCategoryCode = operationModes.length > 0 ? operationModes[0] : 'GENERAL';
+
   const insertPayload = {
     owner_user_id: user.id,
-    owner_full_name: body.owner_full_name.trim(),
-    owner_age: ownerAge,
-    owner_gender: body.owner_gender.trim(),
-    owner_email: body.owner_email.trim(),
-    owner_whatsapp: body.owner_whatsapp.trim(),
-    borough_code: body.borough_code.trim(),
-    neighborhood: body.neighborhood.trim(),
-    google_maps_url: toOptionalString(body.google_maps_url),
-    operation_days_hours: body.operation_days_hours.trim(),
     business_name: body.business_name.trim(),
     business_description: body.business_description.trim(),
-    business_start_range: body.business_start_range.trim(),
-    continuous_operation_time: body.continuous_operation_time.trim(),
-    operation_modes: toStringArray(body.operation_modes),
-    operation_modes_other: toOptionalString(body.operation_modes_other),
-    employees_women_count: toNonNegativeInt(body.employees_women_count),
-    employees_men_count: toNonNegativeInt(body.employees_men_count),
-    sat_status: body.sat_status.trim(),
-    social_links: toStringArray(body.social_links),
-    accessibility_needs: toStringArray(body.accessibility_needs),
-    adaptation_for_world_cup: body.adaptation_for_world_cup.trim(),
-    support_usage: body.support_usage.trim(),
-    training_campus_preference: body.training_campus_preference.trim(),
-    additional_comments: toOptionalString(body.additional_comments),
-    status: 'PENDIENTE',
+    category_code: inferredCategoryCode,
+    phone: body.owner_whatsapp.trim(),
+    email: body.owner_email.trim(),
+    borough: body.borough_code.trim(),
+    neighborhood: body.neighborhood.trim(),
+    latitude: null,
+    longitude: null,
+    status: 'ACTIVE',
+    is_public: true,
   };
 
   const { data, error } = await getSupabaseAdmin()
-    .from('business_requests')
+    .from('business_profiles')
     .insert(insertPayload)
-    .select('id, status, submitted_at')
+    .select('id, status, created_at')
     .single();
 
   if (error || !data) {
-    const isUniqueViolation = error?.code === '23505';
     return apiError(
-      isUniqueViolation ? 'CONFLICT' : 'INTERNAL_ERROR',
-      isUniqueViolation
-        ? 'Ya existe una solicitud activa para este usuario'
-        : error?.message || 'No fue posible crear solicitud',
-      isUniqueViolation ? 409 : 500,
+      'INTERNAL_ERROR',
+      error?.message || 'No fue posible registrar el negocio',
+      500,
     );
+  }
+
+  const { error: directoryUpsertError } = await getSupabaseAdmin()
+    .from('directory_profiles')
+    .upsert(
+      {
+        business_id: data.id,
+        public_name: body.business_name.trim(),
+        short_description: body.business_description.trim(),
+        categories: [inferredCategoryCode],
+        city: body.neighborhood.trim(),
+        state: body.borough_code.trim(),
+        public_score: 0,
+      },
+      { onConflict: 'business_id' },
+    );
+
+  if (directoryUpsertError) {
+    return apiError('INTERNAL_ERROR', directoryUpsertError.message, 500);
   }
 
   return apiOk(
     {
       requestId: data.id,
+      businessId: data.id,
       status: data.status,
-      submittedAt: data.submitted_at,
+      submittedAt: data.created_at,
     },
     201,
   );

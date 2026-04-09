@@ -56,12 +56,10 @@ const REQUEST_FIELD_LABELS: Record<string, string> = {
   training_campus_preference: 'Sede de capacitacion preferida',
   additional_comments: 'Comentarios adicionales',
   status: 'Estatus de solicitud',
-  current_lock_admin_user_id: 'Admin en revision',
   lock_acquired_at: 'Revision iniciada en',
   lock_expires_at: 'Revision expira en',
   submitted_at: 'Fecha de envio',
   updated_at: 'Ultima actualizacion',
-  approved_business_id: 'Negocio aprobado vinculado',
 };
 
 const BUSINESS_PROFILE_FIELD_LABELS: Record<string, string> = {
@@ -255,7 +253,7 @@ export default function BusinessProfilePage() {
               </div>
               <div>
                 <h2 className="text-lg font-black text-gray-900">Solicitud registrada</h2>
-                <p className="text-xs text-gray-400 font-semibold">Datos capturados durante el alta del negocio</p>
+                <p className="text-xs text-gray-400 font-semibold">Formulario de alta capturado durante el registro</p>
               </div>
             </div>
 
@@ -281,7 +279,7 @@ export default function BusinessProfilePage() {
               <DataList data={payload.businessProfile} labels={BUSINESS_PROFILE_FIELD_LABELS} />
             ) : (
               <p className="text-sm text-gray-500 font-medium">
-                Aun no hay perfil publicado. Se mostrara aqui cuando la solicitud sea aprobada.
+                Aun no hay perfil publicado. Se mostrara aqui al completar el registro del negocio.
               </p>
             )}
           </section>

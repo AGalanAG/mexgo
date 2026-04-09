@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     return apiError('AUTH_REQUIRED', 'Token Bearer requerido', 401);
   }
 
-  const hasRole = await userHasAnyRole(user.id, ['ENCARGADO_NEGOCIO', 'ADMIN']);
+  const hasRole = await userHasAnyRole(user.id, ['ENCARGADO_NEGOCIO']);
   if (!hasRole) {
     return apiError('FORBIDDEN', 'Rol no autorizado para crear negocio', 403);
   }
@@ -85,8 +85,8 @@ export async function POST(request: NextRequest) {
     neighborhood: toNullableString(body.neighborhood),
     latitude,
     longitude,
-    status: 'DRAFT',
-    is_public: false,
+    status: 'ACTIVE',
+    is_public: true,
   };
 
   const { data, error } = await getSupabaseAdmin()
@@ -97,6 +97,25 @@ export async function POST(request: NextRequest) {
 
   if (error || !data) {
     return apiError('INTERNAL_ERROR', error?.message || 'No fue posible crear negocio', 500);
+  }
+
+  const { error: directoryUpsertError } = await getSupabaseAdmin()
+    .from('directory_profiles')
+    .upsert(
+      {
+        business_id: data.id,
+        public_name: data.business_name,
+        short_description: data.business_description,
+        categories: [data.category_code],
+        city: data.neighborhood,
+        state: data.borough,
+        public_score: 0,
+      },
+      { onConflict: 'business_id' },
+    );
+
+  if (directoryUpsertError) {
+    return apiError('INTERNAL_ERROR', directoryUpsertError.message, 500);
   }
 
   return apiOk(

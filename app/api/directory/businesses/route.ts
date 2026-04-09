@@ -19,7 +19,6 @@ function parsePositiveInt(value: string | null, fallback: number) {
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const q = searchParams.get('q');
-  const badge = searchParams.get('badge');
   const category = searchParams.get('category');
   const city = searchParams.get('city');
 
@@ -46,75 +45,42 @@ export async function GET(request: NextRequest) {
     query = query.contains('categories', [category]);
   }
 
-  if (isNonEmptyString(badge)) {
-    query = query.contains('badge_codes', [badge]);
-  }
-
   const { data, error, count } = await query;
 
   if (error) {
     return apiError('INTERNAL_ERROR', error.message, 500);
   }
 
-  if (!data || data.length === 0) {
-    let fallbackQuery = getSupabaseAdmin()
-      .from('business_profiles')
-      .select('id, business_name, business_description, borough, neighborhood, latitude, longitude, created_at', {
-        count: 'exact',
-      })
-      .order('created_at', { ascending: false })
-      .range(from, to);
+  const directoryRows = data || [];
+  const businessIds = directoryRows.map((item) => item.business_id);
 
-    if (isNonEmptyString(q)) {
-      fallbackQuery = fallbackQuery.or(
-        `business_name.ilike.%${q}%,business_description.ilike.%${q}%`,
-      );
-    }
+  let fallbackQuery = getSupabaseAdmin()
+    .from('business_profiles')
+    .select('id, business_name, business_description, borough, neighborhood, latitude, longitude, created_at', {
+      count: 'exact',
+    })
+    .eq('status', 'ACTIVE')
+    .order('created_at', { ascending: false });
 
-    if (isNonEmptyString(city)) {
-      fallbackQuery = fallbackQuery.or(`borough.ilike.%${city}%,neighborhood.ilike.%${city}%`);
-    }
-
-    const {
-      data: fallbackBusinesses,
-      error: fallbackError,
-      count: fallbackCount,
-    } = await fallbackQuery;
-
-    if (fallbackError) {
-      return apiError('INTERNAL_ERROR', fallbackError.message, 500);
-    }
-
-    const fallbackItems = (fallbackBusinesses || []).map((business) => ({
-      businessId: business.id,
-      publicName: business.business_name,
-      shortDescription: business.business_description,
-      categories: [],
-      badgeCodes: [],
-      city: business.neighborhood,
-      state: business.borough,
-      publicScore: 0,
-      businessName: business.business_name,
-      businessDescription: business.business_description,
-      borough: business.borough,
-      neighborhood: business.neighborhood,
-      latitude: business.latitude,
-      longitude: business.longitude,
-      operationDaysHours: null,
-      coverImageUrl: null,
-    }));
-
-    return apiOk({
-      items: fallbackItems,
-      pagination: {
-        page,
-        pageSize,
-        total: fallbackCount ?? 0,
-      },
-    });
+  if (isNonEmptyString(q)) {
+    fallbackQuery = fallbackQuery.or(
+      `business_name.ilike.%${q}%,business_description.ilike.%${q}%`,
+    );
   }
 
-  const businessIds = (data || []).map((item) => item.business_id);
+  if (isNonEmptyString(city)) {
+    fallbackQuery = fallbackQuery.or(`borough.ilike.%${city}%,neighborhood.ilike.%${city}%`);
+  }
+
+  const {
+    data: fallbackBusinesses,
+    error: fallbackError,
+    count: fallbackCount,
+  } = await fallbackQuery;
+
+  if (fallbackError) {
+    return apiError('INTERNAL_ERROR', fallbackError.message, 500);
+  }
 
   let businessById = new Map<string, {
     id: string;
@@ -139,7 +105,7 @@ export async function GET(request: NextRequest) {
     businessById = new Map((businessRows || []).map((row) => [row.id, row]));
   }
 
-  const items = (data || []).map((item) => {
+  const directoryItems = directoryRows.map((item) => {
     const business = businessById.get(item.business_id);
 
     return {
@@ -147,7 +113,6 @@ export async function GET(request: NextRequest) {
       publicName: item.public_name,
       shortDescription: item.short_description,
       categories: item.categories || [],
-      badgeCodes: item.badge_codes || [],
       city: item.city,
       state: item.state,
       publicScore: Number(item.public_score ?? 0),
@@ -162,12 +127,35 @@ export async function GET(request: NextRequest) {
     };
   });
 
+  const fallbackOnlyItems = (fallbackBusinesses || [])
+    .filter((business) => !businessIds.includes(business.id))
+    .map((business) => ({
+      businessId: business.id,
+      publicName: business.business_name,
+      shortDescription: business.business_description,
+      categories: [],
+      city: business.neighborhood,
+      state: business.borough,
+      publicScore: 0,
+      businessName: business.business_name,
+      businessDescription: business.business_description,
+      borough: business.borough,
+      neighborhood: business.neighborhood,
+      latitude: business.latitude,
+      longitude: business.longitude,
+      operationDaysHours: null,
+      coverImageUrl: null,
+    }));
+
+  const items = [...directoryItems, ...fallbackOnlyItems].slice(0, pageSize);
+  const total = Math.max(count ?? 0, fallbackCount ?? 0, directoryItems.length + fallbackOnlyItems.length);
+
   return apiOk({
     items,
     pagination: {
       page,
       pageSize,
-      total: count ?? 0,
+      total,
     },
   });
 }

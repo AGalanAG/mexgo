@@ -13,7 +13,6 @@ interface DirectoryBusinessItem {
   businessId: string;
   publicName: string;
   shortDescription: string;
-  badgeCodes: string[];
   city: string | null;
   state: string | null;
   publicScore: number;
@@ -80,7 +79,7 @@ function toRecommendation(item: DirectoryBusinessItem): NegocioConScore {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     score: Number(item.publicScore ?? 0),
-    reasons: item.badgeCodes.length > 0 ? item.badgeCodes : ['negocio verificado Ola Mexico'],
+    reasons: ['negocio local recomendado'],
     estimatedWalkMinutes: 10,
   };
 }

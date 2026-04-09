@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import NavbarBusiness from '@/components/business/NavbarBusiness';
 import Footer from '@/components/tourist/Footer';
 import { LSM_VIDEOS, type LessonVideo } from '@/data/lsm-videos';
 import { Link } from '@/i18n/routing';
 import type { BusinessInsight, CourseRecommendation } from '@/types/types';
 import { CourseCard, type Course, type Category } from '@/components/business/CourseCard';
+import { getStoredAccessToken } from '@/lib/client-auth';
 import {
   ArrowBack as ArrowBackIcon,
   PlayArrow as PlayIcon,
@@ -50,6 +51,45 @@ interface Lesson {
   id: string;
   title: string;
   icon: React.ReactNode;
+}
+
+interface LearningModuleRow {
+  id: string;
+  title: string;
+  category: string;
+  estimated_minutes: number;
+}
+
+interface LearningProgressRow {
+  module_id: string;
+  progress_percent: number;
+  status: string;
+}
+
+interface BusinessMeResponse {
+  ok: boolean;
+  data?: {
+    businessId: string;
+  };
+}
+
+interface LearningModulesResponse {
+  ok: boolean;
+  data?: {
+    items: LearningModuleRow[];
+  };
+}
+
+interface LearningProgressResponse {
+  ok: boolean;
+  data?: {
+    summary?: {
+      totalModules: number;
+      completedModules: number;
+      overallProgress: number;
+    };
+    items: LearningProgressRow[];
+  };
 }
 // ─── LSM Lessons ─────────────────────────────────────────────────────────────
 
@@ -304,9 +344,17 @@ export default function LearningPage() {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [topCursos, setTopCursos] = useState<CourseRecommendation[]>([]);
+  const [businessLearningModules, setBusinessLearningModules] = useState<LearningModuleRow[]>([]);
+  const [businessLearningProgress, setBusinessLearningProgress] = useState<LearningProgressRow[]>([]);
+  const [businessLearningSummary, setBusinessLearningSummary] = useState({
+    totalModules: 0,
+    completedModules: 0,
+    overallProgress: 0,
+  });
+  const [loadingBusinessProgress, setLoadingBusinessProgress] = useState(true);
 
   useEffect(() => {
-    // Intentar leer desde sessionStorage si el dashboard ya lo cargo
+    // Leer recomendaciones IA desde sessionStorage si el dashboard ya las cargo
     const cached = sessionStorage.getItem('mexgo_business_insight');
     if (cached) {
       try {
@@ -321,6 +369,96 @@ export default function LearningPage() {
   }, []);
 
   const courses = selectedCat ? COURSES.filter((c) => c.categoryId === selectedCat.id) : [];
+
+  const progressByModuleId = useMemo(() => {
+    return new Map(businessLearningProgress.map((item) => [item.module_id, item]));
+  }, [businessLearningProgress]);
+
+  const trackedModules = useMemo(() => {
+    return businessLearningModules.slice(0, 6).map((module) => {
+      const progress = progressByModuleId.get(module.id);
+      return {
+        id: module.id,
+        title: module.title,
+        category: module.category,
+        estimatedMinutes: module.estimated_minutes,
+        progressPercent: Number(progress?.progress_percent ?? 0),
+        status: progress?.status ?? 'PENDING',
+      };
+    });
+  }, [businessLearningModules, progressByModuleId]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadBusinessLearningProgress() {
+      try {
+        setLoadingBusinessProgress(true);
+        const accessToken = getStoredAccessToken();
+        if (!accessToken) {
+          return;
+        }
+
+        const businessResponse = await fetch('/api/businesses/me', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          cache: 'no-store',
+        });
+
+        const businessPayload = (await businessResponse.json()) as BusinessMeResponse;
+        const businessId = businessPayload.data?.businessId;
+        if (!businessResponse.ok || !businessId) {
+          return;
+        }
+
+        const [modulesResponse, progressResponse] = await Promise.all([
+          fetch('/api/learning/modules', {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            cache: 'no-store',
+          }),
+          fetch(`/api/learning/completions?businessId=${encodeURIComponent(businessId)}`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            cache: 'no-store',
+          }),
+        ]);
+
+        const modulesPayload = (await modulesResponse.json()) as LearningModulesResponse;
+        const progressPayload = (await progressResponse.json()) as LearningProgressResponse;
+
+        if (cancelled) {
+          return;
+        }
+
+        if (modulesResponse.ok && modulesPayload.data?.items) {
+          setBusinessLearningModules(modulesPayload.data.items);
+        }
+
+        if (progressResponse.ok && progressPayload.data?.items) {
+          setBusinessLearningProgress(progressPayload.data.items);
+          setBusinessLearningSummary({
+            totalModules: Number(progressPayload.data.summary?.totalModules ?? 0),
+            completedModules: Number(progressPayload.data.summary?.completedModules ?? 0),
+            overallProgress: Number(progressPayload.data.summary?.overallProgress ?? 0),
+          });
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingBusinessProgress(false);
+        }
+      }
+    }
+
+    void loadBusinessLearningProgress();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function handleBack() {
     if (selectedLesson) { setSelectedLesson(null); return; }
@@ -436,6 +574,53 @@ export default function LearningPage() {
           {/* ── Home view ── */}
           {!selectedCat && !selectedCourse && (
             <>
+              <section className="space-y-4">
+                <h2 className="text-xl font-black text-blue-700">Progreso del negocio</h2>
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div className="rounded-xl bg-blue-50 p-4">
+                      <p className="text-xs uppercase tracking-wider font-black text-blue-500">Modulos con avance</p>
+                      <p className="text-2xl font-black text-blue-800 mt-1">{businessLearningSummary.totalModules}</p>
+                    </div>
+                    <div className="rounded-xl bg-green-50 p-4">
+                      <p className="text-xs uppercase tracking-wider font-black text-green-600">Modulos completados</p>
+                      <p className="text-2xl font-black text-green-800 mt-1">{businessLearningSummary.completedModules}</p>
+                    </div>
+                    <div className="rounded-xl bg-amber-50 p-4">
+                      <p className="text-xs uppercase tracking-wider font-black text-amber-600">Progreso global</p>
+                      <p className="text-2xl font-black text-amber-800 mt-1">{businessLearningSummary.overallProgress}%</p>
+                    </div>
+                  </div>
+
+                  {loadingBusinessProgress ? (
+                    <p className="text-sm text-gray-500 font-medium">Cargando progreso del negocio...</p>
+                  ) : trackedModules.length === 0 ? (
+                    <p className="text-sm text-gray-500 font-medium">Aun no hay modulos con progreso registrado.</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {trackedModules.map((module) => (
+                        <div key={module.id} className="rounded-xl border border-gray-100 p-3">
+                          <div className="flex items-center justify-between gap-3">
+                            <div>
+                              <p className="text-sm font-black text-gray-800">{module.title}</p>
+                              <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide">
+                                {module.category} - {module.estimatedMinutes} min
+                              </p>
+                            </div>
+                            <span className="text-xs font-black px-2 py-1 rounded-full bg-gray-100 text-gray-700">
+                              {module.status}
+                            </span>
+                          </div>
+                          <div className="mt-2 h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-blue-600 rounded-full" style={{ width: `${module.progressPercent}%` }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </section>
+
               <section className="space-y-4">
                 <h2 className="text-xl font-black text-blue-700">Continuar aprendiendo</h2>
                 <div className="w-72">

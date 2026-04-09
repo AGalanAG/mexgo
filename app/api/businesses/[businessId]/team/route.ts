@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 
-import { getAuthenticatedUser, userHasRole } from '@/lib/auth-helpers';
+import { getAuthenticatedUser } from '@/lib/auth-helpers';
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
 import { getSupabaseAdmin } from '@/lib/supabase';
 
@@ -12,11 +12,6 @@ interface TeamMemberBody {
 }
 
 async function canManageBusiness(userId: string, businessId: string) {
-  const isAdmin = await userHasRole(userId, 'ADMIN');
-  if (isAdmin) {
-    return true;
-  }
-
   const { data, error } = await getSupabaseAdmin()
     .from('business_profiles')
     .select('id')

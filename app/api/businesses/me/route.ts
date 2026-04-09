@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  const hasRole = await userHasAnyRole(user.id, ['ENCARGADO_NEGOCIO', 'ADMIN']);
+  const hasRole = await userHasAnyRole(user.id, ['ENCARGADO_NEGOCIO']);
   if (!hasRole) {
     return apiError('FORBIDDEN', 'Rol no autorizado para consultar negocio', 403);
   }

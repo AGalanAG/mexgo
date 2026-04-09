@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server';
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
 import { getSupabaseAdmin } from '@/lib/supabase';
 
-const ALLOWED_AUDIENCE = new Set(['OWNER', 'STAFF', 'BOTH']);
+const ALLOWED_AUDIENCE = new Set(['OWNER', 'BOTH']);
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
     .from('learning_modules')
     .select('id, source_id, slug, title, description, audience, category, estimated_minutes, pass_score, is_active, created_at')
     .eq('is_active', true)
+    .in('audience', ['OWNER', 'BOTH'])
     .order('created_at', { ascending: false });
 
   if (audience !== null) {
