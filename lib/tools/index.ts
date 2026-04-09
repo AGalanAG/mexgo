@@ -7,7 +7,13 @@ export const declarations = [
   ...recommend.declarations,
 ]
 
-export const handlers: Record<string, (args: never) => unknown> = {
-  ...itinerario.handlers,
-  ...recommend.handlers,
+export function createItinerarioHandlers(userId: string) {
+  return itinerario.createItinerarioHandlers(userId)
+}
+
+export function createHandlers(userId: string): Record<string, (args: never) => unknown> {
+  return {
+    ...itinerario.createItinerarioHandlers(userId),
+    ...recommend.handlers,
+  }
 }

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from '@/i18n/routing'
 import type { ChatMessagePayload, ChatResponse, ItineraryStop, TouristProfile } from '@/types/types'
 import { MOCK_TOURIST_PROFILE } from '@/lib/mockPerfil'
+import { getStoredAccessToken } from '@/lib/client-auth'
 
 type RichMessage = ChatMessagePayload & {
   eventoAgregado?: ItineraryStop
@@ -79,9 +80,17 @@ export default function ChatUI() {
     setCargando(true)
 
     try {
+      const accessToken = getStoredAccessToken()
+      if (!accessToken) {
+        throw new Error('AUTH_REQUIRED')
+      }
+
       const res = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
         body: JSON.stringify({
           mensaje,
           historial,
@@ -128,7 +137,14 @@ export default function ChatUI() {
         } catch { /* ignore */ }
         return nuevos
       })
-    } catch {
+    } catch (error) {
+      if (error instanceof Error && error.message === 'AUTH_REQUIRED') {
+        const localeMatch = window.location.pathname.match(/^\/(en|es|fr)(?:\/|$)/)
+        const locale = localeMatch?.[1] ?? 'es'
+        window.location.assign(`/${locale}?login=1`)
+        return
+      }
+
       setMensajes(prev => [
         ...prev,
         { role: 'model', text: 'Hubo un error al conectar con el asistente. Intenta de nuevo.', error: true },

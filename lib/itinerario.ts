@@ -1,11 +1,23 @@
 import type { ItineraryStop } from '@/types/types'
 import { MOCK_BUSINESSES } from '@/lib/businesses'
 
-// Array en memoria por request — se inicializa desde el cliente via inicializarParadas()
-const paradas: ItineraryStop[] = []
+// Estado en memoria segmentado por usuario para evitar mezclar itinerarios entre sesiones.
+const paradasPorUsuario = new Map<string, ItineraryStop[]>()
+
+function obtenerParadasUsuario(userId: string): ItineraryStop[] {
+  const existing = paradasPorUsuario.get(userId)
+  if (existing) {
+    return existing
+  }
+
+  const created: ItineraryStop[] = []
+  paradasPorUsuario.set(userId, created)
+  return created
+}
 
 // Llamado desde /api/chat antes de invocar Gemini para sincronizar el estado del cliente
-export function inicializarParadas(stops: ItineraryStop[]): void {
+export function inicializarParadas(userId: string, stops: ItineraryStop[]): void {
+  const paradas = obtenerParadasUsuario(userId)
   paradas.length = 0
   paradas.push(...stops)
 }
@@ -28,7 +40,8 @@ type EliminarEventoArgs = {
   id: string
 }
 
-export function agregarEvento(args: AgregarEventoArgs): ItineraryStop {
+export function agregarEvento(userId: string, args: AgregarEventoArgs): ItineraryStop {
+  const paradas = obtenerParadasUsuario(userId)
   const negocio = MOCK_BUSINESSES.find(b => b.id === args.negocio_id)
   const stop: ItineraryStop = {
     id: `stop-${Date.now()}`,
@@ -47,7 +60,8 @@ export function agregarEvento(args: AgregarEventoArgs): ItineraryStop {
   return stop
 }
 
-export function editarEvento(args: EditarEventoArgs): ItineraryStop | { error: string } {
+export function editarEvento(userId: string, args: EditarEventoArgs): ItineraryStop | { error: string } {
+  const paradas = obtenerParadasUsuario(userId)
   const idx = paradas.findIndex(p => p.id === args.id)
   if (idx === -1) return { error: `No existe parada con id ${args.id}` }
 
@@ -58,7 +72,8 @@ export function editarEvento(args: EditarEventoArgs): ItineraryStop | { error: s
   return paradas[idx]
 }
 
-export function eliminarEvento(args: EliminarEventoArgs): { eliminado: boolean; id: string; label?: string } {
+export function eliminarEvento(userId: string, args: EliminarEventoArgs): { eliminado: boolean; id: string; label?: string } {
+  const paradas = obtenerParadasUsuario(userId)
   const idx = paradas.findIndex(p => p.id === args.id)
   if (idx === -1) return { eliminado: false, id: args.id }
 
@@ -69,6 +84,6 @@ export function eliminarEvento(args: EliminarEventoArgs): { eliminado: boolean; 
   return { eliminado: true, id: args.id, label }
 }
 
-export function leerItinerario(): ItineraryStop[] {
-  return paradas
+export function leerItinerario(userId: string): ItineraryStop[] {
+  return obtenerParadasUsuario(userId)
 }

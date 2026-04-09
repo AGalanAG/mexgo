@@ -8,6 +8,7 @@ const intlMiddleware = createIntlMiddleware(routing);
 const PUBLIC_LOCALE_PATHS = new Set(['/', '/register']);
 const PROTECTED_LOCALE_PATHS = new Set(['/profile', '/onboarding', '/trips', '/chat', '/discover']);
 const PROTECTED_NON_LOCALE_PATHS = new Set(['/profile', '/request', '/requests']);
+const BUSINESS_ALLOWED_ROLES = new Set(['ENCARGADO_NEGOCIO', 'EMPLEADO_NEGOCIO']);
 
 function getLocaleAndPath(pathname: string) {
   const match = pathname.match(/^\/(en|es|fr)(\/.*)?$/);
@@ -28,13 +29,31 @@ function redirectToLogin(request: NextRequest, locale: string | null) {
   return NextResponse.redirect(url);
 }
 
+function redirectToLanding(request: NextRequest, locale: string | null) {
+  const targetLocale = locale || routing.defaultLocale;
+  return NextResponse.redirect(new URL(`/${targetLocale}`, request.url));
+}
+
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const { locale, path } = getLocaleAndPath(pathname);
+  const isBusinessPath = path === '/business' || path.startsWith('/business/');
 
   const accessToken = request.cookies.get('mexgo_access_token')?.value || '';
   const primaryRole = request.cookies.get('mexgo_primary_role')?.value || '';
   const isLoggedIn = accessToken.trim().length > 0;
+
+  if (!locale && (pathname === '/business' || pathname.startsWith('/business/'))) {
+    if (!isLoggedIn) {
+      return redirectToLogin(request, null);
+    }
+
+    if (!BUSINESS_ALLOWED_ROLES.has(primaryRole)) {
+      return redirectToLanding(request, null);
+    }
+
+    return NextResponse.next();
+  }
 
   if (!locale && PROTECTED_NON_LOCALE_PATHS.has(pathname)) {
     if (!isLoggedIn) {
@@ -42,23 +61,41 @@ export default function proxy(request: NextRequest) {
     }
 
     if (pathname === '/requests' && !(primaryRole === 'ADMIN' || primaryRole === 'SUPERADMIN')) {
-      return NextResponse.redirect(new URL('/es', request.url));
+      return redirectToLanding(request, null);
     }
 
-    if ((pathname === '/profile' || pathname === '/request') && primaryRole === 'TURISTA') {
+    if (pathname === '/request' && primaryRole === 'TURISTA') {
+      return redirectToLanding(request, null);
+    }
+
+    if (pathname === '/profile' && primaryRole === 'TURISTA') {
       return NextResponse.redirect(new URL('/es/profile', request.url));
+    }
+
+    if (pathname === '/profile' && (primaryRole === 'ENCARGADO_NEGOCIO' || primaryRole === 'EMPLEADO_NEGOCIO')) {
+      return redirectToLanding(request, null);
     }
 
     return NextResponse.next();
   }
 
   if (locale) {
+    if (isBusinessPath) {
+      if (!isLoggedIn) {
+        return redirectToLogin(request, locale);
+      }
+
+      if (!BUSINESS_ALLOWED_ROLES.has(primaryRole)) {
+        return redirectToLanding(request, locale);
+      }
+    }
+
     if (!PUBLIC_LOCALE_PATHS.has(path) && PROTECTED_LOCALE_PATHS.has(path) && !isLoggedIn) {
       return redirectToLogin(request, locale);
     }
 
     if (path === '/profile' && isLoggedIn && primaryRole && primaryRole !== 'TURISTA') {
-      return NextResponse.redirect(new URL('/profile', request.url));
+      return redirectToLanding(request, locale);
     }
   }
 

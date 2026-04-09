@@ -21,7 +21,7 @@ const FAQS = [
   },
   {
     q: '¿Puedo modificar mi registro después de enviarlo?',
-    a: 'Sí, puedes actualizar tu información de perfil desde tu dashboard. Si necesitas cambiar datos del cuestionario original, contacta a soporte.',
+    a: 'Sí, puedes actualizar tu información de perfil desde tu pestaña de perfil. Si necesitas cambiar datos del cuestionario original, contacta a soporte.',
   },
   {
     q: '¿Qué incluye el apoyo económico de Fundación Coppel?',
@@ -80,7 +80,7 @@ export default function SupportPage() {
 
           {/* Header */}
           <div className="flex items-center gap-3">
-            <Link href="/business/dashboard" className="text-[var(--primary)] hover:opacity-70 transition-opacity">
+            <Link href="/business/profile" className="text-[var(--primary)] hover:opacity-70 transition-opacity">
               <ArrowBackIcon sx={{ fontSize: 22 }} />
             </Link>
             <div>

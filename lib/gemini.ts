@@ -2,7 +2,7 @@ import { GoogleGenAI } from '@google/genai'
 import type { Content } from '@google/genai'
 import type { ChatMessagePayload, ItineraryStop, NegocioConScore, TouristProfile } from '@/types/types'
 import { GEMINI_MODEL, buildSystemPrompt } from '@/constants'
-import { declarations, handlers } from '@/lib/tools'
+import { createHandlers, declarations } from '@/lib/tools'
 
 // ─── CLIENTE ──────────────────────────────────────────────────────────────────
 
@@ -18,7 +18,14 @@ type ChatResult = {
   negociosRecomendados?: NegocioConScore[]
 }
 
-export async function chat(mensaje: string, historial: ChatMessagePayload[] = [], perfil?: TouristProfile): Promise<ChatResult> {
+export async function chat(
+  userId: string,
+  mensaje: string,
+  historial: ChatMessagePayload[] = [],
+  perfil?: TouristProfile,
+): Promise<ChatResult> {
+
+  const handlers = createHandlers(userId)
 
   const contents: Content[] = [
     ...historial.map(m => ({ role: m.role, parts: [{ text: m.text }] })),
