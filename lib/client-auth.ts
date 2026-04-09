@@ -65,6 +65,14 @@ export function clearSession() {
   if (typeof window !== 'undefined') {
     window.localStorage.removeItem(SESSION_KEY);
     window.localStorage.removeItem('mexgo_access_token');
+    window.localStorage.removeItem('accessToken');
+
+    for (let index = window.localStorage.length - 1; index >= 0; index -= 1) {
+      const key = window.localStorage.key(index);
+      if (key && /^sb-.*-auth-token$/.test(key)) {
+        window.localStorage.removeItem(key);
+      }
+    }
   }
 
   clearCookie('mexgo_access_token');

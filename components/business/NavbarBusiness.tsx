@@ -14,6 +14,7 @@ import {
   KeyboardArrowDown as ArrowIcon,
   Logout as LogoutIcon,
 } from "@mui/icons-material";
+import { clearSession } from "@/lib/client-auth";
 
 const NAV_LINKS = [
   { href: "/business/profile",   label: "Perfil",       icon: <PersonIcon sx={{ fontSize: 17 }} /> },
@@ -138,7 +139,11 @@ export default function NavbarBusiness() {
             </MenuItem>
             <Divider />
             <MenuItem
-              onClick={() => { setProfileAnchor(null); router.push('/'); }}
+              onClick={() => {
+                setProfileAnchor(null);
+                clearSession();
+                router.push('/');
+              }}
               sx={{ fontSize: 14, fontWeight: 700, color: 'error.main', gap: 1.5 }}
             >
               <LogoutIcon fontSize="small" /> Cerrar sesión
