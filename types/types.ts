@@ -238,3 +238,92 @@ export interface ChatResponse {
   eventoEliminado?: { id: string; label?: string; eliminado: boolean }
   negociosRecomendados?: NegocioConScore[]
 }
+
+// ─── BUSINESS INSIGHT (IA) ───────────────────────────────────────────────────
+
+/** Un modulo del catalogo usado para armar el contexto del insight */
+export interface ModuloCatalogo {
+  slug: string
+  title: string
+  category: string
+  audience: 'OWNER' | 'STAFF' | 'BOTH'
+}
+
+/** Resumen de un modulo completado por el negocio */
+export interface CompletionSummary {
+  slug: string
+  title: string
+  category: string
+  score: number | null
+  status: 'PENDING' | 'PASSED' | 'FAILED' | 'VALIDATED'
+}
+
+/** Datos del negocio pre-procesados para el contexto de Gemini */
+export interface InsightNegocio {
+  businessId: string
+  nombre: string
+  descripcion: string
+  categoria: string
+  alcaldia: string
+  satStatus: string
+  operationModes: string[]
+  accessibilityNeedsNegocio: string[]
+  teamSize: number
+  businessStartRange: string
+  modulosCompletados: CompletionSummary[]
+  insigniasActivas: string[]
+  insigniasPendientes: string[]
+}
+
+/** Agregado de datos de turistas en la alcaldia del negocio */
+export interface InsightZona {
+  alcaldia: string
+  totalTuristasRegistrados: number
+  paisesTop: string[]
+  motivosTop: string[]
+  accessibilityBreakdown: Record<string, number>
+  estadiaPromedio: string
+  promedioSaturacionZona: number
+  diasMasActivos: string[]
+}
+
+/** Contexto completo enviado a Gemini para generar el informe */
+export interface InsightContext {
+  negocio: InsightNegocio
+  zona: InsightZona
+  catalogo: {
+    modulosDisponibles: ModuloCatalogo[]
+  }
+}
+
+/** Un curso recomendado por Gemini con su razon y prioridad */
+export interface CourseRecommendation {
+  slug: string
+  titulo: string
+  categoria: string
+  razon: string
+  prioridad: 'alta' | 'media' | 'baja'
+  impacto_insignia: string | null
+}
+
+/** Informe completo generado por Gemini — shape que devuelve el endpoint */
+export interface BusinessInsight {
+  resumen: string
+  zona: InsightZona
+  negocio: {
+    modulos_completados: number
+    modulos_totales: number
+    progreso_pct: number
+    insignias_activas: string[]
+    insignias_pendientes: string[]
+  }
+  alertas: string[]
+  oportunidades: string[]
+  cursos_recomendados: CourseRecommendation[]
+}
+
+/** Forma del modulo rankeado por el ranker deterministico */
+export interface ModuloRankeado extends ModuloCatalogo {
+  score: number
+  razones: string[]
+}

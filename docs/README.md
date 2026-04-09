@@ -17,6 +17,7 @@ Indice rapido de documentacion activa (enfoque abril 2026).
 - BUSINESS.md: guia operativa del modulo business — rutas, componentes, APIs y estado mock vs real.
 - AI_BUSINESS.md: arquitectura IA del dashboard business — contratos Gemini, tablas nuevas, archivos a crear y orden de implementacion.
 - PASOS_AI_BUSINESS.md: guia ejecutable paso a paso para Gemini CLI — 7 fases independientes con codigo completo, verificaciones y STOP points.
+- PRACTICES.md: errores del agente y convenciones aprendidas por fase — se actualiza despues de cada revision.
 
 ## Equipo
 - ROLES.md: roles de plataforma y responsabilidades de desarrollo.

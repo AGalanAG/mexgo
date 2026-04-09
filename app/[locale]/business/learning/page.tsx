@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import NavbarBusiness from '@/components/business/NavbarBusiness';
 import Footer from '@/components/tourist/Footer';
 import { LSM_VIDEOS, type LessonVideo } from '@/data/lsm-videos';
+import { Link } from '@/i18n/routing';
+import type { BusinessInsight, CourseRecommendation } from '@/types/types';
 import {
   ArrowBack as ArrowBackIcon,
   Favorite as HeartIcon,
@@ -41,6 +43,8 @@ import {
   HealthAndSafety as ProteccionIcon,
   Schedule as TemporalidadIcon,
   RecordVoiceOver as VerbosIcon,
+  LocalFireDepartment as FireIcon,
+  AutoGraph as GraphIcon,
 } from '@mui/icons-material';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -393,6 +397,22 @@ export default function LearningPage() {
   const [selectedCat,    setSelectedCat]    = useState<Category | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
+  const [topCursos, setTopCursos] = useState<CourseRecommendation[]>([]);
+
+  useEffect(() => {
+    // Intentar leer desde sessionStorage si el dashboard ya lo cargo
+    const cached = sessionStorage.getItem('mexgo_business_insight');
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached) as BusinessInsight;
+        if (parsed.cursos_recomendados) {
+          setTopCursos(parsed.cursos_recomendados.slice(0, 3));
+        }
+      } catch (err) {
+        console.error('Error parsing cached insight:', err);
+      }
+    }
+  }, []);
 
   const courses = selectedCat ? COURSES.filter((c) => c.categoryId === selectedCat.id) : [];
 
@@ -446,6 +466,48 @@ export default function LearningPage() {
                     lesson={lesson}
                     onSelect={() => setSelectedLesson(lesson)}
                   />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── Recomendados IA ── */}
+          {!selectedCat && !selectedCourse && !selectedLesson && topCursos.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600">
+                  <FireIcon sx={{ fontSize: 18 }} />
+                </div>
+                <h2 className="text-lg font-black text-gray-900 uppercase tracking-wide">
+                  Recomendados para ti
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {topCursos.map((rec) => (
+                  <div
+                    key={rec.slug}
+                    className="bg-white rounded-2xl p-5 border border-orange-100 shadow-sm hover:shadow-md transition-all group relative overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <GraphIcon sx={{ fontSize: 40 }} />
+                    </div>
+                    <div className="flex flex-col h-full">
+                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md w-fit mb-2 ${
+                        rec.prioridad === 'alta' ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600'
+                      }`}>
+                        Prioridad {rec.prioridad}
+                      </span>
+                      <h3 className="font-black text-gray-900 text-sm leading-tight mb-2">
+                        {rec.titulo}
+                      </h3>
+                      <p className="text-xs text-gray-500 leading-relaxed mb-4 flex-1">
+                        {rec.razon}
+                      </p>
+                      <button className="w-full py-2 bg-blue-700 hover:bg-blue-800 text-white text-[11px] font-black rounded-xl transition-colors">
+                        Empezar módulo
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
