@@ -219,6 +219,32 @@ export interface TouristProfile {
   priority_factor: string
 }
 
+/** Forma persistida en localStorage y en la tabla tourist_profiles de Supabase */
+export interface TouristStoredProfile {
+  fullName: string
+  countryOfOrigin: string
+  accessibilityNeeds: string[]
+  travelMotives: string[]
+  borough?: string
+  stayDuration?: string
+  companionsCount?: number
+}
+
+/** Convierte TouristStoredProfile al formato que espera Gemini */
+export function toGeminiProfile(p: TouristStoredProfile): TouristProfile {
+  return {
+    country:            p.countryOfOrigin,
+    companions_count:   String(p.companionsCount ?? 1),
+    is_adult:           'true',
+    stay_duration:      p.stayDuration ?? '2-3 días',
+    city:               'CDMX',
+    borough:            p.borough ?? 'Centro Histórico',
+    trip_motives:       p.travelMotives,
+    accessibility_needs: p.accessibilityNeeds,
+    priority_factor:    'gastronomia',
+  }
+}
+
 export interface ChatRequest {
   mensaje: string
   historial?: ChatMessagePayload[]
@@ -228,9 +254,9 @@ export interface ChatRequest {
 
 export interface ChatResponse {
   respuesta: string
-  eventoAgregado?: ItineraryStop
-  eventoEditado?: ItineraryStop
-  eventoEliminado?: { id: string; label?: string; eliminado: boolean }
+  eventosAgregados?: ItineraryStop[]
+  eventosEditados?: ItineraryStop[]
+  eventosEliminados?: { id: string; label?: string; eliminado: boolean }[]
   negociosRecomendados?: NegocioConScore[]
 }
 

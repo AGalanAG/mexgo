@@ -1,7 +1,7 @@
 import { Type } from '@google/genai'
 import type { FunctionDeclaration } from '@google/genai'
 import { buscarNegocios } from '@/lib/businesses'
-import { agregarEvento, editarEvento, eliminarEvento, leerItinerario } from '@/lib/itinerario'
+import { agregarEventosLote, editarEventosLote, eliminarEventosLote, leerItinerario } from '@/lib/itinerario'
 
 export const declarations: FunctionDeclaration[] = [
   {
@@ -19,47 +19,71 @@ export const declarations: FunctionDeclaration[] = [
     },
   },
   {
-    name: 'agregar_evento',
-    description: 'Agrega un negocio al itinerario del turista. Úsala cuando el turista confirme que quiere visitar un lugar en una fecha y hora específica.',
+    name: 'agregar_eventos_lote',
+    description: 'Agrega una o varias paradas al itinerario. Úsala siempre que el turista quiera agregar lugares, ya sea uno solo o un día completo.',
     parameters: {
       type: Type.OBJECT,
       properties: {
-        negocio_id: { type: Type.STRING, description: 'ID del negocio.' },
-        nombre:     { type: Type.STRING, description: 'Nombre del negocio.' },
-        dia:        { type: Type.STRING, description: 'Fecha de la visita, formato YYYY-MM-DD.' },
-        hora:       { type: Type.STRING, description: 'Hora de la visita, formato HH:MM.' },
+        eventos: {
+          type: Type.ARRAY,
+          description: 'Lista de eventos a agregar en orden cronológico.',
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              negocio_id: { type: Type.STRING, description: 'ID del negocio.' },
+              nombre:     { type: Type.STRING, description: 'Nombre del negocio.' },
+              dia:        { type: Type.STRING, description: 'Fecha de la visita, formato YYYY-MM-DD.' },
+              hora:       { type: Type.STRING, description: 'Hora de la visita, formato HH:MM.' },
+            },
+            required: ['negocio_id', 'nombre', 'dia', 'hora'],
+          },
+        },
       },
-      required: ['negocio_id', 'nombre', 'dia', 'hora'],
+      required: ['eventos'],
     },
   },
   {
-    name: 'editar_evento',
-    description: 'Edita una parada del itinerario. Úsala cuando el turista quiera cambiar el día, hora o nombre de una parada existente. Primero llama leer_itinerario para obtener el id correcto.',
+    name: 'editar_eventos_lote',
+    description: 'Edita una o varias paradas del itinerario. Primero llama leer_itinerario para obtener los ids correctos.',
     parameters: {
       type: Type.OBJECT,
       properties: {
-        id:     { type: Type.STRING, description: 'ID de la parada a editar.' },
-        dia:    { type: Type.STRING, description: 'Nueva fecha, formato YYYY-MM-DD. Opcional.' },
-        hora:   { type: Type.STRING, description: 'Nueva hora, formato HH:MM. Opcional.' },
-        nombre: { type: Type.STRING, description: 'Nuevo nombre o etiqueta. Opcional.' },
+        ediciones: {
+          type: Type.ARRAY,
+          description: 'Lista de ediciones a aplicar.',
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              id:     { type: Type.STRING, description: 'ID de la parada a editar.' },
+              dia:    { type: Type.STRING, description: 'Nueva fecha, formato YYYY-MM-DD. Opcional.' },
+              hora:   { type: Type.STRING, description: 'Nueva hora, formato HH:MM. Opcional.' },
+              nombre: { type: Type.STRING, description: 'Nuevo nombre o etiqueta. Opcional.' },
+            },
+            required: ['id'],
+          },
+        },
       },
-      required: ['id'],
+      required: ['ediciones'],
     },
   },
   {
-    name: 'eliminar_evento',
-    description: 'Elimina una parada del itinerario. Úsala cuando el turista quiera quitar un lugar de su plan. Primero llama leer_itinerario para obtener el id correcto.',
+    name: 'eliminar_eventos_lote',
+    description: 'Elimina una o varias paradas del itinerario. Primero llama leer_itinerario para obtener los ids correctos.',
     parameters: {
       type: Type.OBJECT,
       properties: {
-        id: { type: Type.STRING, description: 'ID de la parada a eliminar.' },
+        ids: {
+          type: Type.ARRAY,
+          description: 'Lista de IDs de paradas a eliminar.',
+          items: { type: Type.STRING },
+        },
       },
-      required: ['id'],
+      required: ['ids'],
     },
   },
   {
     name: 'leer_itinerario',
-    description: 'Lee el itinerario actual del turista con todos los ids. Úsala para confirmar cambios o cuando el turista quiera ver su plan.',
+    description: 'Lee el itinerario actual del turista con todos los ids. Úsala antes de editar o eliminar, o cuando el turista quiera ver su plan.',
     parameters: {
       type: Type.OBJECT,
       properties: {},
@@ -70,10 +94,10 @@ export const declarations: FunctionDeclaration[] = [
 
 export function createItinerarioHandlers(userId: string): Record<string, (args: never) => unknown> {
   return {
-    buscar_negocios: ({ tipo }: { tipo: string }) => buscarNegocios(tipo),
-    agregar_evento:  (args: { negocio_id: string; nombre: string; dia: string; hora: string }) => agregarEvento(userId, args),
-    editar_evento:   (args: { id: string; dia?: string; hora?: string; nombre?: string }) => editarEvento(userId, args),
-    eliminar_evento: (args: { id: string }) => eliminarEvento(userId, args),
-    leer_itinerario: () => leerItinerario(userId),
+    buscar_negocios:      ({ tipo }: { tipo: string }) => buscarNegocios(tipo),
+    agregar_eventos_lote: (args: { eventos: { negocio_id: string; nombre: string; dia: string; hora: string }[] }) => agregarEventosLote(userId, args),
+    editar_eventos_lote:  (args: { ediciones: { id: string; dia?: string; hora?: string; nombre?: string }[] }) => editarEventosLote(userId, args),
+    eliminar_eventos_lote:(args: { ids: string[] }) => eliminarEventosLote(userId, args),
+    leer_itinerario:      () => leerItinerario(userId).map(({ id, label, routeDate, startTime }) => ({ id, label, routeDate, startTime })),
   }
 }

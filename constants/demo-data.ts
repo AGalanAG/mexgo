@@ -1,4 +1,4 @@
-import type { BusinessInsight } from '@/types/types'
+import type { BusinessInsight, InsightContext, ItineraryStop } from '@/types/types'
 
 export const DEMO_TOKEN       = 'mexgo-demo'
 export const DEMO_USER_ID     = 'demo-user-00000000-0001'
@@ -86,4 +86,114 @@ export const DEMO_INSIGHT: BusinessInsight = {
       impacto_insignia: null,
     },
   ],
+}
+
+export const DEMO_ITINERARY_STOPS: ItineraryStop[] = [
+  {
+    id: 'demo-stop-001',
+    itineraryId: 'demo-itinerary-001',
+    routeDate: '2026-06-14',
+    stopOrder: 1,
+    stopType: 'BUSINESS',
+    businessProfileId: 'neg-001',
+    label: 'Tacos El Güero',
+    startTime: '09:00',
+    latitude: 19.4326,
+    longitude: -99.1332,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'demo-stop-002',
+    itineraryId: 'demo-itinerary-001',
+    routeDate: '2026-06-14',
+    stopOrder: 2,
+    stopType: 'BUSINESS',
+    businessProfileId: 'neg-002',
+    label: 'Café Quinto',
+    startTime: '11:30',
+    latitude: 19.4122,
+    longitude: -99.1728,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'demo-stop-003',
+    itineraryId: 'demo-itinerary-001',
+    routeDate: '2026-06-14',
+    stopOrder: 3,
+    stopType: 'BUSINESS',
+    businessProfileId: 'neg-004',
+    label: 'Casa de Artesanías Coyoacán',
+    startTime: '15:00',
+    latitude: 19.3467,
+    longitude: -99.1617,
+    createdAt: new Date().toISOString(),
+  },
+]
+
+export const DEMO_CHAT_HISTORY = {
+  historial: [
+    { role: 'user' as const, text: '¿Qué me recomiendas para desayunar en el Centro?' },
+    { role: 'model' as const, text: '¡Perfecto! Para desayunar en el Centro Histórico, te recomiendo Tacos El Güero — un clásico desde 1978 con carnitas, suadero y pastor. ¿Lo agrego a tu itinerario del 14 de junio?' },
+    { role: 'user' as const, text: 'Sí, agrégalo a las 9am' },
+    { role: 'model' as const, text: '✅ ¡Listo! Agregué "Tacos El Güero" a tu itinerario el 14 de junio a las 9:00. También hay un café de especialidad increíble cerca, en la Condesa — ¿quieres que te cuente más?' },
+  ],
+  mensajes: [
+    { role: 'user' as const, text: '¿Qué me recomiendas para desayunar en el Centro?' },
+    { role: 'model' as const, text: '¡Perfecto! Para desayunar en el Centro Histórico, te recomiendo Tacos El Güero — un clásico desde 1978 con carnitas, suadero y pastor. ¿Lo agrego a tu itinerario del 14 de junio?' },
+    { role: 'user' as const, text: 'Sí, agrégalo a las 9am' },
+    {
+      role: 'model' as const,
+      text: '✅ ¡Listo! Agregué "Tacos El Güero" a tu itinerario el 14 de junio a las 9:00. También hay un café de especialidad increíble cerca, en la Condesa — ¿quieres que te cuente más?',
+      eventoAgregado: {
+        id: 'demo-stop-001',
+        itineraryId: 'demo-itinerary-001',
+        routeDate: '2026-06-14',
+        stopOrder: 1,
+        stopType: 'BUSINESS' as const,
+        businessProfileId: 'neg-001',
+        label: 'Tacos El Güero',
+        startTime: '09:00',
+        latitude: 19.4326,
+        longitude: -99.1332,
+        createdAt: new Date().toISOString(),
+      },
+    },
+  ],
+}
+
+export const DEMO_INSIGHT_CONTEXT: InsightContext = {
+  negocio: {
+    businessId: DEMO_BUSINESS_ID,
+    nombre: DEMO_BUSINESS_NAME,
+    descripcion: 'Tacos tradicionales al pastor con 20 años de historia.',
+    categoria: 'GASTRONOMIA',
+    alcaldia: DEMO_BOROUGH,
+    satStatus: 'REGISTRADO',
+    operationModes: ['PRESENCIAL'],
+    accessibilityNeedsNegocio: [],
+    teamSize: 5,
+    businessStartRange: '5-10 AÑOS',
+    modulosCompletados: [],
+    insigniasActivas: ['SERVICIO_SEGURO'],
+    insigniasPendientes: ['NEGOCIO_FORMAL', 'PAGOS_DIGITALES'],
+  },
+  zona: {
+    alcaldia: DEMO_BOROUGH,
+    totalTuristasRegistrados: 320,
+    paisesTop: ['EUA', 'Canadá', 'Francia'],
+    motivosTop: ['gastronomy', 'cultural'],
+    accessibilityBreakdown: {
+      movilidad: 18,
+      baja_vision: 12,
+    },
+    estadiaPromedio: '4-7 días',
+    promedioSaturacionZona: 0.72,
+    diasMasActivos: ['Sábado', 'Domingo'],
+  },
+  catalogo: {
+    modulosDisponibles: [
+      { slug: 'atencion-personas-discapacidad', title: 'Atención a Personas con Discapacidad', category: 'profesional', audience: 'BOTH' },
+      { slug: 'registro-sat', title: 'Formalízate — Registro ante el SAT', category: 'formaliza', audience: 'OWNER' },
+    ]
+  }
 }

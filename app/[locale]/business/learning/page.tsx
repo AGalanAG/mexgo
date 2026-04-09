@@ -363,7 +363,7 @@ export default function LearningPage() {
           setTopCursos(parsed.cursos_recomendados.slice(0, 3));
         }
       } catch (err) {
-        console.error('Error parsing cached insight:', err);
+        // ignore
       }
     }
   }, []);

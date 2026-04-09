@@ -12,9 +12,9 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
 
 type ChatResult = {
   respuesta: string
-  eventoAgregado?: ItineraryStop
-  eventoEditado?: ItineraryStop
-  eventoEliminado?: { id: string; label?: string; eliminado: boolean }
+  eventosAgregados?: ItineraryStop[]
+  eventosEditados?: ItineraryStop[]
+  eventosEliminados?: { id: string; label?: string; eliminado: boolean }[]
   negociosRecomendados?: NegocioConScore[]
 }
 
@@ -37,9 +37,9 @@ export async function chat(
     systemInstruction: buildSystemPrompt(perfil),
   }
 
-  let eventoAgregado: ItineraryStop | undefined
-  let eventoEditado: ItineraryStop | undefined
-  let eventoEliminado: { id: string; label?: string; eliminado: boolean } | undefined
+  let eventosAgregados: ItineraryStop[] | undefined
+  let eventosEditados: ItineraryStop[] | undefined
+  let eventosEliminados: { id: string; label?: string; eliminado: boolean }[] | undefined
   let negociosRecomendados: NegocioConScore[] | undefined
 
   while (true) {
@@ -55,9 +55,9 @@ export async function chat(
         const fn = handlers[name]
         const resultado = fn ? fn(fc.args as never) : { error: `Función ${name} no existe` }
 
-        if (name === 'agregar_evento') eventoAgregado = resultado as ItineraryStop
-        if (name === 'editar_evento' && (resultado as ItineraryStop).id) eventoEditado = resultado as ItineraryStop
-        if (name === 'eliminar_evento') eventoEliminado = resultado as { id: string; label?: string; eliminado: boolean }
+        if (name === 'agregar_eventos_lote') eventosAgregados = resultado as ItineraryStop[]
+        if (name === 'editar_eventos_lote') eventosEditados = (resultado as (ItineraryStop | { error: string })[]).filter((r): r is ItineraryStop => 'id' in r)
+        if (name === 'eliminar_eventos_lote') eventosEliminados = resultado as { id: string; label?: string; eliminado: boolean }[]
         if (name === 'buscar_negocios' || name === 'recomendar_negocios') {
           negociosRecomendados = resultado as NegocioConScore[]
         }
@@ -71,7 +71,7 @@ export async function chat(
       })
 
     } else {
-      return { respuesta: respuesta.text ?? '', eventoAgregado, eventoEditado, eventoEliminado, negociosRecomendados }
+      return { respuesta: respuesta.text ?? '', eventosAgregados, eventosEditados, eventosEliminados, negociosRecomendados }
     }
   }
 }
