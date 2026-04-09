@@ -107,7 +107,7 @@ export default function PlaceDetailPage() {
   if (!place) {
     return (
       <div className="flex flex-col min-h-screen bg-white">
-        <Navbar variant="light" />
+        <Navbar  />
         <main className="pt-32 flex flex-col items-center justify-center">
           <div className="w-12 h-12 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin mb-4"></div>
           <p className="text-[var(--primary)] font-black uppercase tracking-widest text-xs">Cargando detalles...</p>
@@ -119,7 +119,7 @@ export default function PlaceDetailPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Navbar fija */}
-      <Navbar variant="light" />
+      <Navbar  />
 
       <main className="pt-24 pb-16 px-4 bg-[var(--background)]">
         {/* Navigation */}

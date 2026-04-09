@@ -139,7 +139,7 @@ export default function ProfilePage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[var(--background)]">
-      <Navbar variant="light" />
+      <Navbar  />
 
       <main className="flex-1 pt-20 pb-20 px-4">
         <div className="max-w-4xl mx-auto space-y-6">
