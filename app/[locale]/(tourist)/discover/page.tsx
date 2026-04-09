@@ -135,9 +135,11 @@ export default function DiscoverPage() {
           params.set('q', debouncedSearch);
         }
 
+        const token = typeof window !== 'undefined' ? localStorage.getItem('mexgo_access_token') : null;
         const response = await fetch(`/api/directory/businesses?${params.toString()}`, {
           method: 'GET',
           cache: 'no-store',
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
 
         if (!response.ok) {

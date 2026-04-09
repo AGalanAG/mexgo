@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server';
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
 import { getSupabaseAdmin } from '@/lib/supabase';
 import { MOCK_BUSINESSES } from '@/lib/businesses';
-import { isDemoMode } from '@/lib/demo';
+import { isDemoMode, isDemoToken } from '@/lib/demo';
 
 function parsePositiveInt(value: string | null, fallback: number) {
   if (!value) {
@@ -18,29 +18,36 @@ function parsePositiveInt(value: string | null, fallback: number) {
   return parsed;
 }
 
+function mockResponse() {
+  const mockItems = MOCK_BUSINESSES.map(b => ({
+    businessId:          b.id,
+    publicName:          b.businessName,
+    shortDescription:    b.businessDescription,
+    categories:          [],
+    badgeCodes:          [],
+    city:                b.neighborhood,
+    state:               b.boroughCode,
+    publicScore:         80,
+    businessName:        b.businessName,
+    businessDescription: b.businessDescription,
+    borough:             b.boroughCode,
+    neighborhood:        b.neighborhood,
+    latitude:            b.latitude,
+    longitude:           b.longitude,
+    operationDaysHours:  b.operationDaysHours,
+    coverImageUrl:       b.coverImageUrl ?? null,
+  }));
+  return apiOk({ items: mockItems, pagination: { page: 1, pageSize: mockItems.length, total: mockItems.length } });
+}
+
 export async function GET(request: NextRequest) {
-  // Demo/local fallback cuando Supabase no está configurado
-  if (isDemoMode()) {
-    const mockItems = MOCK_BUSINESSES.map(b => ({
-      businessId:          b.id,
-      publicName:          b.businessName,
-      shortDescription:    b.businessDescription,
-      categories:          [],
-      badgeCodes:          [],
-      city:                b.neighborhood,
-      state:               b.boroughCode,
-      publicScore:         80,
-      businessName:        b.businessName,
-      businessDescription: b.businessDescription,
-      borough:             b.boroughCode,
-      neighborhood:        b.neighborhood,
-      latitude:            b.latitude,
-      longitude:           b.longitude,
-      operationDaysHours:  b.operationDaysHours,
-      coverImageUrl:       b.coverImageUrl ?? null,
-    }));
-    return apiOk({ items: mockItems, pagination: { page: 1, pageSize: mockItems.length, total: mockItems.length } });
-  }
+  // Demo token en el header → siempre mocks, independiente de Supabase
+  const authHeader = request.headers.get('authorization');
+  const token = authHeader?.toLowerCase().startsWith('bearer ') ? authHeader.slice(7).trim() : null;
+  if (token && isDemoToken(token)) return mockResponse();
+
+  // Sin Supabase configurado → mocks
+  if (isDemoMode()) return mockResponse();
 
   const url = new URL(request.url);
   const searchParams = url.searchParams;
