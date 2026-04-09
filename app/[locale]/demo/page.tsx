@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from '@/i18n/routing';
 import { saveSession } from '@/lib/client-auth';
-import { DEMO_TOKEN, DEMO_USER_ID, DEMO_BUSINESS_NAME, DEMO_TOURIST_NAME, DEMO_ITINERARY_STOPS, DEMO_CHAT_HISTORY } from '@/constants/demo-data';
+import { DEMO_TOKEN, DEMO_USER_ID, DEMO_BUSINESS_NAME, DEMO_TOURIST_NAME, DEMO_ITINERARY_STOPS, DEMO_CHAT_HISTORY, DEMO_RECOMMENDATIONS } from '@/constants/demo-data';
 import { Store as StoreIcon, ExploreOutlined as TouristIcon, ArrowForward as ArrowIcon } from '@mui/icons-material';
 
 export default function DemoPage() {
@@ -30,6 +30,7 @@ export default function DemoPage() {
     }));
     localStorage.setItem('mexgo_itinerary', JSON.stringify(DEMO_ITINERARY_STOPS));
     localStorage.setItem('mexgo_chat_history', JSON.stringify(DEMO_CHAT_HISTORY));
+    localStorage.setItem('mexgo_recommendations', JSON.stringify(DEMO_RECOMMENDATIONS));
 
     // Cookie para que proxy.ts reconozca el rol en modo demo
     document.cookie = `mexgo_primary_role=TURISTA; Path=/; Max-Age=${60 * 60 * 24}; SameSite=Lax`;

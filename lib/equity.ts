@@ -2,8 +2,18 @@ import type { BusinessProfile, NegocioConScore } from '@/types/types'
 
 // ─── CONSTANTES ───────────────────────────────────────────────────────────────
 
-const BETA_OLA_MEXICO = 0.2   // bonus fijo para negocios verificados
+const BETA_OLA_MEXICO = 0.2
 const MAX_RESULTS     = 6
+
+// ─── KEYWORDS POR MOTIVO DE VIAJE ────────────────────────────────────────────
+
+const MOTIVE_KEYWORDS: Record<string, string[]> = {
+  gastronomy: ['taco', 'café', 'cafe', 'comida', 'cocina', 'mercado', 'mezcal', 'antojito', 'taquería', 'carnitas', 'pan', 'botana'],
+  cultural:   ['artesanía', 'artesania', 'museo', 'arte', 'talavera', 'histórico', 'historico', 'colonial', 'tradicional'],
+  nightlife:  ['bar', 'mezcal', 'coctel', 'noche'],
+  nature:     ['parque', 'jardín', 'jardin', 'xochimilco', 'canal'],
+  shopping:   ['artesanía', 'artesania', 'mercado', 'joyería', 'joyeria', 'plata', 'talavera'],
+}
 
 // ─── HAVERSINE ────────────────────────────────────────────────────────────────
 
@@ -21,43 +31,32 @@ function distanciaKm(lat1: number, lng1: number, lat2: number, lng2: number): nu
 
 // ─── TIPOS ────────────────────────────────────────────────────────────────────
 
-export type SaturacionMap = Record<string, number> // businessId → saturation_score (0–1)
+export type SaturacionMap = Record<string, number>
 
 export type EquityInput = {
   negocios: BusinessProfile[]
   saturacion: SaturacionMap
   turistaLat: number
   turistaLng: number
-  questionnaire?: Record<string, unknown>
+  tripMotives?: string[]
 }
 
 // ─── RELEVANCIA ───────────────────────────────────────────────────────────────
-// Hoy: score base + keywords del cuestionario vs descripcion del negocio
-// Mañana: embeddings o scoring semántico con Gemini
 
-function calcularRelevancia(negocio: BusinessProfile, questionnaire?: Record<string, unknown>): number {
-  let base = 0.5
+function calcularRelevancia(negocio: BusinessProfile, tripMotives?: string[]): number {
+  if (!tripMotives || tripMotives.length === 0) return 0.5
 
-  if (!questionnaire) return base
+  const desc = (negocio.businessDescription + ' ' + negocio.businessName).toLowerCase()
+  let bonus = 0
 
-  const desc = negocio.businessDescription.toLowerCase()
-
-  const prefs = questionnaire.foodPreferences
-  if (Array.isArray(prefs)) {
-    for (const pref of prefs as string[]) {
-      if (desc.includes(pref.toLowerCase())) {
-        base += 0.15
-        break
-      }
+  for (const motive of tripMotives) {
+    const keywords = MOTIVE_KEYWORDS[motive.toLowerCase()] ?? [motive.toLowerCase()]
+    if (keywords.some(kw => desc.includes(kw))) {
+      bonus += 0.2
     }
   }
 
-  const style = questionnaire.travelStyle as string | undefined
-  if (style && desc.includes(style.toLowerCase())) {
-    base += 0.1
-  }
-
-  return Math.min(base, 1)
+  return Math.min(0.5 + bonus, 1)
 }
 
 // ─── FUNCIÓN PRINCIPAL ────────────────────────────────────────────────────────
@@ -67,31 +66,27 @@ export function calcularRecomendaciones({
   saturacion,
   turistaLat,
   turistaLng,
-  questionnaire,
+  tripMotives,
 }: EquityInput): NegocioConScore[] {
   const scored = negocios
     .filter(n => n.isActive)
     .map(n => {
-      const distKm      = distanciaKm(turistaLat, turistaLng, n.latitude, n.longitude)
-      const proximidad  = 1 / (1 + distKm)
-      const relevancia  = calcularRelevancia(n, questionnaire)
-      const beta        = BETA_OLA_MEXICO          // todos los negocios activos son Ola México
-      const sat         = saturacion[n.id] ?? 0
+      const distKm     = distanciaKm(turistaLat, turistaLng, n.latitude, n.longitude)
+      const proximidad = 1 / (1 + distKm)
+      const relevancia = calcularRelevancia(n, tripMotives)
+      const sat        = saturacion[n.id] ?? 0
 
-      const score = relevancia * proximidad + beta - sat
+      const score = relevancia * proximidad + BETA_OLA_MEXICO - sat
 
       const reasons: string[] = []
-      if (distKm < 0.5)  reasons.push('muy cerca de ti')
-      if (sat < 0.2)     reasons.push('poca afluencia ahora')
-      if (relevancia > 0.6) reasons.push('coincide con tus preferencias')
+      if (distKm < 0.5)      reasons.push('muy cerca de ti')
+      if (sat < 0.2)         reasons.push('poca afluencia ahora')
+      if (relevancia > 0.6)  reasons.push('coincide con tus intereses')
       if (reasons.length === 0) reasons.push('negocio verificado Ola México')
 
-      const estimatedWalkMinutes = Math.round((distKm / 5) * 60) // ~5 km/h
-
-      return { ...n, score, reasons, estimatedWalkMinutes }
+      return { ...n, score, reasons, estimatedWalkMinutes: Math.round((distKm / 5) * 60) }
     })
 
-  // Ordena por score desc, desempate: menor saturación primero
   scored.sort((a, b) =>
     b.score !== a.score
       ? b.score - a.score
@@ -101,9 +96,15 @@ export function calcularRecomendaciones({
   return scored.slice(0, MAX_RESULTS)
 }
 
-// ─── MOCK DE SATURACIÓN ───────────────────────────────────────────────────────
-// Eliminar cuando Alan conecte daily_business_saturation a Supabase
+// ─── SATURACIÓN ESTABLE ───────────────────────────────────────────────────────
+// Determinista por ID — no cambia entre requests hasta conectar daily_business_saturation
 
-export function mockSaturacion(ids: string[]): SaturacionMap {
-  return Object.fromEntries(ids.map(id => [id, Math.random() * 0.4]))
+function hashId(id: string): number {
+  let h = 0
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) & 0xffff
+  return h
+}
+
+export function saturacionEstable(ids: string[]): SaturacionMap {
+  return Object.fromEntries(ids.map(id => [id, (hashId(id) % 40) / 100]))
 }

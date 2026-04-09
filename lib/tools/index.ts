@@ -1,19 +1,15 @@
+import type { TouristProfile } from '@/types/types'
 import * as itinerario from './itinerario'
-import * as recommend  from './recommend'
-// import * as calendar from './calendar'  ← cuando se integre Google Calendar
+import { declarations as recommendDeclarations, createRecommendHandlers } from './recommend'
 
 export const declarations = [
   ...itinerario.declarations,
-  ...recommend.declarations,
+  ...recommendDeclarations,
 ]
 
-export function createItinerarioHandlers(userId: string) {
-  return itinerario.createItinerarioHandlers(userId)
-}
-
-export function createHandlers(userId: string): Record<string, (args: never) => unknown> {
+export function createHandlers(userId: string, perfil?: TouristProfile): Record<string, (args: never) => unknown> {
   return {
     ...itinerario.createItinerarioHandlers(userId),
-    ...recommend.handlers,
+    ...createRecommendHandlers(perfil),
   }
 }

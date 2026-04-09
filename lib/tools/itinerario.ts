@@ -1,23 +1,8 @@
 import { Type } from '@google/genai'
 import type { FunctionDeclaration } from '@google/genai'
-import { buscarNegocios } from '@/lib/businesses'
 import { agregarEventosLote, editarEventosLote, eliminarEventosLote, leerItinerario } from '@/lib/itinerario'
 
 export const declarations: FunctionDeclaration[] = [
-  {
-    name: 'buscar_negocios',
-    description: 'Busca negocios locales verificados. Úsala cuando el turista pregunte por lugares para comer, comprar o visitar.',
-    parameters: {
-      type: Type.OBJECT,
-      properties: {
-        tipo: {
-          type: Type.STRING,
-          description: 'Categoría: taquería, café, artesanías, mercado, etc.',
-        },
-      },
-      required: ['tipo'],
-    },
-  },
   {
     name: 'agregar_eventos_lote',
     description: 'Agrega una o varias paradas al itinerario. Úsala siempre que el turista quiera agregar lugares, ya sea uno solo o un día completo.',
@@ -94,7 +79,6 @@ export const declarations: FunctionDeclaration[] = [
 
 export function createItinerarioHandlers(userId: string): Record<string, (args: never) => unknown> {
   return {
-    buscar_negocios:      ({ tipo }: { tipo: string }) => buscarNegocios(tipo),
     agregar_eventos_lote: (args: { eventos: { negocio_id: string; nombre: string; dia: string; hora: string }[] }) => agregarEventosLote(userId, args),
     editar_eventos_lote:  (args: { ediciones: { id: string; dia?: string; hora?: string; nombre?: string }[] }) => editarEventosLote(userId, args),
     eliminar_eventos_lote:(args: { ids: string[] }) => eliminarEventosLote(userId, args),

@@ -25,7 +25,7 @@ export async function chat(
   perfil?: TouristProfile,
 ): Promise<ChatResult> {
 
-  const handlers = createHandlers(userId)
+  const handlers = createHandlers(userId, perfil)
 
   const contents: Content[] = [
     ...historial.map(m => ({ role: m.role, parts: [{ text: m.text }] })),
@@ -58,7 +58,7 @@ export async function chat(
         if (name === 'agregar_eventos_lote') eventosAgregados = resultado as ItineraryStop[]
         if (name === 'editar_eventos_lote') eventosEditados = (resultado as (ItineraryStop | { error: string })[]).filter((r): r is ItineraryStop => 'id' in r)
         if (name === 'eliminar_eventos_lote') eventosEliminados = resultado as { id: string; label?: string; eliminado: boolean }[]
-        if (name === 'buscar_negocios' || name === 'recomendar_negocios') {
+        if (name === 'recomendar_negocios') {
           negociosRecomendados = resultado as NegocioConScore[]
         }
 

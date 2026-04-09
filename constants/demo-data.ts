@@ -1,4 +1,13 @@
-import type { BusinessInsight, InsightContext, ItineraryStop } from '@/types/types'
+import type { BusinessInsight, InsightContext, ItineraryStop, NegocioConScore } from '@/types/types'
+import { MOCK_BUSINESSES } from '@/lib/businesses'
+
+/** Recomendaciones mock listas para guardar en localStorage en modo demo */
+export const DEMO_RECOMMENDATIONS: NegocioConScore[] = MOCK_BUSINESSES.map((b, i) => ({
+  ...b,
+  score: 0.9 - i * 0.1,
+  reasons: ['negocio verificado Ola México'],
+  estimatedWalkMinutes: 5 + i * 3,
+}))
 
 export const DEMO_TOKEN       = 'mexgo-demo'
 export const DEMO_USER_ID     = 'demo-user-00000000-0001'

@@ -11,17 +11,26 @@ export async function POST(req: NextRequest) {
     return apiError('AUTH_REQUIRED', 'Token Bearer requerido', 401)
   }
 
-  const body = await req.json() as ChatRequest
+  let body: ChatRequest
+  try {
+    body = await req.json() as ChatRequest
+  } catch {
+    return apiError('VALIDATION_ERROR', 'Body JSON inválido', 400)
+  }
 
   // Sincroniza el itinerario del cliente antes de que Gemini lo lea/modifique
   inicializarParadas(user.id, body.itinerario ?? [])
 
-  const { respuesta, eventosAgregados, eventosEditados, eventosEliminados, negociosRecomendados } = await chat(
-    user.id,
-    body.mensaje,
-    body.historial ?? [],
-    body.perfil,
-  )
-
-  return NextResponse.json<ChatResponse>({ respuesta, eventosAgregados, eventosEditados, eventosEliminados, negociosRecomendados })
+  try {
+    const { respuesta, eventosAgregados, eventosEditados, eventosEliminados, negociosRecomendados } = await chat(
+      user.id,
+      body.mensaje,
+      body.historial ?? [],
+      body.perfil,
+    )
+    return NextResponse.json<ChatResponse>({ respuesta, eventosAgregados, eventosEditados, eventosEliminados, negociosRecomendados })
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Error al procesar el mensaje'
+    return apiError('INTERNAL_ERROR', msg, 500)
+  }
 }
