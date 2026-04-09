@@ -22,6 +22,24 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState('');
 
+  const resetForm = React.useCallback(() => {
+    setEmail('');
+    setPassword('');
+    setErrorMessage('');
+    setIsSubmitting(false);
+  }, []);
+
+  React.useEffect(() => {
+    if (!isOpen) {
+      resetForm();
+    }
+  }, [isOpen, resetForm]);
+
+  const handleClose = React.useCallback(() => {
+    resetForm();
+    onClose();
+  }, [onClose, resetForm]);
+
   if (!isOpen) return null;
 
   const handleLogin = async () => {
@@ -56,7 +74,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         primaryRole: result.data?.primaryRole,
       });
 
-      onClose();
+      handleClose();
 
       const primaryRole = result.data?.primaryRole;
       if (primaryRole === 'ENCARGADO_NEGOCIO' || primaryRole === 'EMPLEADO_NEGOCIO') {
@@ -88,7 +106,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center p-4"
       style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(3px)', WebkitBackdropFilter: 'blur(3px)' }}
-      onClick={onClose}
+      onClick={handleClose}
     >
 
       {/* Modal glassmorphism */}
@@ -105,7 +123,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       >
         {/* Botón cerrar */}
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors p-1 z-10"
         >
           <CloseIcon fontSize="small" />
@@ -202,7 +220,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
               Don't have an account yet?{' '}
               <button
                 onClick={() => {
-                  onClose();
+                  handleClose();
                   openRegister();
                 }}
                 className="text-green-400 font-bold hover:text-green-300 hover:underline transition-colors"
