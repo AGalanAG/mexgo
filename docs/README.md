@@ -18,6 +18,8 @@ Indice rapido de documentacion activa (enfoque abril 2026).
 - AI_BUSINESS.md: arquitectura IA del dashboard business — contratos Gemini, tablas nuevas, archivos a crear y orden de implementacion.
 - PASOS_AI_BUSINESS.md: guia ejecutable paso a paso para Gemini CLI — 7 fases independientes con codigo completo, verificaciones y STOP points.
 - PRACTICES.md: errores del agente y convenciones aprendidas por fase — se actualiza despues de cada revision.
+- IA_BUSINESS_2.md: arquitectura del chat conversacional para propietarios — contratos API, system prompt, componente UI, orden de implementacion y talking points para demo.
+- PASOS_AI_BUSINESS_2.md: guia ejecutable para Gemini CLI — 5 fases del chat conversacional, patrones a seguir, STOP points y convenciones.
 
 ## Equipo
 - ROLES.md: roles de plataforma y responsabilidades de desarrollo.
