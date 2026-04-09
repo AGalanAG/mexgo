@@ -11,7 +11,12 @@ export function isDemoToken(token: string): boolean {
  * @deprecated Usar isDemoToken(token) en lugar de isDemoMode().
  * isDemoMode() activa demo globalmente por env vars, lo que puede enmascarar
  * errores de configuración en producción.
+ *
+ * Para forzar modo demo aunque Supabase esté configurado, establece:
+ *   DEMO_MODE=true
+ * en las variables de entorno del proyecto.
  */
 export function isDemoMode(): boolean {
+  if (process.env.DEMO_MODE === 'true') return true;
   return !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY;
 }
