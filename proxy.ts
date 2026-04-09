@@ -49,6 +49,10 @@ export default function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL('/es/profile', request.url));
     }
 
+    if (pathname === '/profile' && (primaryRole === 'ENCARGADO_NEGOCIO' || primaryRole === 'EMPLEADO_NEGOCIO')) {
+      return NextResponse.redirect(new URL('/es/business/profile', request.url));
+    }
+
     return NextResponse.next();
   }
 
@@ -58,7 +62,11 @@ export default function proxy(request: NextRequest) {
     }
 
     if (path === '/profile' && isLoggedIn && primaryRole && primaryRole !== 'TURISTA') {
-      return NextResponse.redirect(new URL('/profile', request.url));
+      if (primaryRole === 'ENCARGADO_NEGOCIO' || primaryRole === 'EMPLEADO_NEGOCIO') {
+        return NextResponse.redirect(new URL(`/${locale}/business/profile`, request.url));
+      }
+
+      return NextResponse.redirect(new URL('/requests', request.url));
     }
   }
 

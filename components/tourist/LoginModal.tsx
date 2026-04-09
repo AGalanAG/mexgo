@@ -60,7 +60,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
       const primaryRole = result.data?.primaryRole;
       if (primaryRole === 'ENCARGADO_NEGOCIO' || primaryRole === 'EMPLEADO_NEGOCIO') {
-        window.location.assign('/profile');
+        window.location.assign(`/${locale}/business/profile`);
         return;
       }
 

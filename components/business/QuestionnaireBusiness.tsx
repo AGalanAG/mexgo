@@ -233,7 +233,7 @@ const QuestionnaireBusiness: React.FC = () => {
       }
 
       alert("Solicitud enviada correctamente.");
-      router.push("/business/dashboard");
+      router.push("/business/profile");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Error inesperado al enviar solicitud";
       alert(message);
@@ -259,7 +259,7 @@ const QuestionnaireBusiness: React.FC = () => {
           <div className="flex items-center gap-3 shrink-0">
             <button
               type="button"
-              onClick={() => router.push('/business/dashboard')}
+              onClick={() => router.push('/business/profile')}
               className="text-xs font-bold text-gray-300 hover:text-gray-500 border border-gray-200 hover:border-gray-300 px-3 py-1.5 rounded-xl transition-all"
             >
               Saltar (demo) →

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { Link, useRouter } from '@/i18n/routing';
 import HomeNavbar from '@/components/tourist/HomeNavbar';
@@ -15,6 +16,7 @@ import { saveSession } from '@/lib/client-auth';
 function RegisterContent() {
   const t = useTranslations('Register');
   const tNav = useTranslations('Navbar'); // Hook separado para el Navbar
+  const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
   const type = searchParams.get('type') as 'tourist' | 'business' | null;
@@ -92,7 +94,7 @@ function RegisterContent() {
       setIsSuccess(true);
       setTimeout(() => {
         if (type === 'business') {
-          window.location.assign('/profile');
+          window.location.assign(`/${locale}/onboarding-business`);
           return;
         }
 

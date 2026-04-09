@@ -7,16 +7,16 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import {
-  Dashboard as DashboardIcon,
   School as SchoolIcon,
   SupportAgent as SupportAgentIcon,
+  Person as PersonIcon,
   LanguageOutlined as LanguageIcon,
   KeyboardArrowDown as ArrowIcon,
   Logout as LogoutIcon,
 } from "@mui/icons-material";
 
 const NAV_LINKS = [
-  { href: "/business/dashboard", label: "Dashboard",    icon: <DashboardIcon sx={{ fontSize: 17 }} /> },
+  { href: "/business/profile",   label: "Perfil",       icon: <PersonIcon sx={{ fontSize: 17 }} /> },
   { href: "/business/learning",  label: "Aprendizaje",  icon: <SchoolIcon sx={{ fontSize: 17 }} /> },
   { href: "/business/support",   label: "Soporte",      icon: <SupportAgentIcon sx={{ fontSize: 17 }} /> },
 ];
@@ -54,7 +54,7 @@ export default function NavbarBusiness() {
       <div className="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between gap-6">
 
         {/* Logo + Badge */}
-        <Link href="/business/dashboard" className="flex items-center gap-3 group">
+        <Link href="/business/profile" className="flex items-center gap-3 group">
           <div className="flex flex-col leading-none">
             <span className="font-black text-xl text-white tracking-tight group-hover:text-[var(--secondary)] transition-colors">
               Mex<span className="text-[var(--secondary)]">GO</span>
@@ -131,10 +131,10 @@ export default function NavbarBusiness() {
             slotProps={{ paper: { sx: { mt: 1, borderRadius: 2, minWidth: 190 } } }}
           >
             <MenuItem
-              onClick={() => { setProfileAnchor(null); router.push('/business/dashboard'); }}
+              onClick={() => { setProfileAnchor(null); router.push('/business/profile'); }}
               sx={{ fontSize: 14, fontWeight: 700, gap: 1.5 }}
             >
-              <DashboardIcon fontSize="small" /> Mi dashboard
+              <PersonIcon fontSize="small" /> Mi perfil
             </MenuItem>
             <Divider />
             <MenuItem
