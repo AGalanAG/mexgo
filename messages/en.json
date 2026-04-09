@@ -170,8 +170,8 @@
       }
     },
     "bestService": {
-      "title1": "Connecting businesses with users,",
-      "title2": "and users with experiences"
+      "title1": "Connecting customers with businesses,",
+      "title2": "and businesses with tourists"
     },
     "bestTours": {
       "title": "Best Tours For You",
@@ -226,7 +226,12 @@
     "preferences": {
       "title": "Travel preferences",
       "add": "+ Add",
-      "items": ["Cultural Tourism", "Gastronomy", "Nightlife", "Museums"]
+      "items": [
+        "Cultural Tourism",
+        "Gastronomy",
+        "Nightlife",
+        "Museums"
+      ]
     },
     "itineraries": {
       "title": "My Itineraries",

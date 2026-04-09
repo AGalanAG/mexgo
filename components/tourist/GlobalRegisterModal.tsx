@@ -4,6 +4,8 @@ import React from 'react';
 import { useLogin } from '@/context/LoginContext';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/routing';
+import TravelExploreIcon from '@mui/icons-material/TravelExplore';
+import StorefrontIcon from '@mui/icons-material/Storefront';
 
 export default function GlobalRegisterModal() {
   const { isRegisterOpen, closeRegister } = useLogin();
@@ -46,8 +48,8 @@ export default function GlobalRegisterModal() {
               onClick={() => handleSelect('tourist')}
               className="group p-8 rounded-2xl border-2 border-gray-100 hover:border-[var(--green)] hover:bg-green-50/30 cursor-pointer transition-all flex flex-col items-center text-center"
             >
-              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4 text-3xl group-hover:scale-110 transition-transform">
-                ✈️
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <TravelExploreIcon className="text-[var(--green)]" sx={{ fontSize: 32 }} />
               </div>
               <h3 className="text-xl font-bold mb-2 text-gray-900">{t('tourist.title')}</h3>
               <p className="text-sm text-gray-500 mb-6">{t('tourist.description')}</p>
@@ -61,8 +63,8 @@ export default function GlobalRegisterModal() {
               onClick={() => handleSelect('business')}
               className="group p-8 rounded-2xl border-2 border-gray-100 hover:border-[var(--coppel-blue)] hover:bg-blue-50/30 cursor-pointer transition-all flex flex-col items-center text-center"
             >
-              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4 text-3xl group-hover:scale-110 transition-transform">
-                🏢
+              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <StorefrontIcon className="text-[var(--coppel-blue)]" sx={{ fontSize: 32 }} />
               </div>
               <h3 className="text-xl font-bold mb-2 text-gray-900">{t('business.title')}</h3>
               <p className="text-sm text-gray-500 mb-6">{t('business.description')}</p>
