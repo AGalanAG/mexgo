@@ -1,0 +1,248 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+
+\geometry{margin=2.5cm}
+
+\definecolor{d}{RGB}{30, 58, 95}
+\definecolor{a}{RGB}{185, 107, 60}
+\definecolor{g}{RGB}{120, 120, 120}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\textcolor{g}{\small MexGo — docs internos}}
+\lhead{\textcolor{g}{\small ARQUITECTURA.tex}}
+\rfoot{\textcolor{g}{\small \thepage}}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\titleformat{\section}{\normalsize\bfseries\color{d}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{g}}{}{0em}{}
+
+\newcommand{\ok}[1]{\textcolor{teal}{\textbf{✓ #1}}}
+\newcommand{\pend}[1]{\textcolor{red}{\textbf{? #1}}}
+\newcommand{\dec}[1]{\textcolor{a}{\textbf{→ #1}}}
+\newcommand{\descartado}{\textcolor{red}{\textbf{✗ Descartado}}}
+\newcommand{\parcial}{\textcolor{a}{\textbf{~ Principio adoptado}}}
+\newcommand{\elegido}{\textcolor{teal}{\textbf{✓ Elegido}}}
+\newcommand{\f}[1]{\texttt{\textcolor{d}{#1}}}
+
+\hypersetup{colorlinks=true, linkcolor=d, urlcolor=a,
+  pdftitle={MexGo ARQUITECTURA}, pdfauthor={Los Mossitos}}
+
+% ===========================================================================
+\begin{document}
+% ===========================================================================
+
+{\centering
+  {\Large\bfseries\color{d} MexGo — Arquitectura}\par
+  \vspace{0.3cm}
+  {\small\color{g} Los Mossitos · Genius Arena 2026 · \today}\par
+  \vspace{0.5cm}
+  \hrule
+  \vspace{0.8cm}
+}
+
+\tableofcontents
+\vspace{1cm}
+\hrule
+\vspace{0.5cm}
+
+% ===========================================================================
+\section{Para qué sirve este doc}
+% ===========================================================================
+
+Decisiones de arquitectura del proyecto. Qué se evaluó, qué se eligió y por
+qué. Actualizar cuando cambie algo. Responsable: Héctor.
+
+% ===========================================================================
+\section{Patrones evaluados}
+% ===========================================================================
+
+\subsection{Monolito modular — \descartado\ como patrón puro}
+
+Todo en un repo Next.js. Rápido de arrancar y fácil de desplegar, pero con
+5 personas sin separación clara los conflictos de git matan el hackathon.
+El algoritmo de equidad terminaría mezclado con React si no se separa a
+propósito. \dec{Se adopta solo la ventaja del repo único.}
+
+\subsection{Cliente / API separados — \descartado\ como implementación}
+
+Frontend y backend en proyectos distintos. Separación limpia, pero en 2 días
+el setup de CORS, dos repos y contratos de API come tiempo real. Si el backend
+no levanta, el frontend no prueba nada. \dec{Se adopta como mentalidad
+de separación, no como implementación.}
+
+\subsection{BFF — Backend for Frontend — \elegido\ como mentalidad}
+
+Un intermediario orquesta Gemini + Supabase + algoritmo y devuelve al
+frontend el resultado listo. El frontend solo renderiza. El algoritmo nunca
+llega al navegador. Requiere definir contratos de API el día 1.
+\dec{Implementado con Next.js API Routes, no como servicio separado.}
+
+\subsection{Serverless / Supabase Edge Functions — \descartado\ para hackathon}
+
+Funciones Deno en la infra de Supabase. Escalan solas, sin servidor propio.
+Deno es casi idéntico a Node.js pero las diferencias en imports y el cold
+start de 1--2s añaden fricción innecesaria en 2 días. \dec{Ruta de migración
+natural post-hackathon.}
+
+\subsection{Microservicios — \descartado}
+
+Un servicio por dominio, cada uno con su BD. Escalable y tolerante a fallos,
+pero service discovery + load balancing + trazabilidad distribuida para 5
+personas en 2 días es absurdo. \dec{No aplica.}
+
+\subsection{Clean Architecture — \parcial}
+
+La lógica de negocio no conoce a Supabase ni a Gemini. Elegante y testeable,
+pero el boilerplate de interfaces y capas formales no cabe en 2 días.
+\dec{El algoritmo y el perfil cultural son funciones puras en \f{lib/}
+que no importan proveedores directamente.}
+
+\subsection{Arquitectura hexagonal — \parcial}
+
+Puertos y adaptadores. Cambiar Gemini por OpenAI no toca la lógica de negocio.
+Misma ventaja que Clean, mismo problema de boilerplate.
+\dec{Gemini, Mapbox y Cloudinary solo se acceden desde \f{lib/}.
+Si cambia un proveedor, solo cambia ese archivo.}
+
+% ===========================================================================
+\section{Patrón elegido}
+% ===========================================================================
+
+\elegido\ \textbf{Monolito modular con mentalidad BFF — Next.js API Routes.}
+
+Un repo. Las API Routes son el BFF: reciben peticiones del frontend,
+llaman a Gemini y Supabase, aplican el algoritmo, devuelven tarjetas listas.
+El frontend solo muestra. La lógica de negocio vive en \f{lib/} como
+funciones puras en TypeScript, sin depender de Next.js ni de ningún proveedor.
+
+Por qué este: Next.js tiene curva de aprendizaje factible, un repo elimina coordinación de
+servicios, las API Routes protegen el algoritmo del cliente, y post-hackathon
+se puede migrar a Edge Functions sin tocar el frontend.
+
+\subsection{Reglas — no se rompen}
+
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item Frontend no importa Supabase directo — solo consume \f{/app/api/}.
+  \item Algoritmo solo en \f{lib/equity.ts} — nunca en un componente React.
+  \item Claves de Gemini, Mapbox server y Supabase service role — nunca en
+        \texttt{NEXT\_PUBLIC\_}.
+  \item Cada archivo en \f{lib/} — una sola responsabilidad.
+\end{itemize}
+
+% ===========================================================================
+\section{Estructura de carpetas}
+% ===========================================================================
+
+\begin{verbatim}
+mexgo/
+├── app/
+│   ├── (turista)/
+│   │   ├── page.tsx              # Bienvenida
+│   │   ├── cuestionario/
+│   │   ├── itinerario/
+│   │   └── mapa/
+│   ├── (admin)/
+│   │   ├── login/
+│   │   ├── dashboard/
+│   │   └── negocio/[id]/
+│   └── api/                      # BFF — nunca llamado directo desde cliente
+│       ├── recomendar/           # POST: perfil → tarjetas
+│       ├── itinerario/           # POST: preferencias → itinerario
+│       ├── negocios/             # CRUD negocios
+│       └── auth/
+│
+├── lib/                          # Lógica pura — sin deps de Next.js
+│   ├── equity.ts                 # Algoritmo de equidad
+│   ├── cultural.ts               # Perfil cultural por país
+│   ├── gemini.ts                 # Wrapper Gemini
+│   ├── mapbox.ts                 # Wrapper Mapbox
+│   ├── supabase.ts               # Cliente servidor
+│   └── supabase-client.ts        # Cliente browser (solo auth)
+│
+├── components/
+│   ├── ui/
+│   ├── turista/
+│   └── admin/
+│
+├── docs/
+├── supabase/migrations/
+├── .env.local                    # Nunca en git
+├── .env.example                  # Sí en git — sin valores reales
+└── next.config.ts
+\end{verbatim}
+
+% ===========================================================================
+\section{Flujo principal}
+% ===========================================================================
+
+\begin{enumerate}[leftmargin=*, itemsep=2pt]
+  \item Turista abre PWA por QR. Next.js detecta idioma con
+        \texttt{Accept-Language}.
+  \item Cuestionario → \texttt{POST /api/recomendar} con perfil básico.
+  \item API Route → \f{lib/cultural.ts} (parámetros del país) →
+        \f{lib/equity.ts} (score con negocios de Supabase) → 4--6 tarjetas.
+  \item Frontend renderiza. No procesa nada.
+  \item Si tiene boleto → \texttt{POST /api/itinerario} → Gemini integra
+        el partido al plan del día.
+  \item Itinerario se guarda en \texttt{localStorage} para offline.
+\end{enumerate}
+
+% ===========================================================================
+\section{Responsables}
+% ===========================================================================
+
+\begin{center}
+\begin{tabular}{>{\bfseries}p{2.5cm} p{2.5cm} p{8.5cm}}
+\toprule
+Módulo & Quién & Archivos \\
+\midrule
+Arquitectura + deploy & Héctor & \f{next.config.ts}, AWS, \f{.env} \\
+Algoritmo             & Héctor & \f{lib/equity.ts}, \f{lib/cultural.ts} \\
+Gemini                & Héctor & \f{lib/gemini.ts}, \f{api/itinerario/} \\
+Frontend turista      & Emi    & \f{app/(turista)/}, \f{components/turista/} \\
+Frontend admin        & Farid  & \f{app/(admin)/}, \f{components/admin/} \\
+Backend / Supabase    & Alan   & \f{app/api/}, \f{lib/supabase.ts}, migraciones \\
+Apoyo / QA            & Xavier & datos de prueba, tests \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ===========================================================================
+\section{Pendientes}
+% ===========================================================================
+
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item \pend{Servicio AWS} — Amplify / EC2+Nginx / App Runner. (Héctor)
+  \item \pend{Contratos de API} — schemas por endpoint antes del día 1.
+        Alan + Héctor → \f{SCHEMA.tex}.
+  \item \pend{Caché del score} — memoria / Supabase / Redis.
+        Impacta \f{lib/equity.ts}. (Héctor)
+\end{itemize}
+
+% ===========================================================================
+\section{Cambios}
+% ===========================================================================
+
+\begin{tabular}{p{2cm} p{2.5cm} p{9cm}}
+\toprule
+Fecha & Quién & Qué \\
+\midrule
+\today & Héctor & v1.0 — evaluación de patrones, decisión inicial. \\
+\today & Héctor & v1.1 — nombres reales, párrafos cortos. \\
+\today & Héctor & v1.2 — estilo cuaderno, sin relleno. \\
+\bottomrule
+\end{tabular}
+
+\end{document}

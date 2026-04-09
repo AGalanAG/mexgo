@@ -1,0 +1,358 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+\usepackage{graphicx}
+\usepackage{multicol}
+
+\geometry{margin=2.5cm}
+
+\definecolor{primary}{RGB}{28, 66, 232}
+\definecolor{secondary}{RGB}{232, 194, 71}
+\definecolor{dark}{RGB}{30, 58, 95}
+\definecolor{gray}{RGB}{120, 120, 120}
+\definecolor{green}{RGB}{34, 139, 87}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\textcolor{gray}{\small MexGo — Fase 2}}
+\lhead{\textcolor{gray}{\small Genius Arena · Fundación Coppel 2026}}
+\rfoot{\textcolor{gray}{\small \thepage}}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\titleformat{\section}{\large\bfseries\color{primary}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{dark}}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{gray}}{}{0em}{}
+
+\newcommand{\criterio}[2]{
+  \vspace{0.3cm}
+  \noindent\colorbox{primary!10}{\parbox{\dimexpr\linewidth-2\fboxsep}{%
+    \textbf{\textcolor{primary}{#1}}\\[2pt]
+    \small\textcolor{dark}{#2}
+  }}
+  \vspace{0.3cm}
+}
+
+\newcommand{\feature}[1]{\textcolor{green}{\textbf{✓}} #1}
+\newcommand{\tech}[1]{\texttt{\textcolor{primary}{#1}}}
+
+\hypersetup{
+  colorlinks=true, linkcolor=primary, urlcolor=secondary,
+  pdftitle={MexGo FASE 2}, pdfauthor={Los Mossitos}
+}
+
+% ===========================================================================
+\begin{document}
+% ===========================================================================
+
+{\centering
+  {\Large\bfseries\color{primary} MexGo}\par
+  \vspace{0.2cm}
+  {\normalsize\color{dark} Plataforma multilingüe de turismo inclusivo para el Mundial 2026}\par
+  \vspace{0.2cm}
+  {\small\color{gray} Los Mossitos · Genius Arena · Fundación Coppel 2026 · \today}\par
+  \vspace{0.5cm}
+  \hrule
+  \vspace{0.8cm}
+}
+
+\tableofcontents
+\vspace{0.8cm}
+\hrule
+\vspace{0.5cm}
+
+% ===========================================================================
+\section{Resumen ejecutivo}
+% ===========================================================================
+
+MexGo es una Progressive Web App (PWA) que conecta turistas internacionales con
+micro y pequeñas empresas turísticas mexicanas durante el Mundial FIFA 2026.
+El turista recibe recomendaciones personalizadas por idioma, accesibilidad y
+perfil cultural; el negocio local gana visibilidad real con herramientas de
+gestión simples. Todo mediado por IA (Gemini) y sin requerir instalación de app.
+
+\textbf{Prototipo funcional disponible} con flujo completo de registro, cuestionario,
+recomendaciones y chat con IA en tres idiomas (español, inglés, francés).
+
+% ===========================================================================
+\section{Problemática y contexto}
+% ===========================================================================
+
+México recibirá millones de turistas internacionales durante el Mundial 2026.
+El programa \textit{Ola México} de Fundación Coppel busca que esta afluencia
+beneficie a los negocios locales de menor tamaño, que actualmente enfrentan:
+
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item \textbf{Invisibilidad digital}: no aparecen en plataformas internacionales
+        como Google Maps, TripAdvisor o Airbnb Experiences por barreras de idioma
+        y de acceso tecnológico.
+  \item \textbf{Barreras de comunicación}: los dueños no hablan inglés o francés;
+        los turistas no hablan español.
+  \item \textbf{Desconexión cultural}: las recomendaciones genéricas no consideran
+        las preferencias de cada país de origen.
+  \item \textbf{Falta de herramientas}: los negocios locales no tienen forma de
+        gestionar solicitudes, horarios ni valoraciones desde un solo lugar.
+\end{itemize}
+
+% ===========================================================================
+\section{Solución: MexGo}
+% ===========================================================================
+
+\subsection{Para el turista}
+
+\begin{enumerate}[leftmargin=*, itemsep=3pt]
+  \item \textbf{Acceso sin fricción}: escanea un QR o entra a la URL. La app
+        detecta idioma automáticamente (español / inglés / francés). Sin
+        descarga.
+  \item \textbf{Cuestionario de perfil}: 4 pasos breves capturan país de origen,
+        tamaño del grupo, duración de estancia, necesidades de accesibilidad,
+        motivos del viaje y factor de prioridad (cercanía vs.\ preferencia cultural).
+  \item \textbf{Recomendaciones personalizadas}: algoritmo de equidad (\tech{lib/equity.ts})
+        pondera negocios locales según perfil cultural del país, accesibilidad
+        y proximidad. El resultado son tarjetas limpias con información práctica.
+  \item \textbf{Asistente de viaje con IA}: chat con Gemini integrado que responde
+        preguntas sobre los negocios recomendados, genera itinerarios y explica
+        costumbres locales en el idioma del turista.
+  \item \textbf{Itinerario guardado offline}: el plan del día se persiste en
+        \tech{localStorage} para uso sin conexión.
+\end{enumerate}
+
+\subsection{Para el negocio local}
+
+\begin{enumerate}[leftmargin=*, itemsep=3pt]
+  \item \textbf{Registro guiado}: cuestionario simplificado de onboarding que
+        captura el tipo de negocio, servicios, capacidad y necesidades.
+  \item \textbf{Dashboard de gestión}: panel con solicitudes de turistas,
+        módulos de aprendizaje digital (LSM incluido) y métricas de visibilidad.
+  \item \textbf{Sistema de insignias}: gamificación que incentiva completar el
+        perfil, responder solicitudes y obtener valoraciones positivas,
+        aumentando la posición en el algoritmo de recomendación.
+  \item \textbf{Canal de comunicación directo}: los turistas pueden hacer
+        solicitudes; el negocio responde desde el dashboard sin necesidad de
+        hablar el mismo idioma (traducción automática vía Gemini).
+\end{enumerate}
+
+% ===========================================================================
+\section{Criterios de evaluación}
+% ===========================================================================
+
+\subsection{Alto impacto — relación con el track}
+
+\criterio{Track: negocios turísticos locales en contexto del Mundial 2026}
+{MexGo ataca directamente la problemática: micronegocios sin visibilidad
+internacional y turistas sin guía cultural adaptada.}
+
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item El torneo trae turistas de decenas de países con idiomas y culturas
+        distintas; MexGo es el único punto de entrada adaptado por perfil cultural.
+  \item El algoritmo de equidad prioriza negocios locales sobre grandes cadenas,
+        garantizando que el flujo económico llegue al nicho objetivo de Fundación Coppel.
+  \item Accesibilidad como primer ciudadano: el cuestionario captura necesidades
+        (discapacidad auditiva, visual, motriz) y filtra recomendaciones en consecuencia
+        — un diferenciador que ninguna plataforma comercial ofrece de base.
+  \item Información práctica inmediata: el turista sale del cuestionario con
+        tarjetas listas, no con una lista de 200 resultados sin contexto.
+\end{itemize}
+
+\subsection{Innovación y creatividad}
+
+\criterio{¿Qué lo hace diferente?}
+{Combinación de perfil cultural + accesibilidad + IA multilingüe aplicada
+a negocios locales en un flujo sin fricción.}
+
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item \textbf{Algoritmo de equidad cultural}: no recomienda por popularidad
+        sino por afinidad entre el perfil del visitante y las características
+        del negocio. Un turista japonés ve negocios distintos a un turista alemán
+        frente a la misma oferta.
+  \item \textbf{PWA multilingüe con i18n dinámica}: la interfaz, el chat y las
+        recomendaciones cambian de idioma en tiempo real. No hay tres apps —
+        hay una que se adapta.
+  \item \textbf{IA embebida como copiloto, no como producto}: Gemini no es el
+        centro de la app; es el motor que responde preguntas, genera itinerarios
+        y traduce en segundo plano. El turista siempre ve una interfaz limpia.
+  \item \textbf{QR de entrada}: el turista llega desde un volante, un letrero
+        en el estadio o un stand de Fundación Coppel. Sin descargar nada.
+\end{itemize}
+
+\subsection{Escalabilidad}
+
+\criterio{De hackathon a producto nacional y regional}
+{La arquitectura fue diseñada explícitamente para escalar post-hackathon.}
+
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item \textbf{Modelo de datos extensible}: Supabase + migraciones versionadas
+        (\tech{supabase/migrations/}). Agregar ciudades, tipos de negocio o
+        idiomas es una migración y un archivo de traducciones.
+  \item \textbf{Algoritmo desacoplado}: \tech{lib/equity.ts} es una función
+        pura — se puede mover a una Supabase Edge Function o a un microservicio
+        sin tocar el frontend.
+  \item \textbf{Multiidioma por diseño}: \tech{next-intl} con archivos JSON
+        independientes. Agregar portugués para Brasil o alemán para la delegación
+        europea es un archivo de 300 líneas.
+  \item \textbf{Sin servidor propio}: desplegado en Vercel (serverless). Escala
+        automáticamente con el tráfico del mundial sin aprovisionar
+        infraestructura.
+  \item \textbf{Módulo de negocios replicable}: el mismo dashboard puede
+        habilitarse para otros eventos deportivos, culturales o de turismo
+        regional en México.
+\end{itemize}
+
+\textbf{Ruta de crecimiento post-hackathon:}
+\begin{enumerate}[leftmargin=*, itemsep=1pt]
+  \item Piloto con negocios reales en una sede (ej. Guadalajara o Monterrey).
+  \item Integración con Google Maps Platform para enriquecer datos de negocio.
+  \item Módulo de pagos (Conekta / Stripe) para reservas directas.
+  \item App nativa (React Native) si la demanda lo justifica.
+  \item Extensión a eventos Fundación Coppel fuera del mundial.
+\end{enumerate}
+
+\subsection{Viabilidad}
+
+\criterio{Stack coherente con el problema, equipo y presupuesto}
+{Todas las herramientas usadas tienen tier gratuito suficiente para el
+hackathon y pricing predecible para producción.}
+
+\begin{center}
+\begin{tabular}{>{\bfseries}p{3.5cm} p{4.5cm} p{5cm}}
+\toprule
+Tecnología & Rol & Costo operativo \\
+\midrule
+Next.js 16 + Vercel    & Frontend + API Routes + deploy & Gratis (hobby) / \$20 USD/mes (pro) \\
+Supabase               & Base de datos + auth + storage & Gratis hasta 500 MB / \$25 USD/mes \\
+Gemini 2.0 Flash       & Chat + itinerarios + traducción & \$0.075 USD / 1M tokens \\
+next-intl              & i18n (es/en/fr)                & Open source \\
+MUI + Tailwind         & UI components + estilos        & Open source \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Estimado mensual para 10{,}000 turistas activos:} \textasciitilde\$60--80 USD. Para el
+piloto del mundial con carga real, el costo escala de forma lineal y predecible.
+
+El equipo de 5 personas cubrió los módulos sin dependencias externas de pago
+durante el desarrollo. No se requirió hardware ni licencias.
+
+\subsection{Mérito técnico}
+
+\criterio{Prototipo funcional, no solo maqueta}
+{El prototipo presentado corre en producción con flujos completos
+de turista y negocio.}
+
+\textbf{Funcionalidades operativas en el prototipo:}
+
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \feature{Registro e inicio de sesión completos (turista y negocio) con JWT + cookies}
+  \feature{Cuestionario de 4 pasos con validación, accesibilidad y envío a API real}
+  \feature{Chat con Gemini integrado con historial y contexto de perfil}
+  \feature{Dashboard de negocio con módulos de aprendizaje y gestión de solicitudes}
+  \feature{Sistema de badges/insignias para negocios}
+  \feature{Internacionalización dinámica español / inglés / francés}
+  \feature{Modo oscuro / claro con persistencia}
+  \feature{Navbar auth-aware (muestra login o perfil según sesión)}
+  \feature{Middleware de protección de rutas (proxy.ts)}
+  \feature{34 rutas compiladas sin errores en build de producción}
+  \feature{Migraciones de base de datos versionadas (4 migraciones)}
+  \feature{API REST documentada (docs/API.md)}
+\end{itemize}
+
+\textbf{Stack técnico completo:}
+
+\begin{center}
+\begin{tabular}{>{\bfseries}p{3.5cm} p{10cm}}
+\toprule
+Capa & Tecnologías \\
+\midrule
+Frontend       & Next.js 16.2 (App Router), React 19, TypeScript, Tailwind CSS, MUI v6 \\
+i18n           & next-intl, archivos JSON por locale (es/en/fr) \\
+Backend (BFF)  & Next.js API Routes, JWT, Supabase JS Client \\
+Base de datos  & Supabase (PostgreSQL) con Row Level Security \\
+IA             & Google Gemini 2.0 Flash \\
+Auth           & Supabase Auth + cookies HttpOnly \\
+Deploy         & Vercel (serverless, CDN global) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Decisiones de arquitectura destacadas:}
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item \textbf{BFF pattern}: el frontend nunca toca Supabase directo; todas las
+        llamadas pasan por \tech{/app/api/}. Las claves de servicio nunca
+        llegan al cliente.
+  \item \textbf{Algoritmo de equidad en \tech{lib/}}: función pura TypeScript,
+        sin dependencias de Next.js. Testeable y migratable.
+  \item \textbf{Middleware de i18n + auth}: un solo archivo \tech{proxy.ts}
+        maneja detección de locale y protección de rutas, sin duplicar lógica.
+  \item \textbf{PWA-ready}: sin dependencia de app stores. El turista accede
+        desde cualquier dispositivo con un navegador moderno.
+\end{itemize}
+
+% ===========================================================================
+\section{Flujo de usuario — turista}
+% ===========================================================================
+
+\begin{enumerate}[leftmargin=*, itemsep=3pt]
+  \item Escanea QR / accede a URL → app detecta idioma automáticamente.
+  \item Pantalla de bienvenida con botones \textit{Descubrir} y \textit{Viajes}.
+  \item Si no tiene sesión → modal de login/registro (no bloquea la navegación,
+        se puede cerrar).
+  \item Registro en 2 pasos → cuestionario de perfil en 4 pasos.
+  \item Al terminar el cuestionario → chat con IA para explorar recomendaciones.
+  \item El turista puede navegar \textit{Discover} (negocios), \textit{Trips}
+        (itinerarios) y \textit{Chat} desde el navbar.
+\end{enumerate}
+
+% ===========================================================================
+\section{Equipo}
+% ===========================================================================
+
+\begin{center}
+\begin{tabular}{>{\bfseries}p{2.5cm} p{3cm} p{8cm}}
+\toprule
+Integrante & Rol & Contribución principal \\
+\midrule
+Héctor  & Arquitectura / IA   & Arquitectura BFF, algoritmo equidad, Gemini, deploy \\
+Emi     & Frontend turista    & Páginas turista, layouts, flujo de navegación \\
+Farid   & Frontend admin      & Dashboard negocio, módulos de aprendizaje, badges \\
+Alan    & Backend / Supabase  & API Routes, auth completa, migraciones de BD \\
+Xavier  & QA / UI             & Navbar, estilos globales, cuestionario, mock-server \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ===========================================================================
+\section{Repositorio y acceso al prototipo}
+% ===========================================================================
+
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item \textbf{Repositorio}: \url{https://github.com/AGalanAG/mexgo}
+  \item \textbf{Rama principal}: \texttt{main}
+  \item \textbf{Build}: \texttt{npm run build} sin errores — 34 rutas generadas
+  \item \textbf{Deploy}: Vercel (URL a compartir en presentación)
+  \item \textbf{Documentación}: \texttt{docs/} — arquitectura, API, flujo,
+        migraciones
+\end{itemize}
+
+% ===========================================================================
+\section{Próximos pasos (Fase 3)}
+% ===========================================================================
+
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item Integrar algoritmo de equidad completo con datos reales de negocios.
+  \item Poblar base de datos con negocios piloto de una sede del mundial.
+  \item Módulo LSM (Lengua de Señas Mexicana) en el chat de IA.
+  \item Modo offline completo con Service Worker.
+  \item Pruebas de usabilidad con turistas y dueños de negocios reales.
+\end{itemize}
+
+% ===========================================================================
+\end{document}
