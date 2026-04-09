@@ -67,7 +67,9 @@ export default function RecomendacionesPage() {
   useEffect(() => {
     const token = getStoredAccessToken();
     if (!token) {
-      setError('Sesión no encontrada. Vuelve a iniciar sesión.');
+      setError('Sesión no encontrada. Mostrando versión demo.');
+      setBusinessId(DEMO_BUSINESS_ID);
+      setInsight(DEMO_INSIGHT);
       setLoading(false);
       return;
     }
@@ -316,9 +318,6 @@ export default function RecomendacionesPage() {
             ) : null}
           </section>
 
-          {/* ══════════════════════════════════════════════════════════════════
-              ZONA 3 — CHAT CONVERSACIONAL
-          ══════════════════════════════════════════════════════════════════ */}
           <section className="space-y-4">
             <h2 className="font-black text-gray-800 text-lg flex items-center gap-2">
               <span className="w-1 h-5 rounded-full bg-blue-400" />

@@ -137,7 +137,7 @@ const Questionnaire: React.FC = () => {
       }
 
       localStorage.setItem('mexgo_tourist_profile', JSON.stringify(formData));
-      router.push('/trips');
+      router.push('/profile');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Error inesperado al guardar cuestionario';
       alert(message);
@@ -180,7 +180,7 @@ const Questionnaire: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => router.push('/trips')}
+              onClick={() => router.push('/profile')}
               className="text-xs font-bold text-gray-300 hover:text-gray-500 border border-gray-200 hover:border-gray-300 px-3 py-1.5 rounded-xl transition-all"
             >
               Saltar (demo) →
@@ -406,7 +406,7 @@ const Questionnaire: React.FC = () => {
             isNextDisabled() || isSubmitting ? "bg-gray-300 cursor-not-allowed" : "bg-[#1C42E8] hover:shadow-lg active:scale-95 shadow-md shadow-[#1C42E8]/20"
           }`}
         >
-          {step === totalSteps ? (isSubmitting ? "Guardando..." : "Crear Itinerario") : "Siguiente"}
+          {step === totalSteps ? (isSubmitting ? "Guardando..." : "Continuar") : "Siguiente"}
         </button>
       </div>
     </div>
