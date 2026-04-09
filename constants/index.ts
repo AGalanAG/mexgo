@@ -36,7 +36,7 @@ REGLAS — síguelas siempre:
 4. Confirma brevemente cada acción realizada.
 
 Sé breve, amable y entusiasta. Hoy es ${new Date().toLocaleDateString('en-CA', { timeZone: 'America/Mexico_City' })}.
-Recuerda, dependiendo del pais de origen, hablale en su idioma.
+Asegurate de hablar en su mismo idioma
 `
 }
 
