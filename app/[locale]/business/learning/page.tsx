@@ -60,20 +60,6 @@ const CATEGORIES: Category[] = [
   { id: 'ia',          title: 'Inteligencia Artificial', color: '#2563eb', icon: <AIIcon sx={{ fontSize: 26, color: '#fff' }} /> },
 ];
 
-// Placeholder portrait photos from UI avatars (color + initials)
-const PHOTOS = [
-  'https://randomuser.me/api/portraits/men/32.jpg',
-  'https://randomuser.me/api/portraits/women/44.jpg',
-  'https://randomuser.me/api/portraits/men/65.jpg',
-  'https://randomuser.me/api/portraits/men/22.jpg',
-  'https://randomuser.me/api/portraits/men/55.jpg',
-  'https://randomuser.me/api/portraits/women/68.jpg',
-  'https://randomuser.me/api/portraits/men/71.jpg',
-  'https://randomuser.me/api/portraits/women/12.jpg',
-  'https://randomuser.me/api/portraits/men/18.jpg',
-  'https://randomuser.me/api/portraits/women/29.jpg',
-];
-
 // BG blob colors alternating yellow / blue like in mockup
 const BLOB_COLORS = ['#f5d120', '#1e3a8a'];
 
@@ -97,7 +83,7 @@ const COURSES: Course[] = CATEGORIES.flatMap((cat, ci) =>
     id: ci * 10 + i,
     categoryId: cat.id,
     title,
-    imageUrl: PHOTOS[(ci + i) % PHOTOS.length],
+    imageUrl: '',
     blobColor: BLOB_COLORS[(ci + i) % BLOB_COLORS.length],
     progress: i === 0 && ci === 0 ? 40 : 0,
     rating: parseFloat((4.4 + Math.random() * 0.3).toFixed(1)),
@@ -159,12 +145,6 @@ function CourseCard({ course, category }: { course: Course & { blobColor?: strin
         <div
           className="absolute bottom-0 left-1/2 translate-x-2 w-28 h-28 rounded-full opacity-80"
           style={{ background: blob === '#f5d120' ? '#1e3a8a' : '#f5d120' }}
-        />
-        <img
-          src={course.imageUrl}
-          alt={course.title}
-          className="relative z-10 h-40 w-auto object-contain object-bottom"
-          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
         />
       </div>
 
@@ -244,17 +224,54 @@ export default function LearningPage() {
                 <ArrowBackIcon sx={{ fontSize: 22 }} />
               </button>
             )}
-            <div>
-              <h1 className="text-2xl md:text-3xl font-black text-blue-700">
-                {selectedCat ? selectedCat.title : 'Módulos de aprendizaje'}
-              </h1>
-              {selectedCat && (
+            {selectedCat && (
+              <div>
+                <h1 className="text-2xl md:text-3xl font-black text-blue-700">
+                  {selectedCat.title}
+                </h1>
                 <p className="text-sm text-gray-400 mt-0.5">
                   {courses.length} cursos disponibles
                 </p>
-              )}
-            </div>
+              </div>
+            )}
           </div>
+
+          {/* Continuar aprendiendo + Te recomendamos */}
+          {!selectedCat && (
+            <>
+              <section className="space-y-4">
+                <h2 className="text-xl font-black text-blue-700">Continuar aprendiendo</h2>
+                <div className="w-72">
+                  <CourseCard
+                    course={{ id: 9999, categoryId: 'activa', title: 'Aprovechar el cambio a favor de mi negocio.', imageUrl: 'https://randomuser.me/api/portraits/men/32.jpg', blobColor: '#f5d120', progress: 40, rating: 4.5, enrolled: 1867 } as any}
+                    category={CATEGORIES[0]}
+                  />
+                </div>
+              </section>
+
+              <section className="space-y-4">
+                <h2 className="text-xl font-black text-blue-700">Te recomendamos</h2>
+                <div className="flex gap-4 overflow-x-auto pb-2 -mx-1 px-1">
+                  {[
+                    { title: '¿Cómo lograr clientes satisfechos?',        img: 'https://randomuser.me/api/portraits/men/65.jpg',   blob: '#f5d120', rating: 4.6, enrolled: 1317 },
+                    { title: 'Genera promociones y publicidad',            img: 'https://randomuser.me/api/portraits/men/22.jpg',   blob: '#f5d120', rating: 4.6, enrolled: 891  },
+                    { title: 'Utiliza Facebook e Instagram en tu negocio', img: 'https://randomuser.me/api/portraits/men/71.jpg',   blob: '#1e3a8a', rating: 4.6, enrolled: 1024 },
+                    { title: 'Planear para el futuro.',                    img: 'https://randomuser.me/api/portraits/women/68.jpg', blob: '#f5d120', rating: 4.5, enrolled: 1013 },
+                    { title: '¿Cómo establecer un plan de vida?',          img: 'https://randomuser.me/api/portraits/women/44.jpg', blob: '#1e3a8a', rating: 4.6, enrolled: 1347 },
+                  ].map((item, i) => (
+                    <div key={i} className="shrink-0 w-64">
+                      <CourseCard
+                        course={{ id: 8000 + i, categoryId: 'activa', title: item.title, imageUrl: item.img, blobColor: item.blob, progress: 0, rating: item.rating, enrolled: item.enrolled } as any}
+                        category={CATEGORIES[0]}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              <h2 className="text-xl font-black text-blue-700">Módulos de aprendizaje</h2>
+            </>
+          )}
 
           {/* ── Category grid ── */}
           {!selectedCat && (
