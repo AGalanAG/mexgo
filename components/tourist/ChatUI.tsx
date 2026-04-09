@@ -16,9 +16,9 @@ const SUGERENCIAS = [
 ]
 
 type RichMessage = ChatMessagePayload & {
-  eventoAgregado?: ItineraryStop
-  eventoEditado?: ItineraryStop
-  eventoEliminado?: { id: string; label?: string; eliminado: boolean }
+  eventosAgregados?: ItineraryStop[]
+  eventosEditados?: ItineraryStop[]
+  eventosEliminados?: { id: string; label?: string; eliminado: boolean }[]
   negociosRecomendados?: import('@/types/types').NegocioConScore[]
   error?: boolean
 }
@@ -115,24 +115,24 @@ export default function ChatUI() {
       const data: ChatResponse = await res.json()
 
       // Sincronizar itinerario en localStorage según lo que hizo Gemini
-      if (data.eventoAgregado) {
-        sincronizarItinerario(prev => [...prev, data.eventoAgregado!])
+      if (data.eventosAgregados?.length) {
+        sincronizarItinerario(prev => [...prev, ...data.eventosAgregados!])
       }
-      if (data.eventoEliminado?.eliminado) {
-        sincronizarItinerario(prev => prev.filter(s => s.id !== data.eventoEliminado!.id))
+      if (data.eventosEliminados?.length) {
+        const idsEliminados = new Set(data.eventosEliminados.filter(e => e.eliminado).map(e => e.id))
+        sincronizarItinerario(prev => prev.filter(s => !idsEliminados.has(s.id)))
       }
-      if (data.eventoEditado) {
-        sincronizarItinerario(prev =>
-          prev.map(s => s.id === data.eventoEditado!.id ? { ...s, ...data.eventoEditado } : s)
-        )
+      if (data.eventosEditados?.length) {
+        const mapaEdits = new Map(data.eventosEditados.map(e => [e.id, e]))
+        sincronizarItinerario(prev => prev.map(s => mapaEdits.has(s.id) ? { ...s, ...mapaEdits.get(s.id) } : s))
       }
 
       const msgModelo: RichMessage = {
         role: 'model',
         text: data.respuesta,
-        eventoAgregado: data.eventoAgregado,
-        eventoEditado: data.eventoEditado,
-        eventoEliminado: data.eventoEliminado,
+        eventosAgregados: data.eventosAgregados,
+        eventosEditados: data.eventosEditados,
+        eventosEliminados: data.eventosEliminados,
         negociosRecomendados: data.negociosRecomendados,
       }
 
@@ -236,48 +236,59 @@ export default function ChatUI() {
               {m.text}
             </div>
 
-            {/* Card evento agregado */}
-            {m.eventoAgregado && (
+            {/* Paradas agregadas */}
+            {m.eventosAgregados && m.eventosAgregados.length > 0 && (
               <Link href="/trips" target="_blank" rel="noopener noreferrer"
-                className="w-full max-w-sm flex items-center gap-3 bg-[var(--accent)]/10 border border-[var(--accent)]/30 rounded-2xl p-3 hover:shadow-md hover:border-[var(--accent)] transition-all group shadow-sm"
+                className="w-full max-w-sm flex flex-col gap-2 bg-[var(--accent)]/10 border border-[var(--accent)]/30 rounded-2xl p-3 hover:shadow-md hover:border-[var(--accent)] transition-all group shadow-sm"
               >
-                <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/20 flex items-center justify-center shrink-0 text-lg">✅</div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-sm text-[var(--accent)] truncate">{m.eventoAgregado.label}</p>
-                  <p className="text-xs text-gray-500">
-                    📅 {m.eventoAgregado.routeDate}{m.eventoAgregado.startTime && ` · ${m.eventoAgregado.startTime}`}
-                  </p>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-lg">🗓️</span>
+                  <p className="font-bold text-sm text-[var(--accent)]">{m.eventosAgregados.length} parada{m.eventosAgregados.length > 1 ? 's' : ''} agregada{m.eventosAgregados.length > 1 ? 's' : ''}</p>
+                  <span className="ml-auto text-[var(--accent)] text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">Ver Trips →</span>
                 </div>
-                <span className="text-[var(--accent)] text-xs font-bold shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">Ver Trips →</span>
+                {m.eventosAgregados.map(e => (
+                  <div key={e.id} className="flex items-center gap-2 text-xs text-gray-600">
+                    <span className="w-5 h-5 rounded-full bg-[var(--accent)]/20 flex items-center justify-center shrink-0">✅</span>
+                    <span className="font-medium truncate">{e.label}</span>
+                    <span className="ml-auto shrink-0 text-gray-400">{e.startTime ?? ''}</span>
+                  </div>
+                ))}
               </Link>
             )}
 
-            {/* Card evento editado */}
-            {m.eventoEditado && (
+            {/* Paradas editadas */}
+            {m.eventosEditados && m.eventosEditados.length > 0 && (
               <Link href="/trips" target="_blank" rel="noopener noreferrer"
-                className="w-full max-w-sm flex items-center gap-3 bg-[var(--primary)]/10 border border-[var(--primary)]/30 rounded-2xl p-3 hover:shadow-md hover:border-[var(--primary)] transition-all group shadow-sm"
+                className="w-full max-w-sm flex flex-col gap-2 bg-[var(--primary)]/10 border border-[var(--primary)]/30 rounded-2xl p-3 hover:shadow-md hover:border-[var(--primary)] transition-all group shadow-sm"
               >
-                <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/20 flex items-center justify-center shrink-0 text-lg">✏️</div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-sm text-[var(--primary)] truncate">{m.eventoEditado.label}</p>
-                  <p className="text-xs text-gray-500">
-                    📅 {m.eventoEditado.routeDate}{m.eventoEditado.startTime && ` · ${m.eventoEditado.startTime}`}
-                  </p>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-lg">✏️</span>
+                  <p className="font-bold text-sm text-[var(--primary)]">{m.eventosEditados.length} parada{m.eventosEditados.length > 1 ? 's' : ''} editada{m.eventosEditados.length > 1 ? 's' : ''}</p>
+                  <span className="ml-auto text-[var(--primary)] text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">Ver Trips →</span>
                 </div>
-                <span className="text-[var(--primary)] text-xs font-bold shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">Ver Trips →</span>
+                {m.eventosEditados.map(e => (
+                  <div key={e.id} className="flex items-center gap-2 text-xs text-gray-600">
+                    <span className="w-5 h-5 rounded-full bg-[var(--primary)]/20 flex items-center justify-center shrink-0">✏️</span>
+                    <span className="font-medium truncate">{e.label}</span>
+                    <span className="ml-auto shrink-0 text-gray-400">{e.startTime ?? ''}</span>
+                  </div>
+                ))}
               </Link>
             )}
 
-            {/* Card evento eliminado */}
-            {m.eventoEliminado?.eliminado && (
-              <div className="w-full max-w-sm flex items-center gap-3 bg-red-50 border border-red-200 rounded-2xl p-3 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center shrink-0 text-lg">🗑️</div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-sm text-red-600 truncate">
-                    {m.eventoEliminado.label ?? 'Parada eliminada'}
-                  </p>
-                  <p className="text-xs text-red-400">Eliminado del itinerario</p>
+            {/* Paradas eliminadas */}
+            {m.eventosEliminados && m.eventosEliminados.some(e => e.eliminado) && (
+              <div className="w-full max-w-sm flex flex-col gap-2 bg-red-50 border border-red-200 rounded-2xl p-3 shadow-sm">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-lg">🗑️</span>
+                  <p className="font-bold text-sm text-red-600">{m.eventosEliminados.filter(e => e.eliminado).length} parada{m.eventosEliminados.filter(e => e.eliminado).length > 1 ? 's' : ''} eliminada{m.eventosEliminados.filter(e => e.eliminado).length > 1 ? 's' : ''}</p>
                 </div>
+                {m.eventosEliminados.filter(e => e.eliminado).map(e => (
+                  <div key={e.id} className="flex items-center gap-2 text-xs text-red-500">
+                    <span className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center shrink-0">🗑️</span>
+                    <span className="font-medium truncate">{e.label ?? e.id}</span>
+                  </div>
+                ))}
               </div>
             )}
 
@@ -298,9 +309,6 @@ export default function ChatUI() {
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-sm text-[var(--primary)] truncate">{negocio.businessName}</p>
                       <p className="text-xs text-gray-400 truncate">{negocio.neighborhood}, {negocio.boroughCode}</p>
-                      {negocio.estimatedWalkMinutes && (
-                        <p className="text-[10px] text-gray-400 font-medium">🚶 {negocio.estimatedWalkMinutes} min</p>
-                      )}
                     </div>
                     <span className="text-[var(--primary)] text-xs font-bold shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                       Ver →

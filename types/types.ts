@@ -259,9 +259,9 @@ export interface ChatRequest {
 
 export interface ChatResponse {
   respuesta: string
-  eventoAgregado?: ItineraryStop
-  eventoEditado?: ItineraryStop
-  eventoEliminado?: { id: string; label?: string; eliminado: boolean }
+  eventosAgregados?: ItineraryStop[]
+  eventosEditados?: ItineraryStop[]
+  eventosEliminados?: { id: string; label?: string; eliminado: boolean }[]
   negociosRecomendados?: NegocioConScore[]
 }
 

@@ -70,7 +70,7 @@ export function agregarEvento(userId: string, args: AgregarEventoArgs): Itinerar
   const paradas = obtenerParadasUsuario(userId)
   const negocio = MOCK_BUSINESSES.find(b => b.id === args.negocio_id)
   const stop: ItineraryStop = {
-    id: `stop-${Date.now()}`,
+    id: `stop-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     itineraryId: 'local',
     routeDate: args.dia,
     stopOrder: paradas.length + 1,
@@ -112,4 +112,16 @@ export function eliminarEvento(userId: string, args: EliminarEventoArgs): { elim
 
 export function leerItinerario(userId: string): ItineraryStop[] {
   return obtenerParadasUsuario(userId)
+}
+
+export function agregarEventosLote(userId: string, args: { eventos: AgregarEventoArgs[] }): ItineraryStop[] {
+  return args.eventos.map(e => agregarEvento(userId, e))
+}
+
+export function editarEventosLote(userId: string, args: { ediciones: EditarEventoArgs[] }): (ItineraryStop | { error: string })[] {
+  return args.ediciones.map(e => editarEvento(userId, e))
+}
+
+export function eliminarEventosLote(userId: string, args: { ids: string[] }): { eliminado: boolean; id: string; label?: string }[] {
+  return args.ids.map(id => eliminarEvento(userId, { id }))
 }

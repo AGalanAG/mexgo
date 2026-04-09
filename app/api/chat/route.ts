@@ -16,12 +16,12 @@ export async function POST(req: NextRequest) {
   // Sincroniza el itinerario del cliente antes de que Gemini lo lea/modifique
   inicializarParadas(user.id, body.itinerario ?? [])
 
-  const { respuesta, eventoAgregado, eventoEditado, eventoEliminado, negociosRecomendados } = await chat(
+  const { respuesta, eventosAgregados, eventosEditados, eventosEliminados, negociosRecomendados } = await chat(
     user.id,
     body.mensaje,
     body.historial ?? [],
     body.perfil,
   )
 
-  return NextResponse.json<ChatResponse>({ respuesta, eventoAgregado, eventoEditado, eventoEliminado, negociosRecomendados })
+  return NextResponse.json<ChatResponse>({ respuesta, eventosAgregados, eventosEditados, eventosEliminados, negociosRecomendados })
 }
