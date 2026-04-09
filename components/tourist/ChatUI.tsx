@@ -166,7 +166,7 @@ export default function ChatUI() {
                   ? 'bg-[var(--primary)] text-white rounded-br-sm'
                   : m.error
                   ? 'bg-red-50 text-red-600 border border-red-200 rounded-bl-sm'
-                  : 'bg-gray-100 text-[var(--text-primary)] rounded-bl-sm'
+                  : 'bg-[var(--secondary)]/15 text-[var(--text-primary)] rounded-bl-sm'
               }`}
             >
               {m.text}
@@ -222,7 +222,7 @@ export default function ChatUI() {
 
         {cargando && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 text-[var(--text-secondary)] rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm flex gap-1 items-center">
+            <div className="bg-[var(--secondary)]/15 text-[var(--primary)] rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm flex gap-1 items-center">
               <span className="animate-bounce [animation-delay:0ms]">•</span>
               <span className="animate-bounce [animation-delay:150ms]">•</span>
               <span className="animate-bounce [animation-delay:300ms]">•</span>
@@ -233,7 +233,7 @@ export default function ChatUI() {
       </div>
 
       {/* Input */}
-      <div className="border-t border-gray-200 px-4 py-3 flex gap-2 items-center">
+      <div className="border-t-2 border-[var(--secondary)] px-4 py-3 flex gap-2 items-center">
         {mensajes.length > 0 && (
           <button
             onClick={limpiarChat}
@@ -244,7 +244,7 @@ export default function ChatUI() {
           </button>
         )}
         <input
-          className="flex-1 rounded-full border border-gray-300 px-4 py-2 text-sm outline-none focus:border-[var(--primary)] transition-colors bg-white text-[var(--text-primary)] placeholder-gray-400"
+          className="flex-1 rounded-full border border-gray-200 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-surface text-text-primary placeholder-gray-400 transition-all"
           placeholder="Escribe un mensaje..."
           value={input}
           onChange={e => setInput(e.target.value)}
@@ -254,7 +254,7 @@ export default function ChatUI() {
         <button
           onClick={enviar}
           disabled={cargando || !input.trim()}
-          className="rounded-full bg-[var(--primary)] px-5 py-2 text-sm font-semibold text-white disabled:opacity-40 hover:brightness-110 transition-all active:scale-95 shrink-0"
+          className="btn-primary shrink-0 disabled:opacity-40"
         >
           Enviar
         </button>

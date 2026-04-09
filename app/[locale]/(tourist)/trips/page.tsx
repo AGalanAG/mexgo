@@ -127,18 +127,19 @@ export default function TripsPage() {
   ];
 
   return (
-    <div className="flex flex-col h-screen bg-white overflow-hidden">
-      <Navbar variant="light" />
+    <div className="flex flex-col h-screen bg-[var(--background)] overflow-hidden">
+      <Navbar />
 
-      <main className="pt-16 flex-1 flex flex-col lg:flex-row w-full overflow-hidden">
+      <main className="flex-1 flex flex-col lg:flex-row w-full overflow-hidden">
 
         {/* Left Sidebar */}
-        <section className="w-full lg:w-[450px] flex flex-col border-r border-gray-100 bg-white shadow-xl z-10 overflow-hidden">
+        <section className="w-full lg:w-[450px] flex flex-col border-r border-gray-100 bg-surface shadow-xl z-10 overflow-hidden">
           <div className="flex-1 overflow-y-auto no-scrollbar p-6">
             <div className="mb-8">
               <h1 className="text-3xl font-black text-[var(--primary)] mb-1 uppercase tracking-tight">
                 {t('title')}
               </h1>
+              <div className="w-10 h-1 bg-[var(--secondary)] rounded-full mb-2" />
               <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">
                 {t('subtitle')}
               </p>
@@ -159,13 +160,13 @@ export default function TripsPage() {
             {/* Date Selector */}
             <div className="mb-10">
               <label className="block text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] mb-3">{t('dateLabel')}</label>
-              <div className="relative flex items-center bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 focus-within:border-[var(--primary)] focus-within:bg-white transition-all shadow-sm">
+              <div className="relative flex items-center bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 focus-within:border-[var(--primary)] focus-within:bg-surface transition-all shadow-sm">
                 <input
                   type="date"
                   defaultValue="2026-08-17"
                   className="flex-1 bg-transparent border-none outline-none text-sm text-[var(--primary)] font-black uppercase tracking-tight"
                 />
-                <CalendarTodayIcon className="text-gray-300" fontSize="small" />
+                <CalendarTodayIcon className="text-[var(--secondary)]" fontSize="small" />
               </div>
             </div>
 
@@ -173,7 +174,7 @@ export default function TripsPage() {
             <div>
               <h4 className="text-[10px] font-black text-gray-300 uppercase tracking-[0.3em] mb-6 flex items-center gap-4">
                 {t('selectedStops')}
-                <span className="flex-1 h-[1px] bg-gray-100"></span>
+                <span className="flex-1 h-[1px] bg-[var(--secondary)]/40"></span>
               </h4>
 
               <div className="space-y-4 pb-20">
@@ -185,7 +186,7 @@ export default function TripsPage() {
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
-                      className="flex items-center gap-4 bg-white p-5 rounded-[1.5rem] shadow-sm border border-gray-100 hover:border-[var(--primary)] transition-all group"
+                      className="flex items-center gap-4 bg-surface p-5 rounded-[1.5rem] shadow-sm border border-gray-100 hover:border-[var(--primary)] transition-all group"
                     >
                       <div className="w-10 h-10 rounded-full bg-[var(--primary)] flex items-center justify-center text-white font-black text-sm shadow-lg shadow-[var(--primary)]/20 flex-shrink-0">
                         {index + 1}

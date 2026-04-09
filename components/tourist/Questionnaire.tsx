@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { useTranslations, useLocale } from "next-intl";
-import { useRouter, usePathname, routing } from "@/i18n/routing";
-import LanguageIcon from '@mui/icons-material/Language';
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/routing";
 
 const CITIES_DATA: Record<string, string[]> = {
   CDMX: [
@@ -33,9 +32,7 @@ interface QuestionnaireState {
 
 const Questionnaire: React.FC = () => {
   const t = useTranslations("Questionnaire");
-  const locale = useLocale();
   const router = useRouter();
-  const pathname = usePathname();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<QuestionnaireState>({
     country: "",
@@ -58,14 +55,6 @@ const Questionnaire: React.FC = () => {
   const prevStep = () => {
     setStep((prev) => Math.max(prev - 1, 1));
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const toggleLocale = () => {
-    const locales = routing.locales;
-    const currentIndex = locales.indexOf(locale as any);
-    const nextIndex = (currentIndex + 1) % locales.length;
-    const nextLocale = locales[nextIndex];
-    router.replace(pathname, {locale: nextLocale});
   };
 
   const handleMotiveChange = (motive: string) => {
@@ -120,13 +109,6 @@ const Questionnaire: React.FC = () => {
               className="text-xs font-bold text-gray-300 hover:text-gray-500 border border-gray-200 hover:border-gray-300 px-3 py-1.5 rounded-xl transition-all"
             >
               Saltar (demo) →
-            </button>
-            <button
-              onClick={toggleLocale}
-              className="bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-full shadow-sm hover:bg-white hover:border-[#1C42E8]/20 transition-all flex items-center gap-2 text-xs font-bold text-gray-600 active:scale-95"
-            >
-              <LanguageIcon sx={{ fontSize: 16 }} className="text-[#1C42E8]" />
-              <span className="uppercase">{locale}</span>
             </button>
           </div>
         </div>
