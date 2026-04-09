@@ -311,9 +311,7 @@ Campos:
 Restriccion:
 - unique (business_id, badge_id)
 
-<<<<<<< HEAD:docs/SCHEMA.md
 
-=======
 ### `badge_events`
 Auditoria de otorgamiento/revocacion.
 Campos:
@@ -322,7 +320,6 @@ Campos:
 - event_type text not null
 - actor_user_id uuid null fk auth.users(id)
 - payload jsonb not null default '{}'
->>>>>>> origin/feat/alan-backend:SCHEMA.md
 - created_at timestamptz not null default now()
 
 ## 7. Directorio publico
@@ -348,7 +345,6 @@ Campos:
 - source text not null
 - occurred_at timestamptz not null default now()
 
-<<<<<<< HEAD:docs/SCHEMA.md
 ## 12. Reglas de transicion de estado (solicitudes)
 
 Permitidas:
@@ -419,21 +415,14 @@ Implementacion recomendada:
 - Definir estrategia de geocoding fallback cuando no haya coordenadas confiables.
 
 ---
-=======
 ## 8. Compatibilidad con turista
 Tablas y flujos de turista actuales se mantienen sin ruptura.
 Cualquier evolucion del modulo turista debe ser aditiva.
->>>>>>> origin/feat/alan-backend:SCHEMA.md
 
 ## Cambios
 | Fecha | Quien | Que |
 |---|---|---|
-<<<<<<< HEAD:docs/SCHEMA.md
 | 2026-04-06 | Alan | v1.0 — modelo de datos, estados y visitas para algoritmo de equidad. |
 | 2026-04-06 | Alan | v1.1 — soporte de coordenadas y rutas de mapa por dia de itinerario. |
 
-=======
 | 2026-04-07 | Alan | v2.0 - Schema orientado a equipo, aprendizaje, insignias y directorio publico. |
->>>>>>> origin/feat/alan-backend:SCHEMA.md
-in/feat/alan-backend:SCHEMA.md
-eat/alan-backend:SCHEMA.md
