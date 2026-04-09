@@ -68,20 +68,21 @@ export default function DiscoverPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[var(--background)] overflow-x-hidden">
-      <Navbar variant="light" />
+      <Navbar />
 
-      <main className="pt-28 pb-20 px-6 max-w-7xl mx-auto w-full flex-1 flex flex-col items-center">
+      <main className="py-16 px-6 max-w-7xl mx-auto w-full flex-1 flex flex-col items-center">
         {/* Header section centered */}
         <div className="w-full max-w-3xl text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-black text-[var(--primary)] mb-4 tracking-tight">
+          <h2 className="text-4xl md:text-5xl font-black text-[var(--primary)] mb-3 tracking-tight">
             {t('title')}
           </h2>
+          <div className="w-16 h-1.5 bg-[var(--secondary)] rounded-full mx-auto mb-4" />
           <p className="text-gray-500 font-bold uppercase tracking-[0.2em] text-xs mb-8">
             {t('recommendations')}
           </p>
 
           {/* Centered Search bar */}
-          <div className="relative flex items-center bg-white rounded-[2rem] border-2 border-gray-100 overflow-hidden px-6 py-4 shadow-xl shadow-gray-200/50 transition-all focus-within:ring-4 focus-within:ring-[var(--primary)]/5 focus-within:border-[var(--primary)] w-full">
+          <div className="relative flex items-center bg-surface rounded-[2rem] border-2 border-gray-100 overflow-hidden px-6 py-4 shadow-xl shadow-gray-200/50 transition-all focus-within:ring-4 focus-within:ring-[var(--primary)]/5 focus-within:border-[var(--primary)] w-full">
             <SearchIcon className="text-gray-300 mr-3" />
             <input
               type="text"
@@ -101,7 +102,7 @@ export default function DiscoverPage() {
         {/* Loading state */}
         {loading && (
           <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-12 h-12 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin mb-6"></div>
+            <div className="w-12 h-12 border-4 border-[var(--secondary)] border-t-[var(--primary)] rounded-full animate-spin mb-6"></div>
             <p className="text-[var(--primary)] text-xs font-black uppercase tracking-[0.3em]">Buscando tesoros locales...</p>
           </div>
         )}
@@ -142,7 +143,7 @@ export default function DiscoverPage() {
 
                 {/* Back */}
                 <div
-                  className="absolute inset-0 backface-hidden bg-white shadow-2xl flex flex-col p-8 rotate-y-180 border border-gray-50 text-center items-center justify-center"
+                  className="absolute inset-0 backface-hidden bg-surface shadow-2xl flex flex-col p-8 rotate-y-180 border border-gray-50 text-center items-center justify-center"
                   style={{ borderRadius: '2.5rem' }}
                 >
                   <div className="mb-6">
@@ -156,7 +157,7 @@ export default function DiscoverPage() {
                   
                   <Link
                     href={`/discover/${place.id}`}
-                    className="w-full text-center text-[10px] font-black py-4 bg-[var(--primary)] text-white rounded-2xl hover:bg-[var(--primary-dark)] transition-all shadow-lg shadow-[var(--primary)]/20 active:scale-95 uppercase tracking-[0.2em]"
+                    className="btn-primary w-full text-center text-[10px] uppercase tracking-[0.2em]"
                   >
                     {t('viewDetails')}
                   </Link>
@@ -175,9 +176,9 @@ export default function DiscoverPage() {
 
         <div className="mt-24 flex justify-center">
           <motion.button
-            whileHover={{ scale: 1.05, backgroundColor: 'var(--primary)', color: 'white' }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-transparent border-2 border-[var(--primary)] text-[var(--primary)] font-black py-5 px-16 rounded-2xl transition-all shadow-sm uppercase tracking-[0.3em] text-[10px]"
+            className="btn-secondary uppercase tracking-[0.3em] text-[10px] py-5 px-16"
           >
             {t('seeMore')}
           </motion.button>

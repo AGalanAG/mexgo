@@ -170,8 +170,8 @@
       }
     },
     "bestService": {
-      "title": "Nous essayons toujours de vous donner<br/>le meilleur service",
-      "subtitle": "Votre satisfaction est notre priorité absolue."
+      "title1": "Connecter les clients aux entreprises,",
+      "title2": "et les entreprises aux touristes"
     },
     "bestTours": {
       "title": "Les Meilleurs Tours Pour Vous",
@@ -226,7 +226,12 @@
     "preferences": {
       "title": "Préférences de voyage",
       "add": "+ Ajouter",
-      "items": ["Tourisme Culturel", "Gastronomie", "Vie nocturne", "Musées"]
+      "items": [
+        "Tourisme Culturel",
+        "Gastronomie",
+        "Vie nocturne",
+        "Musées"
+      ]
     },
     "itineraries": {
       "title": "Mes Itinéraires",

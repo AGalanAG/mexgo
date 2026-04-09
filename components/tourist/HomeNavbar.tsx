@@ -36,8 +36,8 @@ export default function HomeNavbar() {
     }
   }, [openLogin, searchParams]);
 
-  const [langAnchor,    setLangAnchor]    = useState<null | HTMLElement>(null);
-  const [themeAnchor,   setThemeAnchor]   = useState<null | HTMLElement>(null);
+  const [langAnchor, setLangAnchor] = useState<null | HTMLElement>(null);
+  const [themeAnchor, setThemeAnchor] = useState<null | HTMLElement>(null);
   const [accountAnchor, setAccountAnchor] = useState<null | HTMLElement>(null);
 
   const handleClose = () => {
@@ -52,89 +52,138 @@ export default function HomeNavbar() {
   };
 
   return (
-    <nav className="absolute top-0 left-1/2 -translate-x-1/2 w-full p-6 flex justify-between items-center text-white z-50 max-w-7xl mx-auto">
-      {/* Logo */}
-      <Link href="/" className="font-bold text-2xl leading-tight cursor-pointer">
-        Mex<br />GO
-      </Link>
+    <nav className="absolute top-0 left-0 w-full z-50 text-white">
+      <div className="max-w-7xl mx-auto px-6 py-5 flex items-center">
 
-      {/* Menú Central — solo desktop */}
-      <div className="hidden md:flex gap-8 font-medium">
-        <Link href="/discover" className="hover:text-gray-300 transition-colors">{t('discover')}</Link>
-        <Link href="/trips"    className="hover:text-gray-300 transition-colors">{t('trips')}</Link>
-        <Link href="#"         className="hover:text-gray-300 transition-colors">{t('more')}</Link>
-      </div>
+        {/* Menú Central — solo desktop */}
+        <div className="hidden md:flex gap-8 font-medium">
+          <Link href="/discover" className="hover:text-gray-300 transition-colors">{t('discover')}</Link>
+          <Link href="/trips" className="hover:text-gray-300 transition-colors">{t('trips')}</Link>
+          <Link href="#" className="hover:text-gray-300 transition-colors">{t('more')}</Link>
+        </div>
 
-      {/* Iconos y Botones */}
-      <div className="flex gap-5 items-center">
-        {!isAuthenticated ? (
-          <>
-            <button 
-              onClick={openLogin}
-              className="text-sm font-medium hover:text-gray-300 transition-colors"
-            >
-              {t('login')}
-            </button>
-            <button 
-              onClick={openRegister}
-              className="text-sm font-medium hover:text-gray-300 transition-colors hidden sm:block"
-            >
-              {t('register')}
-            </button>
-          </>
-        ) : (
-          <>
-            <Link href="/profile" className="text-sm font-medium hover:text-gray-300 transition-colors">
-              Perfil
-            </Link>
+        {/* Iconos y Botones */}
+        <div className="flex gap-5 items-center">
+          {!isAuthenticated ? (
+            <>
+              <button
+                onClick={openLogin}
+                className="text-sm font-medium hover:text-gray-300 transition-colors"
+              >
+                {t('login')}
+              </button>
+              <button
+                onClick={openRegister}
+                className="text-sm font-medium hover:text-gray-300 transition-colors hidden sm:block"
+              >
+                {t('register')}
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/profile" className="text-sm font-medium hover:text-gray-300 transition-colors">
+                Perfil
+              </Link>
+              <button
+                onClick={() => {
+                  clearSession();
+                  setIsAuthenticated(false);
+                  router.push('/');
+                }}
+                className="text-sm font-medium hover:text-gray-300 transition-colors hidden sm:block"
+              >
+                Salir
+              </button>
+            </>
+          )}
+
+          {/* Acciones — ocupa el lado derecho */}
+          <div className="flex-1 flex justify-end gap-4 items-center">
+
+            {/* ── Desktop: botones de texto ── */}
+            <div className="hidden md:flex gap-4 items-center">
+              <button
+                onClick={openLogin}
+                className="text-sm font-medium hover:text-gray-300 transition-colors"
+              >
+                {t('login')}
+              </button>
+              <button
+                onClick={openRegister}
+                className="text-sm font-medium bg-white/10 hover:bg-white/20 border border-white/25 px-4 py-1.5 rounded-full transition-all"
+              >
+                {t('register')}
+              </button>
+            </div>
+
+            {/* ── Mobile: ícono de cuenta que abre menú ── */}
             <button
-              onClick={() => {
-                clearSession();
-                setIsAuthenticated(false);
-                router.push('/');
-              }}
-              className="text-sm font-medium hover:text-gray-300 transition-colors hidden sm:block"
+              className="md:hidden p-1 hover:text-gray-300 transition-colors"
+              onClick={(e) => setAccountAnchor(e.currentTarget)}
+              aria-label="Cuenta"
             >
-              Salir
+              <PersonOutlinedIcon fontSize="medium" />
             </button>
-          </>
-        )}
+            <Menu
+              anchorEl={accountAnchor}
+              open={Boolean(accountAnchor)}
+              onClose={handleClose}
+              slotProps={{ paper: { sx: { mt: 1, borderRadius: 2, minWidth: 180 } } }}
+            >
+              <MenuItem
+                onClick={() => { handleClose(); openLogin(); }}
+                sx={{ fontSize: 14, fontWeight: 700, gap: 1.5 }}
+              >
+                <LoginIcon fontSize="small" /> {t('login')}
+              </MenuItem>
+              <Divider />
+              <MenuItem
+                onClick={() => { handleClose(); openRegister(); }}
+                sx={{ fontSize: 14, fontWeight: 700, gap: 1.5 }}
+              >
+                <AppRegistrationIcon fontSize="small" /> {t('register')}
+              </MenuItem>
+            </Menu>
 
-        {/* Idioma */}
-        <button
-          className="hover:text-gray-300 transition-colors flex items-center gap-1 uppercase text-sm font-bold"
-          onClick={(e) => setLangAnchor(e.currentTarget)}
-        >
-          <LanguageIcon fontSize="small" />
-          <span className="hidden sm:inline">{locale}</span>
-        </button>
-        <Menu
-          anchorEl={langAnchor}
-          open={Boolean(langAnchor)}
-          onClose={handleClose}
-          slotProps={{ paper: { sx: { mt: 1, borderRadius: 2 } } }}
-        >
-          <MenuItem onClick={() => toggleLocale('es')} sx={{ fontSize: 14, fontWeight: 700 }}>🇲🇽 Español</MenuItem>
-          <MenuItem onClick={() => toggleLocale('en')} sx={{ fontSize: 14, fontWeight: 700 }}>🇺🇸 English</MenuItem>
-        </Menu>
+            {/* Idioma */}
+            <button
+              className="hover:text-gray-300 transition-colors flex items-center gap-1 uppercase text-sm font-bold"
+              onClick={(e) => setLangAnchor(e.currentTarget)}
+            >
+              <LanguageIcon fontSize="small" />
+              <span className="hidden sm:inline">{locale}</span>
+            </button>
+            <Menu
+              anchorEl={langAnchor}
+              open={Boolean(langAnchor)}
+              onClose={handleClose}
+              slotProps={{ paper: { sx: { mt: 1, borderRadius: 2 } } }}
+            >
+              <MenuItem onClick={() => toggleLocale('es')} sx={{ fontSize: 14, fontWeight: 700 }}>🇲🇽 Español</MenuItem>
+              <MenuItem onClick={() => toggleLocale('en')} sx={{ fontSize: 14, fontWeight: 700 }}>🇺🇸 English</MenuItem>
+              <MenuItem onClick={() => toggleLocale('fr')} sx={{ fontSize: 14, fontWeight: 700 }}>🇫🇷 Français</MenuItem>
+            </Menu>
 
-        {/* Dark Mode */}
-        <button
-          className="hover:text-gray-300 transition-colors"
-          onClick={(e) => setThemeAnchor(e.currentTarget)}
-        >
-          <ModeNightIcon fontSize="medium" />
-        </button>
-        <Menu
-          anchorEl={themeAnchor}
-          open={Boolean(themeAnchor)}
-          onClose={handleClose}
-          slotProps={{ paper: { sx: { mt: 1, borderRadius: 2 } } }}
-        >
-          <MenuItem onClick={() => { setTheme('light');  handleClose(); }} sx={{ fontSize: 14 }}>Luminoso</MenuItem>
-          <MenuItem onClick={() => { setTheme('dark');   handleClose(); }} sx={{ fontSize: 14 }}>Oscuro</MenuItem>
-          <MenuItem onClick={() => { setTheme('system'); handleClose(); }} sx={{ fontSize: 14 }}>Sistema</MenuItem>
-        </Menu>
+            {/* Dark Mode */}
+            <button
+              className="hover:text-gray-300 transition-colors"
+              onClick={(e) => setThemeAnchor(e.currentTarget)}
+            >
+              <ModeNightIcon fontSize="medium" />
+            </button>
+            <Menu
+              anchorEl={themeAnchor}
+              open={Boolean(themeAnchor)}
+              onClose={handleClose}
+              slotProps={{ paper: { sx: { mt: 1, borderRadius: 2 } } }}
+            >
+              <MenuItem onClick={() => { setTheme('light'); handleClose(); }} sx={{ fontSize: 14 }}>Luminoso</MenuItem>
+              <MenuItem onClick={() => { setTheme('dark'); handleClose(); }} sx={{ fontSize: 14 }}>Oscuro</MenuItem>
+              <MenuItem onClick={() => { setTheme('system'); handleClose(); }} sx={{ fontSize: 14 }}>Sistema</MenuItem>
+            </Menu>
+
+          </div>
+        </div>
       </div>
     </nav>
   );
