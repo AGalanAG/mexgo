@@ -4,8 +4,6 @@ export type RoleCode =
   | 'TURISTA'
   | 'ENCARGADO_NEGOCIO'
   | 'EMPLEADO_NEGOCIO'
-  | 'ADMIN'
-  | 'SUPERADMIN'
 
 export type StatusBusinessRequest =
   | 'PENDIENTE'
@@ -106,9 +104,6 @@ export interface BusinessRequest {
   trainingCampusPreference: TrainingCampus
   additionalComments?: string
   status: StatusBusinessRequest
-  currentLockAdminUserId?: string
-  lockAcquiredAt?: string
-  lockExpiresAt?: string
   submittedAt: string
   updatedAt: string
 }

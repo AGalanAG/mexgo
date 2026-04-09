@@ -232,43 +232,8 @@ Mantenimiento:
 
 ---
 
-## 8. Chat e historial
 
-### chat_sessions
 
-Una sesión por turista. Agrupa todos los mensajes de una conversación activa.
-
-- id uuid pk default gen_random_uuid()
-- tourist_user_id uuid not null references auth.users(id)
-- created_at timestamptz not null default now()
-- updated_at timestamptz not null default now()
-
-Indices:
-- idx_chat_sessions_user (tourist_user_id, updated_at desc)
-
-### chat_messages
-
-Mensajes individuales de una sesión de chat.
-
-- id uuid pk default gen_random_uuid()
-- session_id uuid not null references chat_sessions(id) on delete cascade
-- role text not null check (role in ('user', 'model'))
-- content text not null
-- created_at timestamptz not null default now()
-
-Indices:
-- idx_chat_messages_session (session_id, created_at asc)
-
-RLS:
-- Turista lee y escribe solo sus propias sesiones y mensajes.
-
----
-
-## 10. Tickets tecnicos
-
-### technical_tickets
-
-- id uuid pk default gen_random_uuid()
 ### `learning_modules`
 Catalogo de modulos disponibles.
 Campos clave:
@@ -347,20 +312,7 @@ Restriccion:
 - unique (business_id, badge_id)
 
 <<<<<<< HEAD:docs/SCHEMA.md
----
 
-## 11. Auditoria
-
-### audit_logs
-
-- id uuid pk default gen_random_uuid()
-- entity_type text not null
-- entity_id uuid not null
-- action text not null
-- actor_user_id uuid null references auth.users(id)
-- before_data jsonb null
-- after_data jsonb null
-- metadata jsonb not null default '{}'::jsonb
 =======
 ### `badge_events`
 Auditoria de otorgamiento/revocacion.
@@ -479,7 +431,9 @@ Cualquier evolucion del modulo turista debe ser aditiva.
 <<<<<<< HEAD:docs/SCHEMA.md
 | 2026-04-06 | Alan | v1.0 — modelo de datos, estados y visitas para algoritmo de equidad. |
 | 2026-04-06 | Alan | v1.1 — soporte de coordenadas y rutas de mapa por dia de itinerario. |
-| 2026-04-07 | Fidel | v1.2 — tablas chat_sessions y chat_messages para historial de conversacion. |
+
 =======
 | 2026-04-07 | Alan | v2.0 - Schema orientado a equipo, aprendizaje, insignias y directorio publico. |
 >>>>>>> origin/feat/alan-backend:SCHEMA.md
+in/feat/alan-backend:SCHEMA.md
+eat/alan-backend:SCHEMA.md

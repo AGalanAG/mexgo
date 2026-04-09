@@ -7,7 +7,7 @@ const intlMiddleware = createIntlMiddleware(routing);
 
 const PUBLIC_LOCALE_PATHS = new Set(['/', '/register']);
 const PROTECTED_LOCALE_PATHS = new Set(['/profile', '/onboarding', '/trips', '/chat', '/discover']);
-const PROTECTED_NON_LOCALE_PATHS = new Set(['/profile', '/request', '/requests']);
+const PROTECTED_NON_LOCALE_PATHS = new Set(['/profile', '/request']);
 const BUSINESS_ALLOWED_ROLES = new Set(['ENCARGADO_NEGOCIO', 'EMPLEADO_NEGOCIO']);
 
 function getLocaleAndPath(pathname: string) {
@@ -43,6 +43,10 @@ export default function proxy(request: NextRequest) {
   const primaryRole = request.cookies.get('mexgo_primary_role')?.value || '';
   const isLoggedIn = accessToken.trim().length > 0;
 
+  if (pathname === '/requests' || path === '/requests') {
+    return redirectToLanding(request, locale);
+  }
+
   if (!locale && (pathname === '/business' || pathname.startsWith('/business/'))) {
     if (!isLoggedIn) {
       return redirectToLogin(request, null);
@@ -58,10 +62,6 @@ export default function proxy(request: NextRequest) {
   if (!locale && PROTECTED_NON_LOCALE_PATHS.has(pathname)) {
     if (!isLoggedIn) {
       return redirectToLogin(request, null);
-    }
-
-    if (pathname === '/requests' && !(primaryRole === 'ADMIN' || primaryRole === 'SUPERADMIN')) {
-      return redirectToLanding(request, null);
     }
 
     if (pathname === '/request' && primaryRole === 'TURISTA') {

@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     return apiError('AUTH_REQUIRED', 'Token Bearer requerido', 401);
   }
 
-  const hasRole = await userHasAnyRole(user.id, ['ENCARGADO_NEGOCIO', 'EMPLEADO_NEGOCIO', 'ADMIN']);
+  const hasRole = await userHasAnyRole(user.id, ['ENCARGADO_NEGOCIO', 'EMPLEADO_NEGOCIO']);
   if (!hasRole) {
     return apiError('FORBIDDEN', 'Rol no autorizado para consultar perfil de negocio', 403);
   }
@@ -76,23 +76,7 @@ export async function GET(request: NextRequest) {
     return apiError('INTERNAL_ERROR', requestsByOwnerResult.error.message, 500);
   }
 
-  let requestData = requestsByOwnerResult.data;
-
-  if (!requestData && businessProfile) {
-    const requestByApprovedBusinessResult = await supabase
-      .from('business_requests')
-      .select('*')
-      .eq('approved_business_id', businessProfile.id)
-      .order('submitted_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (requestByApprovedBusinessResult.error) {
-      return apiError('INTERNAL_ERROR', requestByApprovedBusinessResult.error.message, 500);
-    }
-
-    requestData = requestByApprovedBusinessResult.data;
-  }
+  const requestData = requestsByOwnerResult.data;
 
   return apiOk({
     ownerUserId: user.id,

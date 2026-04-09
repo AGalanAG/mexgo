@@ -12,7 +12,6 @@ interface RegisterBody {
   language?: unknown;
   countryOfOrigin?: unknown;
   roleCode?: unknown;
-  adminRegistrationToken?: unknown;
 }
 
 function isValidEmail(value: string) {
@@ -44,7 +43,7 @@ export async function POST(request: NextRequest) {
     return apiError('VALIDATION_ERROR', 'Body JSON invalido', 400);
   }
 
-  const { email, password, fullName, language, countryOfOrigin, roleCode, adminRegistrationToken } = body;
+  const { email, password, fullName, language, countryOfOrigin, roleCode } = body;
 
   const normalizedRoleCode = normalizeRoleCode(roleCode ?? 'TURISTA');
 
@@ -56,27 +55,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (!normalizedRoleCode || normalizedRoleCode === 'SUPERADMIN') {
+  if (!normalizedRoleCode) {
     return apiError(
       'VALIDATION_ERROR',
-      'roleCode invalido. Valores permitidos: TURISTA, ENCARGADO_NEGOCIO, EMPLEADO_NEGOCIO, ADMIN',
+      'roleCode invalido. Valores permitidos: TURISTA, ENCARGADO_NEGOCIO, EMPLEADO_NEGOCIO',
       400,
     );
-  }
-
-  if (normalizedRoleCode === 'ADMIN') {
-    const expectedAdminToken = process.env.AUTH_ADMIN_REGISTRATION_TOKEN;
-    if (!isNonEmptyString(expectedAdminToken)) {
-      return apiError(
-        'INTERNAL_ERROR',
-        'No esta configurado AUTH_ADMIN_REGISTRATION_TOKEN para registro ADMIN',
-        500,
-      );
-    }
-
-    if (!isNonEmptyString(adminRegistrationToken) || adminRegistrationToken !== expectedAdminToken) {
-      return apiError('FORBIDDEN', 'Token de registro ADMIN invalido', 403);
-    }
   }
 
   const normalizedEmail = email.trim().toLowerCase();

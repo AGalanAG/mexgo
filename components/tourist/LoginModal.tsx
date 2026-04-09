@@ -82,11 +82,6 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         return;
       }
 
-      if (primaryRole === 'ADMIN' || primaryRole === 'SUPERADMIN') {
-        window.location.assign('/requests');
-        return;
-      }
-
       router.push('/profile');
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'No fue posible iniciar sesion');
@@ -217,7 +212,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
           {/* Registro */}
           <div className="mt-6 text-center">
             <p className="text-xs text-white/60">
-              Don't have an account yet?{' '}
+              Don&apos;t have an account yet?{' '}
               <button
                 onClick={() => {
                   handleClose();
