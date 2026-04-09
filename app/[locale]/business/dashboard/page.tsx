@@ -5,7 +5,6 @@ import { Link } from '@/i18n/routing';
 import NavbarBusiness from '@/components/business/NavbarBusiness';
 import Footer from '@/components/tourist/Footer';
 import { getStoredAccessToken } from '@/lib/client-auth';
-import type { BusinessInsight } from '@/types/types';
 import {
   School as SchoolIcon,
   SupportAgent as SupportAgentIcon,
@@ -16,7 +15,7 @@ import {
   CheckCircle as CheckIcon,
   RadioButtonUnchecked as EmptyIcon,
   EmojiEvents as TrophyIcon,
-  InfoOutlined as InfoIcon,
+  TipsAndUpdates as RecomendacionesIcon,
 } from '@mui/icons-material';
 
 const MOCK = {
@@ -24,7 +23,7 @@ const MOCK = {
   alcaldia: '...',
   modulos_completados: 0,
   modulos_total: 11,
-  visitas: 0,
+  visitas: 450,
 };
 
 const MODULOS_PREVIEW = [
@@ -36,53 +35,28 @@ const MODULOS_PREVIEW = [
 ];
 
 export default function BusinessDashboardPage() {
-  const [insight, setInsight] = useState<BusinessInsight | null>(null);
-  const [insightLoading, setInsightLoading] = useState(true);
   const [businessName, setBusinessName] = useState(MOCK.nombre);
   const [borough, setBorough] = useState(MOCK.alcaldia);
 
   useEffect(() => {
     const token = getStoredAccessToken();
-    if (!token) {
-      setInsightLoading(false);
-      return;
-    }
-
-    // 1. Obtener mi negocio
+    if (!token) return;
     fetch('/api/businesses/me', {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
       .then((res) => {
-        if (res.ok && res.data?.businessId) {
-          const bId = res.data.businessId;
+        if (res.ok && res.data?.businessName) {
           setBusinessName(res.data.businessName);
           setBorough(res.data.borough || 'CDMX');
-
-          // 2. Obtener insight
-          return fetch(`/api/business/${bId}/insight`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-        }
-        throw new Error('No se encontro negocio');
-      })
-      .then((r) => (r ? r.json() : null))
-      .then((res) => {
-        if (res && res.ok && res.data?.insight) {
-          setInsight(res.data.insight);
-          // Guardar en sessionStorage para la pagina de learning
-          sessionStorage.setItem('mexgo_business_insight', JSON.stringify(res.data.insight));
         }
       })
-      .catch((err) => {
-        console.error('Error dashboard data:', err);
-      })
-      .finally(() => setInsightLoading(false));
+      .catch(() => {});
   }, []);
 
-  const done     = insight?.negocio.modulos_completados ?? MOCK.modulos_completados;
-  const total    = insight?.negocio.modulos_totales     ?? MOCK.modulos_total;
-  const progress = insight?.negocio.progreso_pct       ?? Math.round((done / total) * 100);
+  const done     = MOCK.modulos_completados;
+  const total    = MOCK.modulos_total;
+  const progress = Math.round((done / total) * 100);
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: 'var(--background)' }}>
@@ -137,7 +111,7 @@ export default function BusinessDashboardPage() {
                 {/* Quick stats */}
                 <div className="flex gap-6 md:gap-8 flex-wrap">
                   {[
-                    { icon: <TrendingUpIcon sx={{ fontSize: 18 }} />, val: insight?.zona.totalTuristasRegistrados.toString() ?? '...', lbl: 'Turistas zona' },
+                    { icon: <TrendingUpIcon sx={{ fontSize: 18 }} />, val: MOCK.visitas.toString(), lbl: 'Turistas zona' },
                     { icon: <SchoolIcon sx={{ fontSize: 18 }} />,     val: `${done}/${total}`,      lbl: 'Módulos' },
                     { icon: <PeopleIcon sx={{ fontSize: 18 }} />,     val: '1,280',                 lbl: 'Comunidad' },
                   ].map((s) => (
@@ -151,59 +125,6 @@ export default function BusinessDashboardPage() {
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* ── Resumen IA ── */}
-          {insight?.resumen && (
-            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-7 flex items-start gap-5">
-              <div className="w-12 h-12 rounded-2xl bg-[var(--accent)]/10 flex items-center justify-center text-[var(--accent)] shrink-0">
-                <InfoIcon sx={{ fontSize: 24 }} />
-              </div>
-              <div>
-                <h2 className="font-black text-gray-900 text-base mb-1">Informe de Inteligencia</h2>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  {insight.resumen}
-                </p>
-              </div>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Alertas */}
-            {insight?.alertas && insight.alertas.length > 0 && (
-              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-7 space-y-4">
-                <h2 className="font-black text-gray-900 text-base flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-yellow-500" />
-                  Alertas de tu zona
-                </h2>
-                <div className="space-y-3">
-                  {insight.alertas.map((alerta, i) => (
-                    <div key={i} className="flex gap-3 text-xs text-gray-600 bg-yellow-50 rounded-2xl px-4 py-3 border border-yellow-100/50">
-                      <span className="shrink-0 font-bold text-yellow-600">!</span>
-                      {alerta}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Oportunidades */}
-            {insight?.oportunidades && insight.oportunidades.length > 0 && (
-              <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-7 space-y-4">
-                <h2 className="font-black text-gray-900 text-base flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-green-500" />
-                  Oportunidades detectadas
-                </h2>
-                <div className="space-y-3">
-                  {insight.oportunidades.map((op, i) => (
-                    <div key={i} className="flex gap-3 text-xs text-gray-600 bg-green-50 rounded-2xl px-4 py-3 border border-green-100/50">
-                      <span className="shrink-0 font-bold text-green-600">→</span>
-                      {op}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
           {/* ── Progreso formativo ── */}
@@ -302,7 +223,7 @@ export default function BusinessDashboardPage() {
           </div>
 
           {/* ── Action cards ── */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <Link
               href="/business/learning"
               className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-start gap-5 p-6"
@@ -311,14 +232,36 @@ export default function BusinessDashboardPage() {
                 <SchoolIcon sx={{ fontSize: 24 }} />
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-gray-900 font-black text-base mb-1">Módulos de Aprendizaje</h2>
+                <h2 className="text-gray-900 font-black text-base mb-1">Aprendizaje</h2>
                 <p className="text-gray-400 text-sm leading-relaxed mb-4">
-                  Capacitaciones inclusivas: lengua de señas, primeros auxilios, protección civil y más.
+                  Capacitaciones inclusivas: lengua de señas, primeros auxilios y más.
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-bold text-gray-300">{done}/{total} completados</span>
                   <span className="flex items-center gap-1 text-xs font-black text-[var(--accent)] group-hover:gap-2 transition-all">
-                    Ir a módulos <ArrowForwardIcon sx={{ fontSize: 15 }} />
+                    Ver <ArrowForwardIcon sx={{ fontSize: 15 }} />
+                  </span>
+                </div>
+              </div>
+            </Link>
+
+            <Link
+              href="/business/recomendaciones"
+              className="group bg-white rounded-2xl border border-[var(--accent)]/20 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-start gap-5 p-6 relative overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent)]/3 to-transparent pointer-events-none" />
+              <div className="w-11 h-11 rounded-xl bg-[var(--accent)]/12 flex items-center justify-center text-[var(--accent)] shrink-0 relative z-10">
+                <RecomendacionesIcon sx={{ fontSize: 24 }} />
+              </div>
+              <div className="flex-1 min-w-0 relative z-10">
+                <h2 className="text-gray-900 font-black text-base mb-1">Recomendaciones IA</h2>
+                <p className="text-gray-400 text-sm leading-relaxed mb-4">
+                  Análisis de tu zona, alertas y cursos sugeridos por inteligencia artificial.
+                </p>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-black text-[var(--accent)] bg-[var(--accent)]/8 px-2 py-0.5 rounded-full">Gemini AI</span>
+                  <span className="flex items-center gap-1 text-xs font-black text-[var(--accent)] group-hover:gap-2 transition-all">
+                    Ver <ArrowForwardIcon sx={{ fontSize: 15 }} />
                   </span>
                 </div>
               </div>
@@ -334,12 +277,12 @@ export default function BusinessDashboardPage() {
               <div className="flex-1 min-w-0">
                 <h2 className="text-gray-900 font-black text-base mb-1">Soporte</h2>
                 <p className="text-gray-400 text-sm leading-relaxed mb-4">
-                  Resuelve dudas sobre tu registro, módulos o cualquier apoyo que necesites.
+                  Resuelve dudas sobre tu registro, módulos o cualquier apoyo.
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-bold text-[var(--green)]">Disponible</span>
                   <span className="flex items-center gap-1 text-xs font-black text-[var(--accent)] group-hover:gap-2 transition-all">
-                    Ir a soporte <ArrowForwardIcon sx={{ fontSize: 15 }} />
+                    Ver <ArrowForwardIcon sx={{ fontSize: 15 }} />
                   </span>
                 </div>
               </div>

@@ -10,6 +10,8 @@ import {
   School as SchoolIcon,
   SupportAgent as SupportAgentIcon,
   Person as PersonIcon,
+  TipsAndUpdates as RecomendacionesIcon,
+  Dashboard as DashboardIcon,
   LanguageOutlined as LanguageIcon,
   KeyboardArrowDown as ArrowIcon,
   Logout as LogoutIcon,
@@ -17,9 +19,10 @@ import {
 import { clearSession } from "@/lib/client-auth";
 
 const NAV_LINKS = [
-  { href: "/business/profile",   label: "Perfil",       icon: <PersonIcon sx={{ fontSize: 17 }} /> },
-  { href: "/business/learning",  label: "Aprendizaje",  icon: <SchoolIcon sx={{ fontSize: 17 }} /> },
-  { href: "/business/support",   label: "Soporte",      icon: <SupportAgentIcon sx={{ fontSize: 17 }} /> },
+  { href: "/business/dashboard",        label: "Dashboard",        icon: <DashboardIcon sx={{ fontSize: 17 }} /> },
+  { href: "/business/learning",         label: "Aprendizaje",      icon: <SchoolIcon sx={{ fontSize: 17 }} /> },
+  { href: "/business/recomendaciones",  label: "Recomendaciones",  icon: <RecomendacionesIcon sx={{ fontSize: 17 }} /> },
+  { href: "/business/support",          label: "Soporte",          icon: <SupportAgentIcon sx={{ fontSize: 17 }} /> },
 ];
 
 export default function NavbarBusiness() {

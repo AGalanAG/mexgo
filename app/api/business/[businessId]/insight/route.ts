@@ -3,6 +3,7 @@ import { getAuthenticatedUser, userHasRole } from '@/lib/auth-helpers'
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response'
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { buildInsightContext, geminiGenerateInsight } from '@/lib/business-insight'
+import { DEMO_USER_ID, DEMO_BUSINESS_ID, DEMO_INSIGHT, isDemoMode } from '@/lib/demo'
 
 const CACHE_TTL_MS = 6 * 60 * 60 * 1000  // 6 horas
 
@@ -35,7 +36,17 @@ export async function GET(
     return apiError('VALIDATION_ERROR', 'businessId invalido', 400)
   }
 
-  // 2. Autorizacion
+  // 2. Demo mode: devolver insight mock sin Supabase
+  if (isDemoMode() || user.id === DEMO_USER_ID || businessId === DEMO_BUSINESS_ID) {
+    return apiOk({
+      cached:      true,
+      generatedAt: new Date().toISOString(),
+      isStale:     false,
+      insight:     DEMO_INSIGHT,
+    })
+  }
+
+  // 3. Autorizacion
   const hasAccess = await canReadInsight(user.id, businessId)
   if (!hasAccess) {
     return apiError('FORBIDDEN', 'No autorizado para consultar este insight', 403)

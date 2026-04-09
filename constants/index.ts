@@ -4,7 +4,7 @@ export const MAX_RECOMMENDATIONS = 6;
 export const DEFAULT_LANGUAGE = "es-MX";
 export const DEFAULT_COUNTRY = "MX";
 
-import type { TouristProfile, InsightContext } from '@/types/types'
+import type { TouristProfile, InsightContext, BusinessInsight } from '@/types/types'
 
 export function buildSystemPrompt(perfil?: TouristProfile): string {
   const perfilTexto = perfil
@@ -129,5 +129,50 @@ Estructura exacta requerida:
     }
   ]
 }
+`
+}
+
+// ─── PROMPT PARA CHAT CONVERSACIONAL DE NEGOCIO ───────────────────────────────
+
+export function buildBusinessChatSystemPrompt(
+  ctx: InsightContext,
+  insight: BusinessInsight | null,
+): string {
+  const acc = ctx.zona.accessibilityBreakdown
+  const accLineas = Object.entries(acc)
+    .filter(([, v]) => v > 0)
+    .map(([k, v]) => `  · ${k}: ${v}%`)
+    .join('\n') || '  · Sin datos suficientes'
+
+  const insightBloque = insight
+    ? `=== INFORME IA MAS RECIENTE ===
+${insight.resumen}
+Alertas: ${insight.alertas.join(' | ')}
+Oportunidades: ${insight.oportunidades.join(' | ')}`
+    : ''
+
+  return `Eres MexGo Advisor, un consultor de negocios local especializado en Ciudad de Mexico.
+Conoces a fondo el negocio "${ctx.negocio.nombre}" y su situacion actual.
+Responde en espanol, de forma concisa y accionable. Maximo 3 parrafos por respuesta.
+No inventes datos que no aparezcan en el contexto.
+
+=== PERFIL DEL NEGOCIO ===
+Nombre: ${ctx.negocio.nombre}
+Categoria: ${ctx.negocio.categoria}
+Alcaldia: ${ctx.negocio.alcaldia}
+Estatus SAT: ${ctx.negocio.satStatus}
+Descripcion: ${ctx.negocio.descripcion}
+Insignias obtenidas: ${ctx.negocio.insigniasActivas.join(', ') || 'Ninguna'}
+Insignias pendientes: ${ctx.negocio.insigniasPendientes.join(', ') || 'Ninguna'}
+
+=== TURISTAS EN LA ZONA (ultimos 30 dias) ===
+Total: ${ctx.zona.totalTuristasRegistrados}
+Paises principales: ${ctx.zona.paisesTop.join(', ') || 'Sin datos'}
+Motivos de visita: ${ctx.zona.motivosTop.join(', ') || 'Sin datos'}
+Estadia promedio: ${ctx.zona.estadiaPromedio}
+Necesidades de accesibilidad:
+${accLineas}
+
+${insightBloque}
 `
 }

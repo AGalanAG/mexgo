@@ -1,6 +1,8 @@
 import type { NextRequest } from 'next/server';
+import type { User } from '@supabase/supabase-js';
 
 import { getSupabaseAdmin } from '@/lib/supabase';
+import { isDemoToken, DEMO_USER_ID } from '@/lib/demo';
 
 export type PlatformRoleCode =
   | 'TURISTA'
@@ -56,6 +58,18 @@ export async function getAuthenticatedUser(request: NextRequest) {
     return null;
   }
 
+  // Demo mode: bypass Supabase
+  if (isDemoToken(token)) {
+    return {
+      id:             DEMO_USER_ID,
+      email:          'demo@mexgo.mx',
+      app_metadata:   {},
+      user_metadata:  {},
+      aud:            'authenticated',
+      created_at:     new Date().toISOString(),
+    } as User;
+  }
+
   const { data, error } = await getSupabaseAdmin().auth.getUser(token);
   if (error || !data.user) {
     return null;
@@ -65,6 +79,8 @@ export async function getAuthenticatedUser(request: NextRequest) {
 }
 
 export async function userHasRole(userId: string, roleCode: string) {
+  if (userId === DEMO_USER_ID) return true;
+
   const { data: roleRows, error: rolesError } = await getSupabaseAdmin()
     .from('roles')
     .select('id')
@@ -92,6 +108,8 @@ export async function userHasRole(userId: string, roleCode: string) {
 }
 
 export async function userHasAnyRole(userId: string, roleCodes: string[]) {
+  if (userId === DEMO_USER_ID) return true;
+
   for (const roleCode of roleCodes) {
     const hasRole = await userHasRole(userId, roleCode);
     if (hasRole) {
