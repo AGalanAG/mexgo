@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Link } from '@/i18n/routing'
-import type { ChatMessagePayload, ChatResponse, ItineraryStop, TouristProfile } from '@/types/types'
+import type { ChatMessagePayload, ChatResponse, ItineraryStop, TouristStoredProfile } from '@/types/types'
+import { toGeminiProfile } from '@/types/types'
 import { MOCK_TOURIST_PROFILE } from '@/lib/mockPerfil'
 import { getStoredAccessToken } from '@/lib/client-auth'
 import { SmartToy as SmartToyIcon, Send as SendIcon } from '@mui/icons-material'
@@ -18,19 +19,21 @@ type RichMessage = ChatMessagePayload & {
   eventoAgregado?: ItineraryStop
   eventoEditado?: ItineraryStop
   eventoEliminado?: { id: string; label?: string; eliminado: boolean }
+  negociosRecomendados?: import('@/types/types').NegocioConScore[]
   error?: boolean
 }
 
-function leerPerfil(): TouristProfile {
+function leerPerfil(): TouristStoredProfile {
   try {
     const stored = localStorage.getItem('mexgo_tourist_profile')
-    if (stored) return JSON.parse(stored) as TouristProfile
+    if (stored) return JSON.parse(stored) as TouristStoredProfile
   } catch { /* ignore */ }
   return MOCK_TOURIST_PROFILE
 }
 
 const CHAT_LS_KEY = 'mexgo_chat_history'
 const ITINERARY_LS_KEY = 'mexgo_itinerary'
+const MAX_HISTORIAL_API = 20 // máximo de mensajes que se envían a Gemini (10 turnos)
 
 function leerItinerario() {
   try {
@@ -101,8 +104,8 @@ export default function ChatUI() {
         },
         body: JSON.stringify({
           mensaje,
-          historial,
-          perfil: leerPerfil(),
+          historial: nuevoHistorial.slice(-MAX_HISTORIAL_API),
+          perfil: toGeminiProfile(leerPerfil()),
           itinerario: leerItinerario(),
         }),
       })
@@ -130,6 +133,7 @@ export default function ChatUI() {
         eventoAgregado: data.eventoAgregado,
         eventoEditado: data.eventoEditado,
         eventoEliminado: data.eventoEliminado,
+        negociosRecomendados: data.negociosRecomendados,
       }
 
       const nuevoHistorialFinal = [...nuevoHistorial, { role: 'model' as const, text: data.respuesta }]
@@ -170,24 +174,25 @@ export default function ChatUI() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
       {/* Header */}
       <div
-        className="px-7 py-5 flex items-center gap-3 shrink-0 bg-[var(--primary)]"
+        className="px-6 py-4 flex items-center gap-3 shrink-0"
+        style={{ background: 'linear-gradient(135deg, var(--dark-blue) 0%, var(--primary) 100%)' }}
       >
-        <div className="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
-          <SmartToyIcon sx={{ fontSize: 20 }} className="text-white" />
+        <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 backdrop-blur-sm">
+          <SmartToyIcon sx={{ fontSize: 22 }} className="text-white" />
         </div>
         <div>
-          <h2 className="font-black text-white text-base leading-tight">MexGo Asistente</h2>
-          <p className="text-white/50 text-xs font-medium">Tu guía turístico con IA</p>
+          <h2 className="font-black text-white text-sm leading-tight">MexGo Asistente</h2>
+          <p className="text-white/50 text-[11px] font-medium">Tu guía turístico con IA</p>
         </div>
-        <div className="ml-auto flex items-center gap-3">
+        <div className="ml-auto flex items-center gap-2">
           {mensajes.length > 0 && (
             <button
               onClick={limpiarChat}
               title="Limpiar chat"
-              className="text-white/40 hover:text-red-400 text-xs font-bold transition-colors"
+              className="text-white/30 hover:text-red-400 text-xs font-bold transition-colors"
             >
               Limpiar
             </button>
@@ -207,7 +212,7 @@ export default function ChatUI() {
                 <button
                   key={s}
                   onClick={() => enviarMensaje(s)}
-                  className="text-left text-xs font-medium text-[var(--primary)] bg-[var(--primary)]/5 border border-[var(--primary)]/15 rounded-xl px-3 py-2.5 hover:bg-[var(--primary)]/10 transition-colors"
+                  className="text-left text-xs font-semibold text-[var(--primary)] bg-[var(--primary)]/5 border border-[var(--primary)]/20 rounded-xl px-3 py-2.5 hover:bg-[var(--primary)]/10 transition-colors"
                 >
                   {s}
                 </button>
@@ -220,12 +225,12 @@ export default function ChatUI() {
           <div key={i} className={`flex flex-col gap-2 ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
             {/* Burbuja */}
             <div
-              className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
+              className={`max-w-[82%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
                 m.role === 'user'
-                  ? 'bg-[var(--primary)] text-white rounded-br-sm'
+                  ? 'bg-[var(--primary)] text-white rounded-br-sm font-medium'
                   : m.error
                   ? 'bg-red-50 text-red-600 border border-red-200 rounded-bl-sm'
-                  : 'bg-white border border-gray-100 text-gray-700 rounded-bl-sm shadow-sm'
+                  : 'bg-white border border-gray-100 text-gray-700 rounded-bl-sm shadow-sm font-medium'
               }`}
             >
               {m.text}
@@ -234,7 +239,7 @@ export default function ChatUI() {
             {/* Card evento agregado */}
             {m.eventoAgregado && (
               <Link href="/trips" target="_blank" rel="noopener noreferrer"
-                className="w-full max-w-sm flex items-center gap-3 bg-[var(--accent)]/10 border border-[var(--accent)]/30 rounded-2xl p-3 hover:shadow-md hover:border-[var(--accent)] transition-all group"
+                className="w-full max-w-sm flex items-center gap-3 bg-[var(--accent)]/10 border border-[var(--accent)]/30 rounded-2xl p-3 hover:shadow-md hover:border-[var(--accent)] transition-all group shadow-sm"
               >
                 <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/20 flex items-center justify-center shrink-0 text-lg">✅</div>
                 <div className="flex-1 min-w-0">
@@ -250,7 +255,7 @@ export default function ChatUI() {
             {/* Card evento editado */}
             {m.eventoEditado && (
               <Link href="/trips" target="_blank" rel="noopener noreferrer"
-                className="w-full max-w-sm flex items-center gap-3 bg-[var(--primary)]/10 border border-[var(--primary)]/30 rounded-2xl p-3 hover:shadow-md hover:border-[var(--primary)] transition-all group"
+                className="w-full max-w-sm flex items-center gap-3 bg-[var(--primary)]/10 border border-[var(--primary)]/30 rounded-2xl p-3 hover:shadow-md hover:border-[var(--primary)] transition-all group shadow-sm"
               >
                 <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/20 flex items-center justify-center shrink-0 text-lg">✏️</div>
                 <div className="flex-1 min-w-0">
@@ -265,7 +270,7 @@ export default function ChatUI() {
 
             {/* Card evento eliminado */}
             {m.eventoEliminado?.eliminado && (
-              <div className="w-full max-w-sm flex items-center gap-3 bg-red-50 border border-red-200 rounded-2xl p-3">
+              <div className="w-full max-w-sm flex items-center gap-3 bg-red-50 border border-red-200 rounded-2xl p-3 shadow-sm">
                 <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center shrink-0 text-lg">🗑️</div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-sm text-red-600 truncate">
@@ -273,6 +278,35 @@ export default function ChatUI() {
                   </p>
                   <p className="text-xs text-red-400">Eliminado del itinerario</p>
                 </div>
+              </div>
+            )}
+
+            {/* Tarjetas de negocios recomendados */}
+            {m.negociosRecomendados && m.negociosRecomendados.length > 0 && (
+              <div className="w-full max-w-sm space-y-2">
+                {m.negociosRecomendados.slice(0, 3).map((negocio) => (
+                  <Link
+                    key={negocio.id}
+                    href={`/discover/${negocio.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 bg-white border border-gray-100 rounded-2xl p-3 hover:shadow-md hover:border-[var(--primary)]/30 transition-all group shadow-sm"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/10 flex items-center justify-center shrink-0 text-lg">
+                      🏪
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-sm text-[var(--primary)] truncate">{negocio.businessName}</p>
+                      <p className="text-xs text-gray-400 truncate">{negocio.neighborhood}, {negocio.boroughCode}</p>
+                      {negocio.estimatedWalkMinutes && (
+                        <p className="text-[10px] text-gray-400 font-medium">🚶 {negocio.estimatedWalkMinutes} min</p>
+                      )}
+                    </div>
+                    <span className="text-[var(--primary)] text-xs font-bold shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      Ver →
+                    </span>
+                  </Link>
+                ))}
               </div>
             )}
           </div>
@@ -297,8 +331,8 @@ export default function ChatUI() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
-      <div className="px-5 py-4 border-t border-gray-100 flex gap-3 shrink-0">
+      {/* Input area */}
+      <div className="px-4 py-3 border-t border-gray-100/80 bg-white flex gap-2 shrink-0">
         <input
           className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-colors disabled:opacity-50"
           placeholder="Escribe tu pregunta..."

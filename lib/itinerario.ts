@@ -1,5 +1,31 @@
 import type { ItineraryStop } from '@/types/types'
 import { MOCK_BUSINESSES } from '@/lib/businesses'
+import { getSupabaseAdmin } from '@/lib/supabase'
+
+/** Obtiene el itinerario activo del turista, o crea uno nuevo si no existe */
+export async function getOrCreateItinerary(userId: string): Promise<string> {
+  const supabase = getSupabaseAdmin()
+
+  const { data: existing } = await supabase
+    .from('itineraries')
+    .select('id')
+    .eq('tourist_user_id', userId)
+    .eq('status', 'draft')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (existing) return existing.id
+
+  const { data: created, error } = await supabase
+    .from('itineraries')
+    .insert({ tourist_user_id: userId, status: 'draft' })
+    .select('id')
+    .single()
+
+  if (error || !created) throw new Error('No se pudo crear itinerario')
+  return created.id
+}
 
 // Estado en memoria segmentado por usuario para evitar mezclar itinerarios entre sesiones.
 const paradasPorUsuario = new Map<string, ItineraryStop[]>()

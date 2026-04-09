@@ -74,71 +74,64 @@
 \section{Resumen ejecutivo}
 % ===========================================================================
 
-MexGo es una Progressive Web App (PWA) que conecta turistas internacionales con
-micro y pequeñas empresas turísticas mexicanas durante el Mundial FIFA 2026.
-El turista recibe recomendaciones personalizadas por idioma, accesibilidad y
-perfil cultural; el negocio local gana visibilidad real con herramientas de
-gestión simples. Todo mediado por IA (Gemini) y sin requerir instalación de app.
+MexGo es un puente digital diseñado para que la derrama económica del Mundial FIFA 2026
+llegue a quienes suelen ser invisibles: los micro y pequeños negocios locales.
+Nuestra plataforma conecta a turistas internacionales con la autenticidad de México,
+mientras integra a los negocios en el ecosistema de capacitación de \textbf{Coppel Emprende}.
 
-\textbf{Prototipo funcional disponible} con flujo completo de registro, cuestionario,
-recomendaciones y chat con IA en tres idiomas (español, inglés, francés).
+Utilizamos \textbf{IA (Gemini)} no solo para traducir o guiar, sino como el motor de equidad
+que decide qué negocios recomendar basándose en su capacidad, accesibilidad y el perfil
+cultural del turista. El resultado es un prototipo funcional que transforma a una fonda
+tradicional o un taller de artesanías en un destino global, eliminando las barreras de
+idioma y tecnología sin fricción para el usuario.
 
 % ===========================================================================
 \section{Problemática y contexto}
 % ===========================================================================
 
-México recibirá millones de turistas internacionales durante el Mundial 2026.
-El programa \textit{Ola México} de Fundación Coppel busca que esta afluencia
-beneficie a los negocios locales de menor tamaño, que actualmente enfrentan:
+En 2026, el Mundial traerá millones de dólares a México, pero el gran problema es el contraste:
+un turista inglés, como Thomas, pasando de largo frente a la fonda de Doña Carmen para ir a
+una franquicia. ¿Por qué? Porque no hablan el mismo idioma y ella es invisible en internet.
 
-\begin{itemize}[leftmargin=*, itemsep=2pt]
-  \item \textbf{Invisibilidad digital}: no aparecen en plataformas internacionales
-        como Google Maps, TripAdvisor o Airbnb Experiences por barreras de idioma
-        y de acceso tecnológico.
-  \item \textbf{Barreras de comunicación}: los dueños no hablan inglés o francés;
-        los turistas no hablan español.
-  \item \textbf{Desconexión cultural}: las recomendaciones genéricas no consideran
-        las preferencias de cada país de origen.
-  \item \textbf{Falta de herramientas}: los negocios locales no tienen forma de
-        gestionar solicitudes, horarios ni valoraciones desde un solo lugar.
-\end{itemize}
+A pesar del esfuerzo de micronegocios, 8 de cada 10 mueren antes de los dos años por
+falta de clientes y de conocimiento digital. Esta desigualdad económica hace que las
+grandes cadenas acaparen los beneficios mientras el pequeño comercio solo se queda
+mirando. La barrera no es la calidad del servicio, sino la \textbf{invisibilidad digital}
+y la \textbf{brecha de capacitación}.
 
 % ===========================================================================
 \section{Solución: MexGo}
 % ===========================================================================
 
-\subsection{Para el turista}
+MexGo es el puente digital que conecta la cartera del turista directamente con
+el micronegocio local. Nuestra solución no es solo un buscador; es un ecosistema
+que profesionaliza al negocio mientras atrae al cliente.
+
+\subsection{Para el turista: Experiencia auténtica y accesible}
 
 \begin{enumerate}[leftmargin=*, itemsep=3pt]
-  \item \textbf{Acceso sin fricción}: escanea un QR o entra a la URL. La app
-        detecta idioma automáticamente (español / inglés / francés). Sin
-        descarga.
-  \item \textbf{Cuestionario de perfil}: 4 pasos breves capturan país de origen,
-        tamaño del grupo, duración de estancia, necesidades de accesibilidad,
-        motivos del viaje y factor de prioridad (cercanía vs.\ preferencia cultural).
-  \item \textbf{Recomendaciones personalizadas}: algoritmo de equidad (\tech{lib/equity.ts})
-        pondera negocios locales según perfil cultural del país, accesibilidad
-        y proximidad. El resultado son tarjetas limpias con información práctica.
-  \item \textbf{Asistente de viaje con IA}: chat con Gemini integrado que responde
-        preguntas sobre los negocios recomendados, genera itinerarios y explica
-        costumbres locales en el idioma del turista.
-  \item \textbf{Itinerario guardado offline}: el plan del día se persiste en
-        \tech{localStorage} para uso sin conexión.
+  \item \textbf{Acceso sin fricción}: PWA rápida, multilingüe (ES, EN, FR) vía QR.
+  \item \textbf{Recomendaciones por IA}: Gemini recibe el perfil del turista (país,
+        grupo, accesibilidad) y \textbf{decide dinámicamente} qué negocios sugerir.
+        La equidad se inyecta en el prompt: la IA prioriza negocios con menor
+        afluencia actual o con certificaciones específicas (LSM).
+  \item \textbf{Asistente de viaje}: Chat 24/7 que traduce menús, explica
+        costumbres locales y genera itinerarios inteligentes integrando
+        el Mundial.
 \end{enumerate}
 
-\subsection{Para el negocio local}
+\subsection{Para el negocio: Visibilidad y Crecimiento}
 
 \begin{enumerate}[leftmargin=*, itemsep=3pt]
-  \item \textbf{Registro guiado}: cuestionario simplificado de onboarding que
-        captura el tipo de negocio, servicios, capacidad y necesidades.
-  \item \textbf{Dashboard de gestión}: panel con solicitudes de turistas,
-        módulos de aprendizaje digital (LSM incluido) y métricas de visibilidad.
-  \item \textbf{Sistema de insignias}: gamificación que incentiva completar el
-        perfil, responder solicitudes y obtener valoraciones positivas,
-        aumentando la posición en el algoritmo de recomendación.
-  \item \textbf{Canal de comunicación directo}: los turistas pueden hacer
-        solicitudes; el negocio responde desde el dashboard sin necesidad de
-        hablar el mismo idioma (traducción automática vía Gemini).
+  \item \textbf{Registro simplificado}: Onboarding rápido para digitalizar
+        la oferta básica del negocio.
+  \item \textbf{Capacitación Coppel Emprende}: Acceso directo a módulos de
+        formación para dejar de ser invisibles. Incluye certificación en
+        \textbf{Lengua de Señas Mexicana (LSM)} para abrir líneas de ingresos
+        que la competencia ignora.
+  \item \textbf{Visibilidad asistida}: La IA traduce automáticamente las
+        descripciones y facilita la comunicación con clientes de cualquier
+        nacionalidad, eliminando la barrera del idioma.
 \end{enumerate}
 
 % ===========================================================================
@@ -154,7 +147,7 @@ internacional y turistas sin guía cultural adaptada.}
 \begin{itemize}[leftmargin=*, itemsep=2pt]
   \item El torneo trae turistas de decenas de países con idiomas y culturas
         distintas; MexGo es el único punto de entrada adaptado por perfil cultural.
-  \item El algoritmo de equidad prioriza negocios locales sobre grandes cadenas,
+  \item La \textbf{equidad impulsada por IA} prioriza negocios locales sobre grandes cadenas,
         garantizando que el flujo económico llegue al nicho objetivo de Fundación Coppel.
   \item Accesibilidad como primer ciudadano: el cuestionario captura necesidades
         (discapacidad auditiva, visual, motriz) y filtra recomendaciones en consecuencia
@@ -170,16 +163,17 @@ internacional y turistas sin guía cultural adaptada.}
 a negocios locales en un flujo sin fricción.}
 
 \begin{itemize}[leftmargin=*, itemsep=2pt]
-  \item \textbf{Algoritmo de equidad cultural}: no recomienda por popularidad
-        sino por afinidad entre el perfil del visitante y las características
-        del negocio. Un turista japonés ve negocios distintos a un turista alemán
-        frente a la misma oferta.
+  \item \textbf{Equidad por Diseño e Inteligencia}: el sistema no recomienda por popularidad,
+        sino por equidad. La IA analiza el perfil del visitante y el estado de los negocios
+        (saturación, certificaciones Ola México) para equilibrar la demanda. Un turista
+        japonés recibe sugerencias distintas a un alemán, asegurando que la ganancia
+        sea justa y distribuida.
   \item \textbf{PWA multilingüe con i18n dinámica}: la interfaz, el chat y las
         recomendaciones cambian de idioma en tiempo real. No hay tres apps —
         hay una que se adapta.
-  \item \textbf{IA embebida como copiloto, no como producto}: Gemini no es el
-        centro de la app; es el motor que responde preguntas, genera itinerarios
-        y traduce en segundo plano. El turista siempre ve una interfaz limpia.
+  \item \textbf{IA embebida como motor de decisión}: Gemini no es solo un chat; es el
+        motor que decide qué negocios mostrar basándose en las reglas de negocio
+        inyectadas en su prompt de sistema.
   \item \textbf{QR de entrada}: el turista llega desde un volante, un letrero
         en el estadio o un stand de Fundación Coppel. Sin descargar nada.
 \end{itemize}
@@ -283,22 +277,75 @@ Deploy         & Vercel (serverless, CDN global) \\
 \end{tabular}
 \end{center}
 
-\textbf{Decisiones de arquitectura destacadas:}
-\begin{itemize}[leftmargin=*, itemsep=2pt]
-  \item \textbf{BFF pattern}: el frontend nunca toca Supabase directo; todas las
-        llamadas pasan por \tech{/app/api/}. Las claves de servicio nunca
-        llegan al cliente.
-  \item \textbf{Algoritmo de equidad en \tech{lib/}}: función pura TypeScript,
-        sin dependencias de Next.js. Testeable y migratable.
-  \item \textbf{Middleware de i18n + auth}: un solo archivo \tech{proxy.ts}
-        maneja detección de locale y protección de rutas, sin duplicar lógica.
-  \item \textbf{PWA-ready}: sin dependencia de app stores. El turista accede
-        desde cualquier dispositivo con un navegador moderno.
-\end{itemize}
+\subsection{Estructura del proyecto (File Tree)}
+
+El proyecto sigue un patrón de \textbf{Monolito Modular} con separación clara por responsabilidades:
+
+\begin{multicols}{2}
+\begin{verbatim}
+mexgo/
+├── app/
+│   ├── (tourist)/      # PWA Turista
+│   ├── (business)/     # Panel Negocio
+│   ├── api/            # BFF (IA & Data)
+│   └── layout.tsx      # Global shell
+├── components/
+│   ├── tourist/        # UI Turista
+│   ├── business/       # UI Negocio
+│   └── ui/             # Design System
+├── lib/                # Lógica Pura
+│   ├── gemini.ts       # Orquestador IA
+│   ├── equity.ts       # Lógica Equidad
+│   ├── supabase.ts     # Data Access
+│   └── tools/          # Tool Calling
+├── types/              # Typescript Defs
+├── supabase/           # Migraciones DB
+└── public/             # Assets & PWA
+\end{verbatim}
+\end{multicols}
 
 % ===========================================================================
-\section{Flujo de usuario — turista}
+\section{Flujos y Arquitectura de Datos}
 % ===========================================================================
+
+\subsection{Flujo del Turista: De la invisibilidad a la conexión}
+
+\begin{enumerate}[leftmargin=*, itemsep=2pt]
+  \item \textbf{Ingreso (QR)}: El turista accede sin registro obligatorio.
+  \item \textbf{Perfilado Inteligente}: Cuestionario de 4 pasos (País, Grupo, Accesibilidad).
+  \item \textbf{Consultas por IA}: El turista pregunta en su idioma. Gemini activa \texttt{recomendar\_negocios}.
+  \item \textbf{Equidad Dinámica}: La IA evalúa la base de datos de negocios activos, filtra por accesibilidad y prioriza aquellos con menor saturación o mayor avance en Coppel Emprende.
+  \item \textbf{Acción}: El turista guarda el lugar en su itinerario o inicia navegación.
+\end{enumerate}
+
+\subsection{Flujo del Negocio: Crecimiento y Certificación}
+
+\begin{enumerate}[leftmargin=*, itemsep=2pt]
+  \item \textbf{Onboarding}: Registro en la red MexGo.
+  \item \textbf{Diagnóstico IA}: La IA analiza la zona del negocio y sugiere cursos específicos (ej. "Atención al turista europeo" o "LSM Básico").
+  \item \textbf{Aprendizaje (Coppel Emprende)}: El equipo completa módulos.
+  \item \textbf{Insignias}: Al validar conocimientos, el negocio obtiene insignias públicas (Sello Ola México, Accesibilidad Pro).
+  \item \textbf{Impulso en IA}: A mayor capacitación, la IA otorga mayor relevancia en las recomendaciones al turista.
+\end{enumerate}
+
+\subsection{Modelo de Datos Principal (Supabase)}
+
+Diseño relacional optimizado para escala y seguridad (RLS):
+
+\begin{center}
+\begin{tabular}{>{\bfseries}p{3.5cm} p{10cm}}
+\toprule
+Tabla & Propósito \\
+\midrule
+\texttt{users\_profile}     & Perfiles de turistas y dueños de negocio. \\
+\texttt{business\_profiles}  & Datos canónicos del negocio (coords, descripción, categoría). \\
+\texttt{learning\_modules}   & Catálogo de cursos integrados con Coppel Emprende. \\
+\texttt{business\_badges}    & Gamificación y certificaciones obtenidas (ej. LSM). \\
+\texttt{chat\_messages}      & Historial persistente para seguimiento de IA. \\
+\texttt{daily\_saturation}   & Tabla agregada para que la IA sepa la afluencia en tiempo real. \\
+\bottomrule
+\end{tabular}
+\end{center}
 
 \begin{enumerate}[leftmargin=*, itemsep=3pt]
   \item Escanea QR / accede a URL → app detecta idioma automáticamente.
@@ -320,11 +367,11 @@ Deploy         & Vercel (serverless, CDN global) \\
 \toprule
 Integrante & Rol & Contribución principal \\
 \midrule
-Héctor  & Arquitectura / IA   & Arquitectura BFF, algoritmo equidad, Gemini, deploy \\
-Emi     & Frontend turista    & Páginas turista, layouts, flujo de navegación \\
-Farid   & Frontend admin      & Dashboard negocio, módulos de aprendizaje, badges \\
-Alan    & Backend / Supabase  & API Routes, auth completa, migraciones de BD \\
-Xavier  & QA / UI             & Navbar, estilos globales, cuestionario, mock-server \\
+Emiliano & Business / Pitch & Modelo de negocio, narrativa de impacto y pitch \\
+Alan     & Backend         & Arquitectura de API, Supabase, Auth y Base de Datos \\
+Diego    & Frontend        & Desarrollo de la PWA, layouts y flujo de usuario \\
+Xavi     & UX / UI         & Diseño de interfaz, experiencia de usuario y marca \\
+Fidel    & IA              & Implementación de Gemini, prompts de equidad e itinerarios \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -347,11 +394,16 @@ Xavier  & QA / UI             & Navbar, estilos globales, cuestionario, mock-ser
 % ===========================================================================
 
 \begin{itemize}[leftmargin=*, itemsep=2pt]
-  \item Integrar algoritmo de equidad completo con datos reales de negocios.
-  \item Poblar base de datos con negocios piloto de una sede del mundial.
-  \item Módulo LSM (Lengua de Señas Mexicana) en el chat de IA.
-  \item Modo offline completo con Service Worker.
-  \item Pruebas de usabilidad con turistas y dueños de negocios reales.
+  \item \textbf{Integración Coppel Emprende}: Conexión directa con la API de Coppel
+        Emprende para sincronizar el progreso de capacitación de los negocios.
+  \item \textbf{Prueba Piloto}: Lanzamiento controlado con una red de 50 negocios en
+        la zona de Santa Fe / Centro Histórico.
+  \item \textbf{Certificación LSM Pro}: Módulo avanzado de Lengua de Señas Mexicana
+        integrado en el chat para interacciones en tiempo real.
+  \item \textbf{Escalamiento Nacional}: Adaptación de la plataforma para otras sedes
+        del Mundial (Guadalajara y Monterrey) y eventos de Fundación Coppel.
+  \item \textbf{Análisis de Impacto}: Dashboard para Fundación Coppel que mida
+        el incremento real en las ventas de los negocios participantes.
 \end{itemize}
 
 % ===========================================================================

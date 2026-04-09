@@ -2,6 +2,8 @@ import { NextRequest } from 'next/server';
 
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
 import { getSupabaseAdmin } from '@/lib/supabase';
+import { MOCK_BUSINESSES } from '@/lib/businesses';
+import { isDemoMode } from '@/lib/demo';
 
 function parsePositiveInt(value: string | null, fallback: number) {
   if (!value) {
@@ -17,7 +19,31 @@ function parsePositiveInt(value: string | null, fallback: number) {
 }
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+  // Demo/local fallback cuando Supabase no está configurado
+  if (isDemoMode()) {
+    const mockItems = MOCK_BUSINESSES.map(b => ({
+      businessId:          b.id,
+      publicName:          b.businessName,
+      shortDescription:    b.businessDescription,
+      categories:          [],
+      badgeCodes:          [],
+      city:                b.neighborhood,
+      state:               b.boroughCode,
+      publicScore:         80,
+      businessName:        b.businessName,
+      businessDescription: b.businessDescription,
+      borough:             b.boroughCode,
+      neighborhood:        b.neighborhood,
+      latitude:            b.latitude,
+      longitude:           b.longitude,
+      operationDaysHours:  b.operationDaysHours,
+      coverImageUrl:       b.coverImageUrl ?? null,
+    }));
+    return apiOk({ items: mockItems, pagination: { page: 1, pageSize: mockItems.length, total: mockItems.length } });
+  }
+
+  const url = new URL(request.url);
+  const searchParams = url.searchParams;
   const q = searchParams.get('q');
   const badge = searchParams.get('badge');
   const category = searchParams.get('category');

@@ -16,6 +16,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/routing'; // Navegación i18n
 import type { ItineraryStop } from '@/types/types';
 import { MOCK_BUSINESSES } from '@/lib/businesses';
+import { getStoredAccessToken } from '@/lib/client-auth';
 
 interface Stop {
   id: string;
@@ -61,7 +62,29 @@ export default function TripsPage() {
   const [hasLocationPermission, setHasLocationPermission] = useState(true);
 
   useEffect(() => {
-    setStops(loadFromLS());
+    const token = getStoredAccessToken();
+    if (!token) {
+      setStops(loadFromLS());
+    } else {
+      fetch('/api/itinerary', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then(r => r.json())
+        .then(result => {
+          if (result.ok) {
+            const paradas = result.data as ItineraryStop[];
+            setStops(paradas.map(toStop));
+            // Sincronizar localStorage para que ChatUI también lo vea
+            localStorage.setItem(LS_KEY, JSON.stringify(paradas));
+          } else {
+            setStops(loadFromLS());
+          }
+        })
+        .catch(() => {
+          setStops(loadFromLS());
+        });
+    }
+
     const perm = localStorage.getItem('mexgo_location_permission');
     if (perm === 'denied') setHasLocationPermission(false);
   }, []);

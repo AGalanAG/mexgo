@@ -307,7 +307,7 @@ export default function LearningPage() {
 
   useEffect(() => {
     // Intentar leer desde sessionStorage si el dashboard ya lo cargo
-    const cached = sessionStorage.getItem('mexgo_business_insight');
+    const cached = sessionStorage.getItem('mexgo_insight');
     if (cached) {
       try {
         const parsed = JSON.parse(cached) as BusinessInsight;
@@ -315,7 +315,7 @@ export default function LearningPage() {
           setTopCursos(parsed.cursos_recomendados.slice(0, 3));
         }
       } catch (err) {
-        console.error('Error parsing cached insight:', err);
+        // ignore
       }
     }
   }, []);

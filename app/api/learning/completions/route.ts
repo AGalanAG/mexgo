@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server';
 import { getAuthenticatedUser, userHasAnyRole, userHasRole } from '@/lib/auth-helpers';
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
 import { getSupabaseAdmin } from '@/lib/supabase';
+import { DEMO_USER_ID } from '@/constants/demo-data';
 
 interface CompletionBody {
   businessId?: unknown;
@@ -41,6 +42,10 @@ export async function GET(request: NextRequest) {
     return apiError('AUTH_REQUIRED', 'Token Bearer requerido', 401);
   }
 
+  if (user.id === DEMO_USER_ID) {
+    return apiOk({ items: [] });
+  }
+
   const businessId = new URL(request.url).searchParams.get('businessId');
   if (!isNonEmptyString(businessId)) {
     return apiError('VALIDATION_ERROR', 'businessId es obligatorio', 400);
@@ -70,6 +75,10 @@ export async function POST(request: NextRequest) {
   const user = await getAuthenticatedUser(request);
   if (!user) {
     return apiError('AUTH_REQUIRED', 'Token Bearer requerido', 401);
+  }
+
+  if (user.id === DEMO_USER_ID) {
+    return apiOk({ ok: true, message: 'Simulado en demo' });
   }
 
   const hasRole = await userHasAnyRole(user.id, ['ENCARGADO_NEGOCIO', 'ADMIN', 'EMPLEADO_NEGOCIO']);

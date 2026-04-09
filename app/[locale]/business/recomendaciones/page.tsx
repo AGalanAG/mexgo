@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { Link } from '@/i18n/routing';
 import NavbarBusiness from '@/components/business/NavbarBusiness';
 import Footer from '@/components/tourist/Footer';
 import BusinessChat from '@/components/business/BusinessChat';
@@ -59,41 +60,108 @@ function SkeletonCard() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function RecomendacionesPage() {
-  const [businessId, setBusinessId] = useState<string | null>(null);
-  const [insight, setInsight] = useState<BusinessInsight | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [businessId, setBusinessId] = useState<string | null>(null)
+  const [insight, setInsight] = useState<BusinessInsight | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
-    const token = getStoredAccessToken();
-    if (!token) {
-      setError('Sesión no encontrada. Vuelve a iniciar sesión.');
-      setLoading(false);
-      return;
+    // 1. Intentar leer del sessionStorage primero (fast path)
+    const cached = sessionStorage.getItem('mexgo_insight')
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached) as BusinessInsight
+        setInsight(parsed)
+        // También necesitamos el businessId para el chat
+        const token = getStoredAccessToken()
+        if (token) {
+          fetch('/api/businesses/me', { headers: { Authorization: `Bearer ${token}` } })
+            .then(r => r.json())
+            .then(res => {
+              if (res.ok) setBusinessId(res.data.businessId)
+            }).catch(() => {})
+        }
+        setLoading(false)
+        return
+      } catch { /* ignorar */ }
     }
 
-    fetch('/api/businesses/me', { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((res) => {
-        if (!res.ok || !res.data?.businessId) throw new Error('Negocio no encontrado');
-        const bId = res.data.businessId as string;
-        setBusinessId(bId);
-        return fetch(`/api/business/${bId}/insight`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      })
-      .then((r) => r.json())
-      .then((res) => {
-        if (res.ok && res.data?.insight) setInsight(res.data.insight as BusinessInsight);
-        else throw new Error('No se pudo obtener el informe');
+    // 2. Fallback: pedir el insight a la API
+    const token = getStoredAccessToken()
+    if (!token) {
+      setError(true)
+      setLoading(false)
+      return
+    }
+
+    // Primero obtener el businessId del usuario
+    fetch('/api/businesses/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.json())
+      .then(async (bizResult) => {
+        if (!bizResult.ok || !bizResult.data?.businessId) throw new Error('No se pudo obtener negocio')
+        const bId = bizResult.data.businessId as string
+        setBusinessId(bId)
+
+        const res = await fetch(`/api/business/${bId}/insight`, {
+          method: 'GET', // Usar GET para coincidir con la API actual
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        const result = await res.json()
+        if (!result.ok || !result.data?.insight) throw new Error('No se pudo generar insight')
+
+        sessionStorage.setItem('mexgo_insight', JSON.stringify(result.data.insight))
+        setInsight(result.data.insight as BusinessInsight)
       })
       .catch(() => {
-        // Sin Supabase o error de red → mostrar datos demo
-        setBusinessId(DEMO_BUSINESS_ID);
-        setInsight(DEMO_INSIGHT);
+        // En demo mode o error, si no hay Supabase, intentar cargar demo
+        if (token === 'mexgo-demo') {
+           setBusinessId('demo-biz-00000000-0001')
+           setInsight(DEMO_INSIGHT)
+        } else {
+           setError(true)
+        }
       })
-      .finally(() => setLoading(false));
-  }, []);
+      .finally(() => setLoading(false))
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen" style={{ background: 'var(--background)' }}>
+        <NavbarBusiness />
+        <main className="flex-1 flex items-center justify-center p-24">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 border-3 border-[var(--primary)]/30 border-t-[var(--primary)] rounded-full animate-spin" />
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+              Generando análisis...
+            </p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col min-h-screen" style={{ background: 'var(--background)' }}>
+        <NavbarBusiness />
+        <main className="flex-1 flex flex-col items-center justify-center p-24 gap-3">
+          <p className="text-gray-500 text-sm font-medium text-center">
+            No se pudo cargar el análisis. Ve al{' '}
+            <Link href="/business/dashboard" className="text-[var(--primary)] font-bold hover:underline">
+              Dashboard
+            </Link>{' '}
+            para generarlo.
+          </p>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col min-h-screen" style={{ background: 'var(--background)' }}>
