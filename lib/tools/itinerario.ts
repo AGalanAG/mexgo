@@ -68,10 +68,12 @@ export const declarations: FunctionDeclaration[] = [
   },
 ]
 
-export const handlers: Record<string, (args: never) => unknown> = {
-  buscar_negocios: ({ tipo }: { tipo: string }) => buscarNegocios(tipo),
-  agregar_evento:  (args: { negocio_id: string; nombre: string; dia: string; hora: string }) => agregarEvento(args),
-  editar_evento:   (args: { id: string; dia?: string; hora?: string; nombre?: string }) => editarEvento(args),
-  eliminar_evento: (args: { id: string }) => eliminarEvento(args),
-  leer_itinerario: () => leerItinerario(),
+export function createItinerarioHandlers(userId: string): Record<string, (args: never) => unknown> {
+  return {
+    buscar_negocios: ({ tipo }: { tipo: string }) => buscarNegocios(tipo),
+    agregar_evento:  (args: { negocio_id: string; nombre: string; dia: string; hora: string }) => agregarEvento(userId, args),
+    editar_evento:   (args: { id: string; dia?: string; hora?: string; nombre?: string }) => editarEvento(userId, args),
+    eliminar_evento: (args: { id: string }) => eliminarEvento(userId, args),
+    leer_itinerario: () => leerItinerario(userId),
+  }
 }

@@ -29,6 +29,11 @@ function redirectToLogin(request: NextRequest, locale: string | null) {
   return NextResponse.redirect(url);
 }
 
+function redirectToLanding(request: NextRequest, locale: string | null) {
+  const targetLocale = locale || routing.defaultLocale;
+  return NextResponse.redirect(new URL(`/${targetLocale}`, request.url));
+}
+
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const { locale, path } = getLocaleAndPath(pathname);
@@ -44,11 +49,7 @@ export default function proxy(request: NextRequest) {
     }
 
     if (!BUSINESS_ALLOWED_ROLES.has(primaryRole)) {
-      if (primaryRole === 'TURISTA') {
-        return NextResponse.redirect(new URL('/es/profile', request.url));
-      }
-
-      return NextResponse.redirect(new URL('/requests', request.url));
+      return redirectToLanding(request, null);
     }
 
     return NextResponse.next();
@@ -60,15 +61,19 @@ export default function proxy(request: NextRequest) {
     }
 
     if (pathname === '/requests' && !(primaryRole === 'ADMIN' || primaryRole === 'SUPERADMIN')) {
-      return NextResponse.redirect(new URL('/es', request.url));
+      return redirectToLanding(request, null);
     }
 
-    if ((pathname === '/profile' || pathname === '/request') && primaryRole === 'TURISTA') {
+    if (pathname === '/request' && primaryRole === 'TURISTA') {
+      return redirectToLanding(request, null);
+    }
+
+    if (pathname === '/profile' && primaryRole === 'TURISTA') {
       return NextResponse.redirect(new URL('/es/profile', request.url));
     }
 
     if (pathname === '/profile' && (primaryRole === 'ENCARGADO_NEGOCIO' || primaryRole === 'EMPLEADO_NEGOCIO')) {
-      return NextResponse.redirect(new URL('/es/business/profile', request.url));
+      return redirectToLanding(request, null);
     }
 
     return NextResponse.next();
@@ -81,11 +86,7 @@ export default function proxy(request: NextRequest) {
       }
 
       if (!BUSINESS_ALLOWED_ROLES.has(primaryRole)) {
-        if (primaryRole === 'TURISTA') {
-          return NextResponse.redirect(new URL(`/${locale}/profile`, request.url));
-        }
-
-        return NextResponse.redirect(new URL('/requests', request.url));
+        return redirectToLanding(request, locale);
       }
     }
 
@@ -94,11 +95,7 @@ export default function proxy(request: NextRequest) {
     }
 
     if (path === '/profile' && isLoggedIn && primaryRole && primaryRole !== 'TURISTA') {
-      if (primaryRole === 'ENCARGADO_NEGOCIO' || primaryRole === 'EMPLEADO_NEGOCIO') {
-        return NextResponse.redirect(new URL(`/${locale}/business/profile`, request.url));
-      }
-
-      return NextResponse.redirect(new URL('/requests', request.url));
+      return redirectToLanding(request, locale);
     }
   }
 
