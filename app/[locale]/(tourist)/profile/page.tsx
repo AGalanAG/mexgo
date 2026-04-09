@@ -175,7 +175,7 @@ export default function ProfilePage() {
             {/* Content below banner */}
             <div className="px-6 pb-6">
               {/* Avatar + Edit */}
-              <div className="flex items-end justify-between -mt-14 mb-4">
+              <div className="flex items-start justify-between -mt-14 mb-4">
                 <div className="relative">
                   <div className="w-24 h-24 rounded-full border-4 border-white bg-gradient-to-br from-[var(--coppel-yellow)] to-[var(--secondary)] flex items-center justify-center shadow-xl">
                     <span className="text-4xl font-black text-[var(--dark-blue)]">
@@ -187,17 +187,19 @@ export default function ProfilePage() {
                   </button>
                 </div>
 
-                <button
-                  onClick={handleEditClick}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-                    isEditing
-                      ? 'bg-[var(--green)] text-white shadow-lg shadow-[var(--green)]/30'
-                      : 'border-2 border-[var(--coppel-blue)] text-[var(--coppel-blue)] hover:bg-[var(--coppel-blue)]/5'
-                  }`}
-                >
-                  <EditIcon sx={{ fontSize: 16 }} />
-                  {isEditing ? 'Guardar' : 'Editar'}
-                </button>
+                <div className="mt-[72px]">
+                  <button
+                    onClick={handleEditClick}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                      isEditing
+                        ? 'bg-[var(--green)] text-white shadow-lg shadow-[var(--green)]/30'
+                        : 'border-2 border-[var(--coppel-blue)] text-[var(--coppel-blue)] hover:bg-[var(--coppel-blue)]/5'
+                    }`}
+                  >
+                    <EditIcon sx={{ fontSize: 16 }} />
+                    {isEditing ? 'Guardar' : 'Editar'}
+                  </button>
+                </div>
               </div>
 
               {/* Name & Origin */}
@@ -270,52 +272,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* ── Recent Trips ── */}
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-sm font-black text-gray-400 uppercase tracking-widest">
-                Mis Itinerarios
-              </h2>
-              <a href="/trips" className="text-xs font-bold text-[var(--coppel-blue)] hover:underline">
-                Ver todos →
-              </a>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {MOCK_TRIPS.map((trip) => (
-                <div
-                  key={trip.id}
-                  className="group rounded-2xl overflow-hidden border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer"
-                >
-                  <div className="relative h-32 overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={trip.image}
-                      alt={trip.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    <div className="absolute bottom-2 left-3 text-white">
-                      <p className="font-black text-sm leading-tight">{trip.title}</p>
-                      <p className="text-[10px] text-white/70 font-medium">{trip.date} · {trip.stops} paradas</p>
-                    </div>
-                  </div>
-                  <div className="px-3 py-2 flex items-center gap-1">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <StarIcon
-                        key={i}
-                        sx={{ fontSize: 12 }}
-                        className={i < trip.rating ? 'text-[var(--secondary)]' : 'text-gray-200'}
-                      />
-                    ))}
-                    <span className="ml-auto text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                      {trip.rating}/5
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          
 
           {/* ── Mundial 2026 Badge ── */}
           <div

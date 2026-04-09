@@ -7,6 +7,10 @@ const withNextIntl = createNextIntlPlugin(
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["*.ngrok-free.app", "localhost:3000"],
+  turbopack: {
+    // Evita que Next tome otro workspace como root cuando hay lockfiles multiples.
+    root: process.cwd(),
+  },
   images: {
     remotePatterns: [
       {

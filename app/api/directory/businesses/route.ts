@@ -53,116 +53,92 @@ export async function GET(request: NextRequest) {
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
-  let query = getSupabaseAdmin()
-    .from('directory_profiles')
-    .select('*', { count: 'exact' })
-    .order('public_score', { ascending: false })
-    .range(from, to);
+  try {
 
-  if (isNonEmptyString(q)) {
-    query = query.ilike('public_name', `%${q}%`);
-  }
-
-  if (isNonEmptyString(city)) {
-    query = query.eq('city', city);
-  }
-
-  if (isNonEmptyString(category)) {
-    query = query.contains('categories', [category]);
-  }
-
-  const { data, error, count } = await query;
-
-  if (error) {
-    return apiError('INTERNAL_ERROR', error.message, 500);
-  }
-
-  const directoryRows = data || [];
-  const businessIds = directoryRows.map((item) => item.business_id);
-
-  let fallbackQuery = getSupabaseAdmin()
+  // Fuente principal: negocios activos. El directorio aporta metadatos publicos,
+  // pero la paginacion estable se hace aqui para evitar errores por rango vacio.
+  let businessesQuery = getSupabaseAdmin()
     .from('business_profiles')
     .select('id, business_name, business_description, borough, neighborhood, latitude, longitude, created_at', {
       count: 'exact',
     })
     .eq('status', 'ACTIVE')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(from, to);
 
   if (isNonEmptyString(q)) {
-    fallbackQuery = fallbackQuery.or(
-      `business_name.ilike.%${q}%,business_description.ilike.%${q}%`,
-    );
+    businessesQuery = businessesQuery.ilike('business_name', `%${q}%`);
   }
 
   if (isNonEmptyString(city)) {
-    fallbackQuery = fallbackQuery.or(`borough.ilike.%${city}%,neighborhood.ilike.%${city}%`);
+    businessesQuery = businessesQuery.or(`borough.ilike.%${city}%,neighborhood.ilike.%${city}%`);
   }
 
   const {
-    data: fallbackBusinesses,
-    error: fallbackError,
-    count: fallbackCount,
-  } = await fallbackQuery;
+    data: businessRows,
+    error: businessesError,
+    count: businessesCount,
+  } = await businessesQuery;
 
-  if (fallbackError) {
-    return apiError('INTERNAL_ERROR', fallbackError.message, 500);
+  const businessesOutOfRange = Boolean(
+    businessesError?.message?.includes('Requested range not satisfiable')
+  );
+
+  if (businessesError && !businessesOutOfRange) {
+    return apiError('INTERNAL_ERROR', businessesError.message, 500);
   }
 
-  let businessById = new Map<string, {
-    id: string;
-    business_name: string;
-    business_description: string;
-    borough: string | null;
-    neighborhood: string | null;
-    latitude: number | null;
-    longitude: number | null;
+  const businesses = businessesOutOfRange ? [] : (businessRows || []);
+  const businessIds = businesses.map((b) => b.id);
+
+  let directoryByBusinessId = new Map<string, {
+    business_id: string;
+    public_name: string;
+    short_description: string;
+    categories: string[] | null;
+    city: string | null;
+    state: string | null;
+    public_score: number | null;
   }>();
 
   if (businessIds.length > 0) {
-    const { data: businessRows, error: businessError } = await getSupabaseAdmin()
-      .from('business_profiles')
-      .select('id, business_name, business_description, borough, neighborhood, latitude, longitude')
-      .in('id', businessIds);
+    let directoryQuery = getSupabaseAdmin()
+      .from('directory_profiles')
+      .select('business_id, public_name, short_description, categories, city, state, public_score')
+      .in('business_id', businessIds);
 
-    if (businessError) {
-      return apiError('INTERNAL_ERROR', businessError.message, 500);
+    if (isNonEmptyString(category)) {
+      directoryQuery = directoryQuery.contains('categories', [category]);
     }
 
-    businessById = new Map((businessRows || []).map((row) => [row.id, row]));
+    const { data: directoryRows, error: directoryError } = await directoryQuery;
+
+    if (directoryError) {
+      return apiError('INTERNAL_ERROR', directoryError.message, 500);
+    }
+
+    directoryByBusinessId = new Map((directoryRows || []).map((row) => [row.business_id, row]));
   }
 
-  const directoryItems = directoryRows.map((item) => {
-    const business = businessById.get(item.business_id);
+  const items = businesses
+    .filter((business) => {
+      if (!isNonEmptyString(category)) {
+        return true;
+      }
 
-    return {
-      businessId: item.business_id,
-      publicName: item.public_name,
-      shortDescription: item.short_description,
-      categories: item.categories || [],
-      city: item.city,
-      state: item.state,
-      publicScore: Number(item.public_score ?? 0),
-      businessName: business?.business_name ?? item.public_name,
-      businessDescription: business?.business_description ?? item.short_description,
-      borough: business?.borough ?? null,
-      neighborhood: business?.neighborhood ?? null,
-      latitude: business?.latitude ?? null,
-      longitude: business?.longitude ?? null,
-      operationDaysHours: null,
-      coverImageUrl: null,
-    };
-  });
+      return directoryByBusinessId.has(business.id);
+    })
+    .map((business) => {
+      const directory = directoryByBusinessId.get(business.id);
 
-  const fallbackOnlyItems = (fallbackBusinesses || [])
-    .filter((business) => !businessIds.includes(business.id))
-    .map((business) => ({
+      return {
       businessId: business.id,
-      publicName: business.business_name,
-      shortDescription: business.business_description,
-      categories: [],
-      city: business.neighborhood,
-      state: business.borough,
-      publicScore: 0,
+      publicName: directory?.public_name ?? business.business_name,
+      shortDescription: directory?.short_description ?? business.business_description,
+      categories: directory?.categories || [],
+      city: directory?.city ?? business.neighborhood,
+      state: directory?.state ?? business.borough,
+      publicScore: Number(directory?.public_score ?? 0),
       businessName: business.business_name,
       businessDescription: business.business_description,
       borough: business.borough,
@@ -171,17 +147,35 @@ export async function GET(request: NextRequest) {
       longitude: business.longitude,
       operationDaysHours: null,
       coverImageUrl: null,
-    }));
+      };
+    });
 
-  const items = [...directoryItems, ...fallbackOnlyItems].slice(0, pageSize);
-  const total = Math.max(count ?? 0, fallbackCount ?? 0, directoryItems.length + fallbackOnlyItems.length);
+  const total = businessesOutOfRange ? 0 : (businessesCount ?? 0);
 
-  return apiOk({
-    items,
-    pagination: {
-      page,
-      pageSize,
-      total,
-    },
-  });
+    return apiOk({
+      items,
+      pagination: {
+        page,
+        pageSize,
+        total,
+      },
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+
+    // Algunas combinaciones de paginacion en PostgREST pueden lanzar este error;
+    // para Discover debe comportarse como "sin resultados".
+    if (message.includes('Requested range not satisfiable')) {
+      return apiOk({
+        items: [],
+        pagination: {
+          page,
+          pageSize,
+          total: 0,
+        },
+      });
+    }
+
+    return apiError('INTERNAL_ERROR', message, 500);
+  }
 }

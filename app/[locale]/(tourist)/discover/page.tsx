@@ -30,6 +30,11 @@ interface DirectoryBusinessesResponse {
   ok: boolean;
   data?: {
     items: DirectoryBusinessItem[];
+    pagination?: {
+      page: number;
+      pageSize: number;
+      total: number;
+    };
   };
 }
 
@@ -44,6 +49,7 @@ interface DisplayPlace {
 }
 
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80';
+const PAGE_SIZE = 8;
 
 function toDisplay(n: NegocioConScore): DisplayPlace {
   return {
@@ -86,18 +92,50 @@ function toRecommendation(item: DirectoryBusinessItem): NegocioConScore {
 
 export default function DiscoverPage() {
   const [searchValue, setSearchValue] = useState<string>('');
+  const [debouncedSearch, setDebouncedSearch] = useState<string>('');
   const [flippedId, setFlippedId] = useState<string | null>(null);
-  const [places, setPlaces] = useState<DisplayPlace[]>([]);
+  const [recommendations, setRecommendations] = useState<NegocioConScore[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadMoreError, setLoadMoreError] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalResults, setTotalResults] = useState(0);
   const t = useTranslations('Discover');
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setDebouncedSearch(searchValue.trim());
+    }, 300);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [searchValue]);
 
   useEffect(() => {
     let cancelled = false;
 
-    async function loadBusinesses() {
+    async function loadBusinesses(page: number, append: boolean) {
       try {
-        setLoading(true);
-        const response = await fetch('/api/directory/businesses?page=1&pageSize=100', {
+        if (append) {
+          setLoadingMore(true);
+          setLoadMoreError('');
+        } else {
+          setLoading(true);
+          setFlippedId(null);
+          setLoadMoreError('');
+        }
+
+        const params = new URLSearchParams({
+          page: String(page),
+          pageSize: String(PAGE_SIZE),
+        });
+
+        if (debouncedSearch) {
+          params.set('q', debouncedSearch);
+        }
+
+        const response = await fetch(`/api/directory/businesses?${params.toString()}`, {
           method: 'GET',
           cache: 'no-store',
         });
@@ -109,29 +147,41 @@ export default function DiscoverPage() {
         const payload = (await response.json()) as DirectoryBusinessesResponse;
         const items = payload.data?.items || [];
         const negocios = items.map(toRecommendation);
+        const total = payload.data?.pagination?.total ?? negocios.length;
 
         if (!cancelled) {
-          localStorage.setItem('mexgo_recommendations', JSON.stringify(negocios));
-          setPlaces(negocios.map(toDisplay));
+          setCurrentPage(page);
+          setTotalResults(total);
+          setRecommendations((prev) => {
+            const next = append
+              ? [...prev, ...negocios.filter((item) => !prev.some((p) => p.id === item.id))]
+              : negocios;
+
+            localStorage.setItem('mexgo_recommendations', JSON.stringify(next));
+            return next;
+          });
         }
       } catch {
-        if (!cancelled) {
-          setPlaces([]);
+        if (!cancelled && !append) {
+          setRecommendations([]);
+          setTotalResults(0);
+          setCurrentPage(1);
           localStorage.setItem('mexgo_recommendations', JSON.stringify([]));
         }
       } finally {
         if (!cancelled) {
           setLoading(false);
+          setLoadingMore(false);
         }
       }
     }
 
-    void loadBusinesses();
+    void loadBusinesses(1, false);
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [debouncedSearch]);
 
   const clearSearch = (): void => setSearchValue('');
 
@@ -140,11 +190,56 @@ export default function DiscoverPage() {
     setFlippedId(flippedId === id ? null : id);
   };
 
-  const filtered = places.filter(p =>
-    !searchValue ||
-    p.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-    p.description.toLowerCase().includes(searchValue.toLowerCase())
-  );
+  const places = recommendations.map(toDisplay);
+  const totalPages = Math.max(1, Math.ceil(totalResults / PAGE_SIZE));
+  const hasMore = places.length < totalResults;
+
+  const handleSeeMore = async () => {
+    if (loading || loadingMore || !hasMore) {
+      return;
+    }
+
+    const nextPage = currentPage + 1;
+
+    try {
+      setLoadingMore(true);
+      setLoadMoreError('');
+      const params = new URLSearchParams({
+        page: String(nextPage),
+        pageSize: String(PAGE_SIZE),
+      });
+
+      if (debouncedSearch) {
+        params.set('q', debouncedSearch);
+      }
+
+      const response = await fetch(`/api/directory/businesses?${params.toString()}`, {
+        method: 'GET',
+        cache: 'no-store',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error cargando negocios: ${response.status}`);
+      }
+
+      const payload = (await response.json()) as DirectoryBusinessesResponse;
+      const items = payload.data?.items || [];
+      const negocios = items.map(toRecommendation);
+      const total = payload.data?.pagination?.total ?? totalResults;
+
+      setCurrentPage(nextPage);
+      setTotalResults(total);
+      setRecommendations((prev) => {
+        const next = [...prev, ...negocios.filter((item) => !prev.some((p) => p.id === item.id))];
+        localStorage.setItem('mexgo_recommendations', JSON.stringify(next));
+        return next;
+      });
+    } catch {
+      setLoadMoreError('No se pudieron cargar mas negocios. Intenta de nuevo.');
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-[var(--background)] overflow-x-hidden">
@@ -189,7 +284,7 @@ export default function DiscoverPage() {
 
         {/* Cards grid centered and with aspect-square */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full justify-items-center">
-          {filtered.map((place) => (
+          {places.map((place) => (
             <div
               key={place.id}
               className="perspective-1000 cursor-pointer aspect-square w-full max-w-[320px] group"
@@ -248,21 +343,31 @@ export default function DiscoverPage() {
         </div>
 
         {/* Empty state */}
-        {!loading && filtered.length === 0 && (
+        {!loading && places.length === 0 && (
           <div className="text-center py-20 bg-gray-50 rounded-[3rem] w-full max-w-2xl border-2 border-dashed border-gray-200">
             <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-xs">No hay resultados para tu búsqueda</p>
           </div>
         )}
 
-        <div className="mt-24 flex justify-center">
+        <div className="mt-16 text-center text-xs font-bold uppercase tracking-[0.2em] text-gray-400">
+          Página {currentPage} de {totalPages} · Mostrando {places.length} de {totalResults} negocios
+        </div>
+
+        <div className="mt-8 flex justify-center">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="btn-secondary uppercase tracking-[0.3em] text-[10px] py-5 px-16"
+            onClick={handleSeeMore}
+            disabled={loading || loadingMore || !hasMore}
+            className="btn-secondary uppercase tracking-[0.3em] text-[10px] py-5 px-16 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {t('seeMore')}
+            {loadingMore ? 'Cargando...' : hasMore ? t('seeMore') : 'No hay más resultados'}
           </motion.button>
         </div>
+
+        {loadMoreError && (
+          <p className="mt-4 text-center text-sm text-red-500 font-medium">{loadMoreError}</p>
+        )}
       </main>
 
       <style jsx global>{`
