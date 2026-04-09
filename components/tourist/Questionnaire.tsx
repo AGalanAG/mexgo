@@ -21,10 +21,22 @@ const CITIES_DATA: Record<string, string[]> = {
   ]
 };
 
+const ACCESSIBILITY_OPTIONS = [
+  'none',
+  'deaf',
+  'mute',
+  'deaf_mute',
+  'low_vision',
+  'blindness',
+  'mobility',
+  'other',
+] as const;
+
 interface QuestionnaireState {
   country: string;
   companions_count: string;
   is_adult: string;
+  accessibility_needs: string[];
   stay_duration: string;
   city: string;
   borough: string;
@@ -42,6 +54,7 @@ const Questionnaire: React.FC = () => {
     country: "",
     companions_count: "",
     is_adult: "",
+    accessibility_needs: [],
     stay_duration: "",
     city: "",
     borough: "",
@@ -79,6 +92,21 @@ const Questionnaire: React.FC = () => {
     });
   };
 
+  const handleAccessibilityNeedChange = (need: string) => {
+    setFormData((prev) => {
+      if (need === 'none') {
+        return { ...prev, accessibility_needs: ['none'] };
+      }
+
+      const withoutNone = prev.accessibility_needs.filter((item) => item !== 'none');
+      const accessibility_needs = withoutNone.includes(need)
+        ? withoutNone.filter((item) => item !== need)
+        : [...withoutNone, need];
+
+      return { ...prev, accessibility_needs };
+    });
+  };
+
   const handleFinish = async () => {
     const accessToken = getStoredAccessToken();
     if (!accessToken) {
@@ -90,6 +118,7 @@ const Questionnaire: React.FC = () => {
       country: formData.country,
       companions_count: formData.companions_count,
       is_adult: formData.is_adult,
+      accessibility_needs: formData.accessibility_needs,
       stay_duration: formData.stay_duration,
       city: formData.city,
       borough: formData.borough,
@@ -133,7 +162,7 @@ const Questionnaire: React.FC = () => {
   }, [formData.city]);
 
   const isNextDisabled = () => {
-    if (step === 1) return !formData.country || !formData.companions_count || !formData.is_adult;
+    if (step === 1) return !formData.country || !formData.companions_count || !formData.is_adult || formData.accessibility_needs.length === 0;
     if (step === 2) return !formData.stay_duration || !formData.city || !formData.borough;
     if (step === 3) return formData.trip_motives.length < 2 || formData.trip_motives.length > 3;
     if (step === 4) return !formData.priority_factor;
@@ -225,6 +254,35 @@ const Questionnaire: React.FC = () => {
                   }`}
                 >
                   {t(`tourist.step1.ageOptions.${key}`)}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold mb-2 text-gray-900">
+              {t('tourist.step1.accessibilityLabel')}
+            </label>
+            <p className="text-xs text-gray-500 mb-3">{t('tourist.step1.accessibilityHint')}</p>
+            <div className="grid gap-3">
+              {ACCESSIBILITY_OPTIONS.map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => handleAccessibilityNeedChange(key)}
+                  className={`p-4 rounded-2xl border-2 transition-all text-left flex justify-between items-center font-medium cursor-pointer touch-manipulation ${
+                    formData.accessibility_needs.includes(key)
+                      ? "border-[#E8C247] bg-[#E8C247]/10 text-gray-900 shadow-sm"
+                      : "border-gray-100 text-gray-700 bg-gray-50/10"
+                  }`}
+                >
+                  <span className="pr-4">{t(`tourist.step1.accessibilityOptions.${key}`)}</span>
+                  {formData.accessibility_needs.includes(key) && (
+                    <div className="bg-[#E8C247] rounded-full p-1 shrink-0">
+                      <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  )}
                 </button>
               ))}
             </div>

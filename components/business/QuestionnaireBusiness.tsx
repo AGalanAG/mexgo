@@ -27,6 +27,17 @@ const SAT_STATUS = [
   { id: "no_no_interesa", label: "No y no me interesa" },
 ];
 
+const ACCESSIBILITY_NEEDS_OPTIONS = [
+  { id: 'none', label: 'Ninguna' },
+  { id: 'deaf', label: 'Sordera' },
+  { id: 'mute', label: 'Mudez' },
+  { id: 'deaf_mute', label: 'Sordomudez' },
+  { id: 'low_vision', label: 'Baja visión' },
+  { id: 'blindness', label: 'Ceguera' },
+  { id: 'mobility', label: 'Movilidad reducida' },
+  { id: 'other', label: 'Otra condición' },
+] as const;
+
 const SEDES_CAPACITACION = [
   {
     id: "HUB_AZTECA",
@@ -49,6 +60,7 @@ interface FormState {
   nombre_completo: string;
   edad: string;
   genero: string;
+  accessibility_needs: string[];
   // Step 2
   alcaldia: string;
   colonia_y_maps: string;
@@ -94,7 +106,7 @@ const QuestionnaireBusiness: React.FC = () => {
   const totalSteps = 5;
 
   const [formData, setFormData] = useState<FormState>({
-    nombre_completo: "", edad: "", genero: "",
+    nombre_completo: "", edad: "", genero: "", accessibility_needs: [],
     alcaldia: "", colonia_y_maps: "", sede_previa: "",
     mujeres_empleadas: "", hombres_empleados: "",
     nombre_negocio: "", descripcion_negocio: "", antiguedad: "", tiempo_continuo: "", horarios: "",
@@ -114,12 +126,26 @@ const QuestionnaireBusiness: React.FC = () => {
         : [...prev.formas_operacion, opt],
     }));
 
+  const toggleAccessibilityNeed = (need: string) =>
+    setFormData((prev) => {
+      if (need === 'none') {
+        return { ...prev, accessibility_needs: ['none'] };
+      }
+
+      const withoutNone = prev.accessibility_needs.filter((item) => item !== 'none');
+      const accessibility_needs = withoutNone.includes(need)
+        ? withoutNone.filter((item) => item !== need)
+        : [...withoutNone, need];
+
+      return { ...prev, accessibility_needs };
+    });
+
   const nextStep = () => { setStep((p) => Math.min(p + 1, totalSteps)); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const prevStep = () => { setStep((p) => Math.max(p - 1, 1)); window.scrollTo({ top: 0, behavior: "smooth" }); };
 
   const isNextDisabled = () => {
     if (step === 1) {
-      return !formData.nombre_completo || !formData.edad || !formData.genero || !formData.correo_electronico || !formData.whatsapp;
+      return !formData.nombre_completo || !formData.edad || !formData.genero || formData.accessibility_needs.length === 0 || !formData.correo_electronico || !formData.whatsapp;
     }
     if (step === 2) {
       return !formData.alcaldia || !formData.colonia_y_maps || !formData.sede_previa;
@@ -181,6 +207,7 @@ const QuestionnaireBusiness: React.FC = () => {
       employees_men_count: Number(formData.hombres_empleados),
       sat_status: formData.sat_status,
       social_links: socialLinks,
+      accessibility_needs: formData.accessibility_needs,
       adaptation_for_world_cup: formData.adaptacion_mundial,
       support_usage: formData.uso_apoyo,
       training_campus_preference: formData.sede_presencial,
@@ -297,6 +324,27 @@ const QuestionnaireBusiness: React.FC = () => {
                 </select>
               </Field>
             </div>
+
+            <Field label="4. ¿Tienes alguna necesidad de accesibilidad o capacidad diferente?" required>
+              <p className="text-xs text-gray-500 mb-2">Selecciona todas las que apliquen. Si no aplica, selecciona Ninguna.</p>
+              <div className="grid gap-2 mt-1">
+                {ACCESSIBILITY_NEEDS_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => toggleAccessibilityNeed(opt.id)}
+                    className={`p-3 rounded-2xl border-2 transition-all text-left text-sm font-medium cursor-pointer ${
+                      formData.accessibility_needs.includes(opt.id)
+                        ? "border-[#E8C247] bg-[#E8C247]/10 text-gray-900"
+                        : "border-gray-100 text-gray-700 hover:border-gray-200"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </Field>
+
             <div>
               <label className="block text-sm font-semibold mb-2 text-gray-900">Correo electrónico</label>
               <input

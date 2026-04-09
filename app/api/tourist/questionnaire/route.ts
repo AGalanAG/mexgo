@@ -12,6 +12,7 @@ interface TouristQuestionnaireBody {
   city?: unknown;
   borough?: unknown;
   trip_motives?: unknown;
+  accessibility_needs?: unknown;
   payload?: unknown;
 }
 
@@ -76,6 +77,7 @@ export async function POST(request: NextRequest) {
     city: body.city.trim(),
     borough: body.borough.trim(),
     trip_motives: tripMotives,
+    accessibility_needs: asStringArray(body.accessibility_needs),
     payload,
   };
 

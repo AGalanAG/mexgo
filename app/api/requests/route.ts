@@ -24,6 +24,7 @@ interface BusinessRequestBody {
   employees_men_count?: unknown;
   sat_status?: unknown;
   social_links?: unknown;
+  accessibility_needs?: unknown;
   adaptation_for_world_cup?: unknown;
   support_usage?: unknown;
   training_campus_preference?: unknown;
@@ -132,6 +133,7 @@ export async function POST(request: NextRequest) {
     employees_men_count: toNonNegativeInt(body.employees_men_count),
     sat_status: body.sat_status.trim(),
     social_links: toStringArray(body.social_links),
+    accessibility_needs: toStringArray(body.accessibility_needs),
     adaptation_for_world_cup: body.adaptation_for_world_cup.trim(),
     support_usage: body.support_usage.trim(),
     training_campus_preference: body.training_campus_preference.trim(),
