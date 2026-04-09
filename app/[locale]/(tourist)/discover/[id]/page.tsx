@@ -189,7 +189,7 @@ export default function PlaceDetailPage() {
         <section className="max-w-5xl mx-auto">
           {/* Header Section */}
           <div className="text-center mb-10">
-            <h1 className="text-3xl md:text-5xl font-black text-[var(--primary)] mb-3 tracking-tight" style={{ fontFamily: 'var(--font-display, inherit)' }}>
+            <h1 className="text-2xl md:text-5xl font-black text-[var(--primary)] mb-3 tracking-tight" style={{ fontFamily: 'var(--font-display, inherit)' }}>
               {place.name}
             </h1>
             <div className="flex items-center justify-center gap-2">
@@ -207,7 +207,7 @@ export default function PlaceDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 shadow-2xl rounded-[2rem] overflow-hidden bg-white border border-gray-100">
             
             {/* Left: Main Visual */}
-            <div className="relative h-[450px] lg:h-[550px]">
+            <div className="relative h-[300px] md:h-[450px] lg:h-[550px]">
               <img 
                 src={place.photos[0]} 
                 alt={place.name} 
@@ -222,7 +222,7 @@ export default function PlaceDetailPage() {
             </div>
 
             {/* Right: Integrated Info & Action */}
-            <div className="p-8 md:p-12 flex flex-col justify-between bg-white border-l border-gray-50 h-[450px] lg:h-[550px]">
+            <div className="p-6 md:p-12 flex flex-col justify-between bg-white border-l border-gray-50 h-auto lg:h-[550px]">
               <div>
                 <h4 className="text-[var(--primary)] font-black uppercase tracking-[0.2em] text-[10px] mb-8 border-b border-gray-100 pb-2">Business Details</h4>
                 
@@ -255,7 +255,7 @@ export default function PlaceDetailPage() {
 
               <div className="space-y-6">
                 {/* Interactive Map */}
-                <div className="w-full h-[140px] rounded-2xl overflow-hidden border border-gray-100 shadow-inner">
+                <div className="w-full h-[120px] md:h-[140px] rounded-2xl overflow-hidden border border-gray-100 shadow-inner mt-4 lg:mt-0">
                   <MapboxMap
                     center={[place.lng, place.lat]}
                     zoom={15}

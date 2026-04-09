@@ -237,17 +237,17 @@ export default function ProfilePage() {
           </div>
 
           {/* ── Stats Row ── */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
             {STATS.map((s) => (
               <div
                 key={s.label}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col items-center gap-2 hover:shadow-md hover:-translate-y-0.5 transition-all"
+                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 sm:p-5 flex flex-col items-center gap-1 sm:gap-2 hover:shadow-md hover:-translate-y-0.5 transition-all"
               >
-                <div className="w-10 h-10 rounded-full bg-[var(--coppel-blue)]/10 text-[var(--coppel-blue)] flex items-center justify-center">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[var(--coppel-blue)]/10 text-[var(--coppel-blue)] flex items-center justify-center scale-90 sm:scale-100">
                   {s.icon}
                 </div>
-                <span className="text-2xl font-black text-[var(--primary)]">{s.value}</span>
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{s.label}</span>
+                <span className="text-xl sm:text-2xl font-black text-[var(--primary)]">{s.value}</span>
+                <span className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em] sm:tracking-widest text-center">{s.label}</span>
               </div>
             ))}
           </div>

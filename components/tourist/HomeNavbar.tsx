@@ -8,6 +8,7 @@ import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
+import MenuIcon from '@mui/icons-material/Menu';
 import { useTheme } from 'next-themes';
 import { useLogin } from '@/context/LoginContext';
 import { useTranslations, useLocale } from 'next-intl';
@@ -39,11 +40,13 @@ export default function HomeNavbar() {
   const [langAnchor,    setLangAnchor]    = useState<null | HTMLElement>(null);
   const [themeAnchor,   setThemeAnchor]   = useState<null | HTMLElement>(null);
   const [accountAnchor, setAccountAnchor] = useState<null | HTMLElement>(null);
+  const [navAnchor,     setNavAnchor]     = useState<null | HTMLElement>(null);
 
   const handleClose = () => {
     setLangAnchor(null);
     setThemeAnchor(null);
     setAccountAnchor(null);
+    setNavAnchor(null);
   };
 
   const toggleLocale = (nextLocale: string) => {
@@ -56,7 +59,25 @@ export default function HomeNavbar() {
       <div className="max-w-7xl mx-auto px-6 py-5 flex items-center">
 
         {/* Logo — ocupa el lado izquierdo */}
-        <div className="flex-1 flex justify-start">
+        <div className="flex-1 flex justify-start items-center gap-2">
+          {/* ── Mobile Hamburger ── */}
+          <button
+            className="md:hidden p-1 mr-1 hover:text-gray-300 transition-colors"
+            onClick={(e) => setNavAnchor(e.currentTarget)}
+            aria-label="Menu"
+          >
+            <MenuIcon fontSize="medium" />
+          </button>
+          <Menu
+            anchorEl={navAnchor}
+            open={Boolean(navAnchor)}
+            onClose={handleClose}
+            slotProps={{ paper: { sx: { mt: 1, borderRadius: 2, minWidth: 150 } } }}
+          >
+            <MenuItem onClick={handleClose} component={Link} href="/discover" sx={{ fontSize: 15, fontWeight: 600 }}>{t('discover')}</MenuItem>
+            <MenuItem onClick={handleClose} component={Link} href="/trips" sx={{ fontSize: 15, fontWeight: 600 }}>{t('trips')}</MenuItem>
+          </Menu>
+
           <Link href="/" className="font-extrabold text-2xl cursor-pointer">
             Mex<span className="text-[var(--secondary)]">GO</span>
           </Link>

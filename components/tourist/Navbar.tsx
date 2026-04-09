@@ -10,6 +10,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
+import MenuIcon from '@mui/icons-material/Menu';
 import { useTheme } from 'next-themes';
 import { useTranslations, useLocale } from 'next-intl';
 import { clearSession, getStoredSession } from '@/lib/client-auth';
@@ -30,11 +31,13 @@ export default function Navbar() {
   const [themeAnchor,   setThemeAnchor]   = useState<null | HTMLElement>(null);
   const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
   const [langAnchor,    setLangAnchor]    = useState<null | HTMLElement>(null);
+  const [navAnchor,     setNavAnchor]     = useState<null | HTMLElement>(null);
 
   const handleClose = () => {
     setThemeAnchor(null);
     setProfileAnchor(null);
     setLangAnchor(null);
+    setNavAnchor(null);
   };
 
   const toggleLocale = (nextLocale: string) => {
@@ -47,7 +50,26 @@ export default function Navbar() {
       <div className="container-responsive py-3 flex items-center">
 
         {/* Logo — igual que home */}
-        <div className="flex-1 flex justify-start">
+        <div className="flex-1 flex justify-start items-center gap-2">
+          {/* Mobile Hamburger Menu */}
+          <button
+            className="md:hidden p-1 mr-1 hover:text-[var(--secondary)] transition-colors"
+            onClick={(e) => setNavAnchor(e.currentTarget)}
+            aria-label="Menu"
+          >
+            <MenuIcon fontSize="medium" />
+          </button>
+          <Menu
+            anchorEl={navAnchor}
+            open={Boolean(navAnchor)}
+            onClose={handleClose}
+            slotProps={{ paper: { sx: { mt: 1, borderRadius: 2, minWidth: 150 } } }}
+          >
+            <MenuItem onClick={handleClose} component={Link} href="/discover" sx={{ fontSize: 15, fontWeight: 600 }}>{t('discover')}</MenuItem>
+            <MenuItem onClick={handleClose} component={Link} href="/trips" sx={{ fontSize: 15, fontWeight: 600 }}>{t('trips')}</MenuItem>
+            <MenuItem onClick={handleClose} component={Link} href="/chat" sx={{ fontSize: 15, fontWeight: 600 }}>{t('chat')}</MenuItem>
+          </Menu>
+
           <div
             className="font-extrabold text-2xl cursor-pointer"
             onClick={() => router.push('/')}
