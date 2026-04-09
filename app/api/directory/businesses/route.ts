@@ -56,8 +56,114 @@ export async function GET(request: NextRequest) {
     return apiError('INTERNAL_ERROR', error.message, 500);
   }
 
+  if (!data || data.length === 0) {
+    let fallbackQuery = getSupabaseAdmin()
+      .from('business_profiles')
+      .select('id, business_name, business_description, borough, neighborhood, latitude, longitude, created_at', {
+        count: 'exact',
+      })
+      .order('created_at', { ascending: false })
+      .range(from, to);
+
+    if (isNonEmptyString(q)) {
+      fallbackQuery = fallbackQuery.or(
+        `business_name.ilike.%${q}%,business_description.ilike.%${q}%`,
+      );
+    }
+
+    if (isNonEmptyString(city)) {
+      fallbackQuery = fallbackQuery.or(`borough.ilike.%${city}%,neighborhood.ilike.%${city}%`);
+    }
+
+    const {
+      data: fallbackBusinesses,
+      error: fallbackError,
+      count: fallbackCount,
+    } = await fallbackQuery;
+
+    if (fallbackError) {
+      return apiError('INTERNAL_ERROR', fallbackError.message, 500);
+    }
+
+    const fallbackItems = (fallbackBusinesses || []).map((business) => ({
+      businessId: business.id,
+      publicName: business.business_name,
+      shortDescription: business.business_description,
+      categories: [],
+      badgeCodes: [],
+      city: business.neighborhood,
+      state: business.borough,
+      publicScore: 0,
+      businessName: business.business_name,
+      businessDescription: business.business_description,
+      borough: business.borough,
+      neighborhood: business.neighborhood,
+      latitude: business.latitude,
+      longitude: business.longitude,
+      operationDaysHours: null,
+      coverImageUrl: null,
+    }));
+
+    return apiOk({
+      items: fallbackItems,
+      pagination: {
+        page,
+        pageSize,
+        total: fallbackCount ?? 0,
+      },
+    });
+  }
+
+  const businessIds = (data || []).map((item) => item.business_id);
+
+  let businessById = new Map<string, {
+    id: string;
+    business_name: string;
+    business_description: string;
+    borough: string | null;
+    neighborhood: string | null;
+    latitude: number | null;
+    longitude: number | null;
+  }>();
+
+  if (businessIds.length > 0) {
+    const { data: businessRows, error: businessError } = await getSupabaseAdmin()
+      .from('business_profiles')
+      .select('id, business_name, business_description, borough, neighborhood, latitude, longitude')
+      .in('id', businessIds);
+
+    if (businessError) {
+      return apiError('INTERNAL_ERROR', businessError.message, 500);
+    }
+
+    businessById = new Map((businessRows || []).map((row) => [row.id, row]));
+  }
+
+  const items = (data || []).map((item) => {
+    const business = businessById.get(item.business_id);
+
+    return {
+      businessId: item.business_id,
+      publicName: item.public_name,
+      shortDescription: item.short_description,
+      categories: item.categories || [],
+      badgeCodes: item.badge_codes || [],
+      city: item.city,
+      state: item.state,
+      publicScore: Number(item.public_score ?? 0),
+      businessName: business?.business_name ?? item.public_name,
+      businessDescription: business?.business_description ?? item.short_description,
+      borough: business?.borough ?? null,
+      neighborhood: business?.neighborhood ?? null,
+      latitude: business?.latitude ?? null,
+      longitude: business?.longitude ?? null,
+      operationDaysHours: null,
+      coverImageUrl: null,
+    };
+  });
+
   return apiOk({
-    items: data || [],
+    items,
     pagination: {
       page,
       pageSize,

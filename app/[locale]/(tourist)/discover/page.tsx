@@ -8,7 +8,31 @@ import { motion } from 'framer-motion';
 import { Link } from '@/i18n/routing';
 import { useTranslations } from 'next-intl';
 import type { NegocioConScore } from '@/types/types';
-import { MOCK_BUSINESSES } from '@/lib/businesses';
+
+interface DirectoryBusinessItem {
+  businessId: string;
+  publicName: string;
+  shortDescription: string;
+  badgeCodes: string[];
+  city: string | null;
+  state: string | null;
+  publicScore: number;
+  businessName: string;
+  businessDescription: string;
+  borough: string | null;
+  neighborhood: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  operationDaysHours: string | null;
+  coverImageUrl: string | null;
+}
+
+interface DirectoryBusinessesResponse {
+  ok: boolean;
+  data?: {
+    items: DirectoryBusinessItem[];
+  };
+}
 
 interface DisplayPlace {
   id: string;
@@ -34,6 +58,33 @@ function toDisplay(n: NegocioConScore): DisplayPlace {
   };
 }
 
+function toRecommendation(item: DirectoryBusinessItem): NegocioConScore {
+  const latitude = Number(item.latitude ?? 19.4326);
+  const longitude = Number(item.longitude ?? -99.1332);
+
+  return {
+    id: item.businessId,
+    businessRequestId: item.businessId,
+    ownerUserId: 'public-directory',
+    businessName: item.businessName || item.publicName,
+    businessDescription: item.businessDescription || item.shortDescription,
+    boroughCode: item.borough || item.state || 'N/A',
+    neighborhood: item.neighborhood || item.city || 'N/A',
+    latitude,
+    longitude,
+    locationSource: 'directory',
+    operationDaysHours: item.operationDaysHours || 'Horario no disponible',
+    socialLinks: [],
+    coverImageUrl: item.coverImageUrl || undefined,
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    score: Number(item.publicScore ?? 0),
+    reasons: item.badgeCodes.length > 0 ? item.badgeCodes : ['negocio verificado Ola Mexico'],
+    estimatedWalkMinutes: 10,
+  };
+}
+
 export default function DiscoverPage() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [flippedId, setFlippedId] = useState<string | null>(null);
@@ -42,15 +93,45 @@ export default function DiscoverPage() {
   const t = useTranslations('Discover');
 
   useEffect(() => {
-    const negocios: NegocioConScore[] = MOCK_BUSINESSES.map(n => ({
-      ...n,
-      score: 0.8,
-      reasons: ['negocio verificado Ola México'],
-      estimatedWalkMinutes: 10,
-    }));
-    localStorage.setItem('mexgo_recommendations', JSON.stringify(negocios));
-    setPlaces(negocios.map(toDisplay));
-    setLoading(false);
+    let cancelled = false;
+
+    async function loadBusinesses() {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/directory/businesses?page=1&pageSize=100', {
+          method: 'GET',
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error cargando negocios: ${response.status}`);
+        }
+
+        const payload = (await response.json()) as DirectoryBusinessesResponse;
+        const items = payload.data?.items || [];
+        const negocios = items.map(toRecommendation);
+
+        if (!cancelled) {
+          localStorage.setItem('mexgo_recommendations', JSON.stringify(negocios));
+          setPlaces(negocios.map(toDisplay));
+        }
+      } catch {
+        if (!cancelled) {
+          setPlaces([]);
+          localStorage.setItem('mexgo_recommendations', JSON.stringify([]));
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadBusinesses();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const clearSearch = (): void => setSearchValue('');
