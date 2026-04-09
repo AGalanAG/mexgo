@@ -50,32 +50,37 @@ export async function POST(request: NextRequest) {
     return apiError('INTERNAL_ERROR', 'Falta configuracion de Supabase anon key', 500);
   }
 
-  const { data, error } = await anonClient.auth.signInWithPassword({
-    email: normalizedEmail,
-    password,
-  });
+  try {
+    const { data, error } = await anonClient.auth.signInWithPassword({
+      email: normalizedEmail,
+      password,
+    });
 
-  if (error || !data.user || !data.session) {
-    return apiError('AUTH_REQUIRED', error?.message || 'Credenciales invalidas', 401);
+    if (error || !data.user || !data.session) {
+      return apiError('AUTH_REQUIRED', error?.message || 'Credenciales invalidas', 401);
+    }
+
+    const roleCodes = await getUserRoleCodes(data.user.id);
+    const primaryRole = getPrimaryRole(roleCodes);
+
+    return apiOk({
+      user: {
+        id: data.user.id,
+        email: data.user.email,
+        emailConfirmedAt: data.user.email_confirmed_at,
+      },
+      session: {
+        accessToken: data.session.access_token,
+        refreshToken: data.session.refresh_token,
+        expiresIn: data.session.expires_in,
+        expiresAt: data.session.expires_at,
+        tokenType: data.session.token_type,
+      },
+      roleCodes,
+      primaryRole,
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Error interno al iniciar sesion';
+    return apiError('INTERNAL_ERROR', msg, 500);
   }
-
-  const roleCodes = await getUserRoleCodes(data.user.id);
-  const primaryRole = getPrimaryRole(roleCodes);
-
-  return apiOk({
-    user: {
-      id: data.user.id,
-      email: data.user.email,
-      emailConfirmedAt: data.user.email_confirmed_at,
-    },
-    session: {
-      accessToken: data.session.access_token,
-      refreshToken: data.session.refresh_token,
-      expiresIn: data.session.expires_in,
-      expiresAt: data.session.expires_at,
-      tokenType: data.session.token_type,
-    },
-    roleCodes,
-    primaryRole,
-  });
 }

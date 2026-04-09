@@ -63,9 +63,7 @@ export default function TripsPage() {
 
   useEffect(() => {
     const token = getStoredAccessToken();
-    if (!token) {
-      setStops(loadFromLS());
-    } else {
+    if (token) {
       fetch('/api/itinerary', {
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -74,15 +72,10 @@ export default function TripsPage() {
           if (result.ok) {
             const paradas = result.data as ItineraryStop[];
             setStops(paradas.map(toStop));
-            // Sincronizar localStorage para que ChatUI también lo vea
             localStorage.setItem(LS_KEY, JSON.stringify(paradas));
-          } else {
-            setStops(loadFromLS());
           }
         })
-        .catch(() => {
-          setStops(loadFromLS());
-        });
+        .catch(() => { /* mantener vacío si falla */ });
     }
 
     const perm = localStorage.getItem('mexgo_location_permission');
@@ -205,7 +198,7 @@ export default function TripsPage() {
                   {stops.map((stop, index) => (
                     <motion.div
                       layout
-                      key={stop.id}
+                      key={`${stop.id}-${index}`}
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}

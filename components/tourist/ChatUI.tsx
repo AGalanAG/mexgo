@@ -246,8 +246,8 @@ export default function ChatUI() {
                   <p className="font-bold text-sm text-[var(--accent)]">{m.eventosAgregados.length} parada{m.eventosAgregados.length > 1 ? 's' : ''} agregada{m.eventosAgregados.length > 1 ? 's' : ''}</p>
                   <span className="ml-auto text-[var(--accent)] text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">Ver Trips →</span>
                 </div>
-                {m.eventosAgregados.map(e => (
-                  <div key={e.id} className="flex items-center gap-2 text-xs text-gray-600">
+                {m.eventosAgregados.map((e, i) => (
+                  <div key={`${e.id}-${i}`} className="flex items-center gap-2 text-xs text-gray-600">
                     <span className="w-5 h-5 rounded-full bg-[var(--accent)]/20 flex items-center justify-center shrink-0">✅</span>
                     <span className="font-medium truncate">{e.label}</span>
                     <span className="ml-auto shrink-0 text-gray-400">{e.startTime ?? ''}</span>
@@ -266,8 +266,8 @@ export default function ChatUI() {
                   <p className="font-bold text-sm text-[var(--primary)]">{m.eventosEditados.length} parada{m.eventosEditados.length > 1 ? 's' : ''} editada{m.eventosEditados.length > 1 ? 's' : ''}</p>
                   <span className="ml-auto text-[var(--primary)] text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">Ver Trips →</span>
                 </div>
-                {m.eventosEditados.map(e => (
-                  <div key={e.id} className="flex items-center gap-2 text-xs text-gray-600">
+                {m.eventosEditados.map((e, i) => (
+                  <div key={`${e.id}-${i}`} className="flex items-center gap-2 text-xs text-gray-600">
                     <span className="w-5 h-5 rounded-full bg-[var(--primary)]/20 flex items-center justify-center shrink-0">✏️</span>
                     <span className="font-medium truncate">{e.label}</span>
                     <span className="ml-auto shrink-0 text-gray-400">{e.startTime ?? ''}</span>
@@ -283,8 +283,8 @@ export default function ChatUI() {
                   <span className="text-lg">🗑️</span>
                   <p className="font-bold text-sm text-red-600">{m.eventosEliminados.filter(e => e.eliminado).length} parada{m.eventosEliminados.filter(e => e.eliminado).length > 1 ? 's' : ''} eliminada{m.eventosEliminados.filter(e => e.eliminado).length > 1 ? 's' : ''}</p>
                 </div>
-                {m.eventosEliminados.filter(e => e.eliminado).map(e => (
-                  <div key={e.id} className="flex items-center gap-2 text-xs text-red-500">
+                {m.eventosEliminados.filter(e => e.eliminado).map((e, i) => (
+                  <div key={`${e.id}-${i}`} className="flex items-center gap-2 text-xs text-red-500">
                     <span className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center shrink-0">🗑️</span>
                     <span className="font-medium truncate">{e.label ?? e.id}</span>
                   </div>

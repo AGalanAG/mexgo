@@ -86,65 +86,70 @@ export async function POST(request: NextRequest) {
     return apiError('INTERNAL_ERROR', 'Falta configuracion de Supabase anon key', 500);
   }
 
-  const { data: signUpData, error: signUpError } = await anonClient.auth.signUp({
-    email: normalizedEmail,
-    password,
-    options: {
-      data: {
-        full_name: fullName,
+  try {
+    const { data: signUpData, error: signUpError } = await anonClient.auth.signUp({
+      email: normalizedEmail,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+        },
       },
-    },
-  });
+    });
 
-  if (signUpError || !signUpData.user) {
-    const isConflict = signUpError?.message.toLowerCase().includes('already');
-    const isRateLimited = signUpError?.message.toLowerCase().includes('rate limit');
-    return apiError(
-      isRateLimited ? 'RATE_LIMITED' : isConflict ? 'CONFLICT' : 'INTERNAL_ERROR',
-      signUpError?.message || 'No fue posible registrar el usuario',
-      isRateLimited ? 429 : isConflict ? 409 : 500,
+    if (signUpError || !signUpData.user) {
+      const isConflict = signUpError?.message.toLowerCase().includes('already');
+      const isRateLimited = signUpError?.message.toLowerCase().includes('rate limit');
+      return apiError(
+        isRateLimited ? 'RATE_LIMITED' : isConflict ? 'CONFLICT' : 'INTERNAL_ERROR',
+        signUpError?.message || 'No fue posible registrar el usuario',
+        isRateLimited ? 429 : isConflict ? 409 : 500,
+      );
+    }
+
+    const userId = signUpData.user.id;
+
+    const { data: adminUserData, error: adminUserError } =
+      await getSupabaseAdmin().auth.admin.getUserById(userId);
+
+    if (adminUserError || !adminUserData.user) {
+      await cleanupAuthUser(userId);
+      return apiError(
+        'INTERNAL_ERROR',
+        'El usuario no existe en auth.users del proyecto configurado en service role. Revisa que NEXT_PUBLIC_SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY pertenezcan al mismo proyecto.',
+        500,
+      );
+    }
+
+    const { error: profileError } = await getSupabaseAdmin().from('users_profile').upsert({
+      id: userId,
+      full_name: fullName,
+      language_code: resolvedLanguage,
+      country_of_origin: resolvedCountryOfOrigin,
+      email_verified: false,
+    });
+
+    if (profileError) {
+      await cleanupAuthUser(userId);
+      return apiError('INTERNAL_ERROR', profileError.message, 500);
+    }
+
+    const roleAssignment = await assignRoleToUser(userId, normalizedRoleCode, userId);
+    if (!roleAssignment.ok) {
+      await cleanupAuthUser(userId);
+      return apiError('INTERNAL_ERROR', roleAssignment.error, 500);
+    }
+
+    return apiOk(
+      {
+        userId,
+        roleCode: normalizedRoleCode,
+        emailVerificationSent: true,
+      },
+      201,
     );
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Error interno al registrar usuario';
+    return apiError('INTERNAL_ERROR', msg, 500);
   }
-
-  const userId = signUpData.user.id;
-
-  const { data: adminUserData, error: adminUserError } =
-    await getSupabaseAdmin().auth.admin.getUserById(userId);
-
-  if (adminUserError || !adminUserData.user) {
-    await cleanupAuthUser(userId);
-    return apiError(
-      'INTERNAL_ERROR',
-      'El usuario no existe en auth.users del proyecto configurado en service role. Revisa que NEXT_PUBLIC_SUPABASE_URL y SUPABASE_SERVICE_ROLE_KEY pertenezcan al mismo proyecto.',
-      500,
-    );
-  }
-
-  const { error: profileError } = await getSupabaseAdmin().from('users_profile').upsert({
-    id: userId,
-    full_name: fullName,
-    language_code: resolvedLanguage,
-    country_of_origin: resolvedCountryOfOrigin,
-    email_verified: false,
-  });
-
-  if (profileError) {
-    await cleanupAuthUser(userId);
-    return apiError('INTERNAL_ERROR', profileError.message, 500);
-  }
-
-  const roleAssignment = await assignRoleToUser(userId, normalizedRoleCode, userId);
-  if (!roleAssignment.ok) {
-    await cleanupAuthUser(userId);
-    return apiError('INTERNAL_ERROR', roleAssignment.error, 500);
-  }
-
-  return apiOk(
-    {
-      userId,
-      roleCode: normalizedRoleCode,
-      emailVerificationSent: true,
-    },
-    201,
-  );
 }

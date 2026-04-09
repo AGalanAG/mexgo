@@ -57,7 +57,7 @@
 {\centering
   {\Large\bfseries\color{primary} MexGo}\par
   \vspace{0.2cm}
-  {\normalsize\color{dark} Plataforma multilingüe de turismo inclusivo para el Mundial 2026}\par
+  {\normalsize\color{dark} Plataforma de conexión y fortalecimiento de negocios locales que mejora la experiencia turística y promueve la inclusión}\par
   \vspace{0.2cm}
   {\small\color{gray} Los Mossitos · Genius Arena · Fundación Coppel 2026 · \today}\par
   \vspace{0.5cm}
@@ -74,10 +74,9 @@
 \section{Resumen ejecutivo}
 % ===========================================================================
 
-MexGo es un puente digital diseñado para que la derrama económica del Mundial FIFA 2026
-llegue a quienes suelen ser invisibles: los micro y pequeños negocios locales.
-Nuestra plataforma conecta a turistas internacionales con la autenticidad de México,
-mientras integra a los negocios en el ecosistema de capacitación de \textbf{Coppel Emprende}.
+MexGo es una plataforma digital que conecta turistas y usuarios locales con micronegocios, mientras fortalece a estos negocios mediante herramientas hechas por Coppel Emprende y acceso a recursos relevantes.
+
+Aprovechando el contexto del Mundial FIFA 2026 como punto de entrada, MexGo no solo busca dirigir la derrama económica hacia los negocios locales, sino también ayudarlos a prepararse para ofrecer mejores experiencias a cualquier tipo de cliente, independientemente de su idioma o necesidades de accesibilidad.
 
 Utilizamos \textbf{IA (Gemini)} no solo para traducir o guiar, sino como el motor de equidad
 que decide qué negocios recomendar basándose en su capacidad, accesibilidad y el perfil
@@ -90,8 +89,8 @@ idioma y tecnología sin fricción para el usuario.
 % ===========================================================================
 
 En 2026, el Mundial traerá millones de dólares a México, pero el gran problema es el contraste:
-un turista inglés, como Thomas, pasando de largo frente a la fonda de Doña Carmen para ir a
-una franquicia. ¿Por qué? Porque no hablan el mismo idioma y ella es invisible en internet.
+un turista  pasando de largo frente a una fonda local para ir a
+un restaurante reconocido. ¿Por qué? Porque no hablan el mismo idioma y la fonda es invisible en internet.
 
 A pesar del esfuerzo de micronegocios, 8 de cada 10 mueren antes de los dos años por
 falta de clientes y de conocimiento digital. Esta desigualdad económica hace que las
@@ -112,7 +111,7 @@ que profesionaliza al negocio mientras atrae al cliente.
 \begin{enumerate}[leftmargin=*, itemsep=3pt]
   \item \textbf{Acceso sin fricción}: PWA rápida, multilingüe (ES, EN, FR) vía QR.
   \item \textbf{Recomendaciones por IA}: Gemini recibe el perfil del turista (país,
-        grupo, accesibilidad) y \textbf{decide dinámicamente} qué negocios sugerir.
+        grupo, accesibilidad) y genera recomendaciones personalizadas considerando tanto sus preferencias como el nivel de preparación de los negocios dentro de la plataforma.
         La equidad se inyecta en el prompt: la IA prioriza negocios con menor
         afluencia actual o con certificaciones específicas (LSM).
   \item \textbf{Asistente de viaje}: Chat 24/7 que traduce menús, explica
@@ -126,7 +125,7 @@ que profesionaliza al negocio mientras atrae al cliente.
   \item \textbf{Registro simplificado}: Onboarding rápido para digitalizar
         la oferta básica del negocio.
   \item \textbf{Capacitación Coppel Emprende}: Acceso directo a módulos de
-        formación para dejar de ser invisibles. Incluye certificación en
+        formación para dejar de ser invisibles. Incluye recursos de
         \textbf{Lengua de Señas Mexicana (LSM)} para abrir líneas de ingresos
         que la competencia ignora.
   \item \textbf{Visibilidad asistida}: La IA traduce automáticamente las
@@ -165,7 +164,7 @@ a negocios locales en un flujo sin fricción.}
 \begin{itemize}[leftmargin=*, itemsep=2pt]
   \item \textbf{Equidad por Diseño e Inteligencia}: el sistema no recomienda por popularidad,
         sino por equidad. La IA analiza el perfil del visitante y el estado de los negocios
-        (saturación, certificaciones Ola México) para equilibrar la demanda. Un turista
+        (saturación, seguimiento a recursos ofrecidos en la plataforma por parte del negocio) para equilibrar la demanda. Un turista
         japonés recibe sugerencias distintas a un alemán, asegurando que la ganancia
         sea justa y distribuida.
   \item \textbf{PWA multilingüe con i18n dinámica}: la interfaz, el chat y las
@@ -180,15 +179,16 @@ a negocios locales en un flujo sin fricción.}
 
 \subsection{Escalabilidad}
 
-\criterio{De hackathon a producto nacional y regional}
+\criterio{De hackathon a producto regional y nacional}
 {La arquitectura fue diseñada explícitamente para escalar post-hackathon.}
+
+Aunque el Mundial 2026 funciona como catalizador inicial, MexGo está diseñado como una plataforma de uso continuo. Su enfoque permite operar tanto en contextos turísticos como en el consumo local cotidiano, facilitando la conexión entre negocios y usuarios más allá de eventos específicos.
 
 \begin{itemize}[leftmargin=*, itemsep=2pt]
   \item \textbf{Modelo de datos extensible}: Supabase + migraciones versionadas
         (\tech{supabase/migrations/}). Agregar ciudades, tipos de negocio o
         idiomas es una migración y un archivo de traducciones.
-  \item \textbf{Algoritmo desacoplado}: \tech{lib/equity.ts} es una función
-        pura — se puede mover a una Supabase Edge Function o a un microservicio
+
         sin tocar el frontend.
   \item \textbf{Multiidioma por diseño}: \tech{next-intl} con archivos JSON
         independientes. Agregar portugués para Brasil o alemán para la delegación
@@ -203,11 +203,11 @@ a negocios locales en un flujo sin fricción.}
 
 \textbf{Ruta de crecimiento post-hackathon:}
 \begin{enumerate}[leftmargin=*, itemsep=1pt]
-  \item Piloto con negocios reales en una sede (ej. Guadalajara o Monterrey).
+  \item Piloto con negocios reales en otras sedes (ej. Guadalajara o Monterrey).
   \item Integración con Google Maps Platform para enriquecer datos de negocio.
   \item Módulo de pagos (Conekta / Stripe) para reservas directas.
   \item App nativa (React Native) si la demanda lo justifica.
-  \item Extensión a eventos Fundación Coppel fuera del mundial.
+  \item Extensión a eventos diferentes al mundial.
 \end{enumerate}
 
 \subsection{Viabilidad}
@@ -223,7 +223,7 @@ Tecnología & Rol & Costo operativo \\
 \midrule
 Next.js 16 + Vercel    & Frontend + API Routes + deploy & Gratis (hobby) / \$20 USD/mes (pro) \\
 Supabase               & Base de datos + auth + storage & Gratis hasta 500 MB / \$25 USD/mes \\
-Gemini 2.0 Flash       & Chat + itinerarios + traducción & \$0.075 USD / 1M tokens \\
+Gemini 2.5 Flash       & Chat + itinerarios + traducción & \$0.075 USD / 1M tokens \\
 next-intl              & i18n (es/en/fr)                & Open source \\
 MUI + Tailwind         & UI components + estilos        & Open source \\
 \bottomrule
@@ -251,7 +251,6 @@ de turista y negocio.}
   \feature{Dashboard de negocio con módulos de aprendizaje y gestión de solicitudes}
   \feature{Sistema de badges/insignias para negocios}
   \feature{Internacionalización dinámica español / inglés / francés}
-  \feature{Modo oscuro / claro con persistencia}
   \feature{Navbar auth-aware (muestra login o perfil según sesión)}
   \feature{Middleware de protección de rutas (proxy.ts)}
   \feature{34 rutas compiladas sin errores en build de producción}
@@ -304,6 +303,30 @@ mexgo/
 \end{verbatim}
 \end{multicols}
 
+\subsection{Detalle de la Arquitectura Técnica}
+
+\begin{itemize}[leftmargin=*, itemsep=4pt]
+  \item \textbf{lib/ (El Motor)}:
+    \begin{itemize}[label=--]
+      \item \tech{gemini.ts}: Orquestador central de la Inteligencia Artificial. Gestiona el historial de conversación y el \textit{function calling} para ejecutar herramientas en tiempo real.
+      \item \tech{equity.ts}: Implementación del algoritmo de equidad que balancea la carga de turistas entre negocios, considerando relevancia, proximidad y saturación.
+      \item \tech{supabase.ts}: Cliente de servidor que garantiza un acceso seguro y eficiente a la base de datos utilizando \textit{Service Role} y RLS.
+      \item \tech{tools/}: Directorio de funciones atómicas que la IA puede invocar, como gestión de itinerarios, búsqueda de negocios y geocodificación.
+    \end{itemize}
+  \item \textbf{constants/ (La Configuración)}:
+    \begin{itemize}[label=--]
+      \item \tech{index.ts}: Repositorio central de \textit{System Prompts} que definen el comportamiento de la IA, así como constantes globales del modelo y parámetros de búsqueda.
+    \end{itemize}
+  \item \textbf{types/ (La Integridad)}:
+    \begin{itemize}[label=--]
+      \item \tech{types.ts}: Definiciones de interfaces de TypeScript que aseguran que los datos fluyan correctamente entre el frontend, el BFF y la base de datos, evitando errores de consistencia.
+    \end{itemize}
+  \item \textbf{app/api/ (Capa BFF)}:
+    \begin{itemize}[label=--]
+      \item Actúa como puente entre el cliente y los servicios. Protege las llaves de API y encapsula la lógica compleja, entregando al frontend solo los datos necesarios procesados.
+    \end{itemize}
+\end{itemize}
+
 % ===========================================================================
 \section{Flujos y Arquitectura de Datos}
 % ===========================================================================
@@ -322,10 +345,10 @@ mexgo/
 
 \begin{enumerate}[leftmargin=*, itemsep=2pt]
   \item \textbf{Onboarding}: Registro en la red MexGo.
-  \item \textbf{Diagnóstico IA}: La IA analiza la zona del negocio y sugiere cursos específicos (ej. "Atención al turista europeo" o "LSM Básico").
-  \item \textbf{Aprendizaje (Coppel Emprende)}: El equipo completa módulos.
-  \item \textbf{Insignias}: Al validar conocimientos, el negocio obtiene insignias públicas (Sello Ola México, Accesibilidad Pro).
-  \item \textbf{Impulso en IA}: A mayor capacitación, la IA otorga mayor relevancia en las recomendaciones al turista.
+  \item \textbf{Diagnóstico IA}: La plataforma analiza la información del negocio y su contexto para generar recomendaciones específicas de mejora, incluyendo cursos de Coppel Emprende y recursos complementarios.
+  \item \textbf{Aprendizaje (Coppel Emprende)}: El negocio accede a contenidos relevantes y mejora sus capacidades.
+  \item \textbf{Insignias}: El nivel de preparación del negocio influye en su visibilidad dentro de la plataforma, generando un ciclo de mejora continua.
+  \item \textbf{Impulso en IA}: Dependiendo de la capacitación de Coppel Emprende que el negocio complete, la IA ajusta la relevancia en las recomendaciones al turista de acuerdo a su condicion o preferencias.
 \end{enumerate}
 
 \subsection{Modelo de Datos Principal (Supabase)}
@@ -340,18 +363,15 @@ Tabla & Propósito \\
 \texttt{users\_profile}     & Perfiles de turistas y dueños de negocio. \\
 \texttt{business\_profiles}  & Datos canónicos del negocio (coords, descripción, categoría). \\
 \texttt{learning\_modules}   & Catálogo de cursos integrados con Coppel Emprende. \\
-\texttt{business\_badges}    & Gamificación y certificaciones obtenidas (ej. LSM). \\
 \texttt{chat\_messages}      & Historial persistente para seguimiento de IA. \\
-\texttt{daily\_saturation}   & Tabla agregada para que la IA sepa la afluencia en tiempo real. \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \begin{enumerate}[leftmargin=*, itemsep=3pt]
-  \item Escanea QR / accede a URL → app detecta idioma automáticamente.
+  \item Accede a través de la URL → app detecta idioma automáticamente.
   \item Pantalla de bienvenida con botones \textit{Descubrir} y \textit{Viajes}.
-  \item Si no tiene sesión → modal de login/registro (no bloquea la navegación,
-        se puede cerrar).
+  \item Si no tiene sesión → modal de login/registro.
   \item Registro en 2 pasos → cuestionario de perfil en 4 pasos.
   \item Al terminar el cuestionario → chat con IA para explorar recomendaciones.
   \item El turista puede navegar \textit{Discover} (negocios), \textit{Trips}
@@ -384,24 +404,22 @@ Fidel    & IA              & Implementación de Gemini, prompts de equidad e iti
   \item \textbf{Repositorio}: \url{https://github.com/AGalanAG/mexgo}
   \item \textbf{Rama principal}: \texttt{main}
   \item \textbf{Build}: \texttt{npm run build} sin errores — 34 rutas generadas
-  \item \textbf{Deploy}: Vercel (URL a compartir en presentación)
+  \item \textbf{Deploy}: Vercel: \url{https://mexgo-two.vercel.app/}
   \item \textbf{Documentación}: \texttt{docs/} — arquitectura, API, flujo,
         migraciones
 \end{itemize}
 
 % ===========================================================================
-\section{Próximos pasos (Fase 3)}
+\section{Próximos pasos}
 % ===========================================================================
 
 \begin{itemize}[leftmargin=*, itemsep=2pt]
   \item \textbf{Integración Coppel Emprende}: Conexión directa con la API de Coppel
         Emprende para sincronizar el progreso de capacitación de los negocios.
-  \item \textbf{Prueba Piloto}: Lanzamiento controlado con una red de 50 negocios en
-        la zona de Santa Fe / Centro Histórico.
-  \item \textbf{Certificación LSM Pro}: Módulo avanzado de Lengua de Señas Mexicana
-        integrado en el chat para interacciones en tiempo real.
+  \item \textbf{Prueba Piloto}: Lanzamiento controlado con una mayor cantidad de negocios en
+        zonas clave de la Ciudad de México.
   \item \textbf{Escalamiento Nacional}: Adaptación de la plataforma para otras sedes
-        del Mundial (Guadalajara y Monterrey) y eventos de Fundación Coppel.
+        del Mundial (Guadalajara y Monterrey), para otras ciudades de México y  para futuros eventos que se realicen en el país.
   \item \textbf{Análisis de Impacto}: Dashboard para Fundación Coppel que mida
         el incremento real en las ventas de los negocios participantes.
 \end{itemize}
