@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 
 import { getPrimaryRole, getUserRoleCodes } from '@/lib/auth-helpers';
 import { apiError, apiOk, isNonEmptyString } from '@/lib/api-response';
+import { getSupabaseAnonKey, getSupabaseUrl } from '@/lib/supabase';
 
 interface LoginBody {
   email?: unknown;
@@ -10,8 +11,8 @@ interface LoginBody {
 }
 
 function getAnonClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseUrl = getSupabaseUrl();
+  const supabaseAnonKey = getSupabaseAnonKey();
 
   if (!supabaseUrl || !supabaseAnonKey) {
     return null;
