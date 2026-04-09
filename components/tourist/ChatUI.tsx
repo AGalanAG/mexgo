@@ -5,6 +5,14 @@ import { Link } from '@/i18n/routing'
 import type { ChatMessagePayload, ChatResponse, ItineraryStop, TouristProfile } from '@/types/types'
 import { MOCK_TOURIST_PROFILE } from '@/lib/mockPerfil'
 import { getStoredAccessToken } from '@/lib/client-auth'
+import { SmartToy as SmartToyIcon, Send as SendIcon } from '@mui/icons-material'
+
+const SUGERENCIAS = [
+  '¿Qué lugares me recomiendas en CDMX?',
+  '¿Cómo llego al Zócalo desde Coyoacán?',
+  'Agrega Teotihuacán a mi itinerario',
+  '¿Qué comer cerca de Bellas Artes?',
+]
 
 type RichMessage = ChatMessagePayload & {
   eventoAgregado?: ItineraryStop
@@ -67,8 +75,8 @@ export default function ChatUI() {
     localStorage.removeItem(CHAT_LS_KEY)
   }
 
-  async function enviar() {
-    const mensaje = input.trim()
+  async function enviarMensaje(texto?: string) {
+    const mensaje = (texto ?? input).trim()
     if (!mensaje || cargando) return
 
     const msgUsuario: RichMessage = { role: 'user', text: mensaje }
@@ -157,37 +165,71 @@ export default function ChatUI() {
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      enviar()
+      void enviarMensaje()
     }
   }
 
   return (
-    <div className="flex flex-col h-full max-w-2xl mx-auto w-full">
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div
+        className="px-7 py-5 flex items-center gap-3 shrink-0 bg-[var(--primary)]"
+      >
+        <div className="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+          <SmartToyIcon sx={{ fontSize: 20 }} className="text-white" />
+        </div>
+        <div>
+          <h2 className="font-black text-white text-base leading-tight">MexGo Asistente</h2>
+          <p className="text-white/50 text-xs font-medium">Tu guía turístico con IA</p>
+        </div>
+        <div className="ml-auto flex items-center gap-3">
+          {mensajes.length > 0 && (
+            <button
+              onClick={limpiarChat}
+              title="Limpiar chat"
+              className="text-white/40 hover:text-red-400 text-xs font-bold transition-colors"
+            >
+              Limpiar
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Mensajes */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
+      <div className="flex-1 overflow-y-auto px-5 py-5 bg-gray-50/50 space-y-4">
         {mensajes.length === 0 && (
-          <div className="text-center mt-16 space-y-2">
-            <p className="text-4xl">🇲🇽</p>
-            <p className="text-[var(--text-primary)] font-semibold">Hola, soy tu asistente MexGo</p>
-            <p className="text-[var(--text-secondary)] text-sm">¿Qué quieres visitar en México?</p>
+          <div className="flex flex-col items-center justify-center h-full gap-4">
+            <p className="text-gray-400 text-sm text-center font-medium">
+              Hola, soy tu asistente MexGo — ¿qué quieres visitar?
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-md">
+              {SUGERENCIAS.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => enviarMensaje(s)}
+                  className="text-left text-xs font-medium text-[var(--primary)] bg-[var(--primary)]/5 border border-[var(--primary)]/15 rounded-xl px-3 py-2.5 hover:bg-[var(--primary)]/10 transition-colors"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
         {mensajes.map((m, i) => (
           <div key={i} className={`flex flex-col gap-2 ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
-            {/* Burbuja de texto */}
+            {/* Burbuja */}
             <div
-              className={`max-w-xs md:max-w-sm rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+              className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
                 m.role === 'user'
                   ? 'bg-[var(--primary)] text-white rounded-br-sm'
                   : m.error
                   ? 'bg-red-50 text-red-600 border border-red-200 rounded-bl-sm'
-                  : 'bg-[var(--secondary)]/15 text-[var(--text-primary)] rounded-bl-sm'
+                  : 'bg-white border border-gray-100 text-gray-700 rounded-bl-sm shadow-sm'
               }`}
             >
               {m.text}
             </div>
-
 
             {/* Card evento agregado */}
             {m.eventoAgregado && (
@@ -197,7 +239,7 @@ export default function ChatUI() {
                 <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/20 flex items-center justify-center shrink-0 text-lg">✅</div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-sm text-[var(--accent)] truncate">{m.eventoAgregado.label}</p>
-                  <p className="text-xs text-[var(--text-secondary)]">
+                  <p className="text-xs text-gray-500">
                     📅 {m.eventoAgregado.routeDate}{m.eventoAgregado.startTime && ` · ${m.eventoAgregado.startTime}`}
                   </p>
                 </div>
@@ -213,7 +255,7 @@ export default function ChatUI() {
                 <div className="w-10 h-10 rounded-xl bg-[var(--primary)]/20 flex items-center justify-center shrink-0 text-lg">✏️</div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-sm text-[var(--primary)] truncate">{m.eventoEditado.label}</p>
-                  <p className="text-xs text-[var(--text-secondary)]">
+                  <p className="text-xs text-gray-500">
                     📅 {m.eventoEditado.routeDate}{m.eventoEditado.startTime && ` · ${m.eventoEditado.startTime}`}
                   </p>
                 </div>
@@ -238,10 +280,17 @@ export default function ChatUI() {
 
         {cargando && (
           <div className="flex justify-start">
-            <div className="bg-[var(--secondary)]/15 text-[var(--primary)] rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm flex gap-1 items-center">
-              <span className="animate-bounce [animation-delay:0ms]">•</span>
-              <span className="animate-bounce [animation-delay:150ms]">•</span>
-              <span className="animate-bounce [animation-delay:300ms]">•</span>
+            <div className="bg-white border border-gray-100 shadow-sm rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-2">
+              <div className="flex gap-1">
+                {[0, 1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce"
+                    style={{ animationDelay: `${i * 0.15}s` }}
+                  />
+                ))}
+              </div>
+              <span className="text-xs text-gray-400 font-medium">MexGo está pensando...</span>
             </div>
           </div>
         )}
@@ -249,30 +298,21 @@ export default function ChatUI() {
       </div>
 
       {/* Input */}
-      <div className="border-t-2 border-[var(--secondary)] px-4 py-3 flex gap-2 items-center">
-        {mensajes.length > 0 && (
-          <button
-            onClick={limpiarChat}
-            title="Limpiar chat"
-            className="rounded-full border border-gray-200 px-3 py-2 text-xs text-gray-400 hover:text-red-500 hover:border-red-200 transition-colors shrink-0"
-          >
-            🗑
-          </button>
-        )}
+      <div className="px-5 py-4 border-t border-gray-100 flex gap-3 shrink-0">
         <input
-          className="flex-1 rounded-full border border-gray-200 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-surface text-text-primary placeholder-gray-400 transition-all"
-          placeholder="Escribe un mensaje..."
+          className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-colors disabled:opacity-50"
+          placeholder="Escribe tu pregunta..."
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={onKeyDown}
           disabled={cargando}
         />
         <button
-          onClick={enviar}
+          onClick={() => void enviarMensaje()}
           disabled={cargando || !input.trim()}
-          className="btn-primary shrink-0 disabled:opacity-40"
+          className="w-10 h-10 rounded-xl bg-[var(--primary)] hover:bg-[var(--dark-blue)] disabled:opacity-40 disabled:cursor-not-allowed text-white flex items-center justify-center transition-all shrink-0 shadow-md shadow-[var(--primary)]/20"
         >
-          Enviar
+          <SendIcon sx={{ fontSize: 18 }} />
         </button>
       </div>
     </div>

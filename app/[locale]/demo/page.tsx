@@ -3,12 +3,33 @@
 import React, { useState } from 'react';
 import { useRouter } from '@/i18n/routing';
 import { saveSession } from '@/lib/client-auth';
-import { DEMO_TOKEN, DEMO_USER_ID, DEMO_BUSINESS_NAME } from '@/constants/demo-data';
-import { Store as StoreIcon, ArrowForward as ArrowIcon } from '@mui/icons-material';
+import { DEMO_TOKEN, DEMO_USER_ID, DEMO_BUSINESS_NAME, DEMO_TOURIST_NAME } from '@/constants/demo-data';
+import { Store as StoreIcon, ExploreOutlined as TouristIcon, ArrowForward as ArrowIcon } from '@mui/icons-material';
 
 export default function DemoPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+
+  function entrarComoTurista() {
+    setLoading(true);
+    saveSession({
+      accessToken:  DEMO_TOKEN,
+      refreshToken: DEMO_TOKEN,
+      primaryRole:  'TURISTA',
+      roleCodes:    ['TURISTA'],
+      user: {
+        id:    DEMO_USER_ID,
+        email: 'demo-turista@mexgo.mx',
+      },
+    });
+    localStorage.setItem('mexgo_tourist_profile', JSON.stringify({
+      fullName:        DEMO_TOURIST_NAME,
+      countryOfOrigin: 'MX',
+      accessibilityNeeds: [],
+      travelMotives:   ['gastronomy', 'cultural'],
+    }));
+    router.push('/discover');
+  }
 
   function entrarComoNegocio() {
     setLoading(true);
@@ -50,6 +71,23 @@ export default function DemoPage() {
             Explora MexGO Negocios sin necesitar cuenta
           </p>
         </div>
+
+        <button
+          onClick={entrarComoTurista}
+          disabled={loading}
+          className="w-full flex items-center justify-between gap-3 bg-[var(--primary)] hover:bg-[var(--dark-blue)] disabled:opacity-60 text-white font-black px-6 py-4 rounded-2xl transition-all shadow-lg shadow-[var(--primary)]/25 active:scale-[0.98]"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+              <TouristIcon sx={{ fontSize: 20 }} />
+            </div>
+            <div className="text-left">
+              <p className="text-sm font-black leading-tight">Entrar como turista</p>
+              <p className="text-[11px] font-medium text-white/70 leading-tight">{DEMO_TOURIST_NAME}</p>
+            </div>
+          </div>
+          <ArrowIcon sx={{ fontSize: 20 }} className="shrink-0 opacity-70" />
+        </button>
 
         <button
           onClick={entrarComoNegocio}

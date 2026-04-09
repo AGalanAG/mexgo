@@ -5,6 +5,7 @@ export const DEMO_USER_ID     = 'demo-user-00000000-0001'
 export const DEMO_BUSINESS_ID = 'demo-biz-00000000-0001'
 export const DEMO_BUSINESS_NAME = 'Tacos El Pastorcito'
 export const DEMO_BOROUGH       = 'Coyoacán'
+export const DEMO_TOURIST_NAME  = 'Viajero Demo'
 
 export const DEMO_INSIGHT: BusinessInsight = {
   resumen:
