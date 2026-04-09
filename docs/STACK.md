@@ -165,8 +165,7 @@ Contratos completos → `API.md`
 | `itinerary_daily_routes` | Caché de geometría de ruta por día |
 | `visits` | Visitas registradas — alimenta el algoritmo de equidad |
 | `daily_business_saturation` | Agregado diario de saturación por negocio |
-| `technical_tickets` | Tickets técnicos para SuperAdmin |
-| `audit_logs` | Auditoría de todas las transiciones de estado |
+
 
 Schema completo → `SCHEMA.md`
 

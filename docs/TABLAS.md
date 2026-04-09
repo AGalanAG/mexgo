@@ -153,58 +153,6 @@
 
 ---
 
-## Chat e historial
-
-### chat_sessions
-| Columna | Tipo | Notas |
-|---------|------|-------|
-| id | uuid PK | gen_random_uuid() |
-| tourist_user_id | uuid | FK → auth.users |
-| created_at | timestamptz | default now() |
-| updated_at | timestamptz | default now() |
-
-### chat_messages
-| Columna | Tipo | Notas |
-|---------|------|-------|
-| id | uuid PK | gen_random_uuid() |
-| session_id | uuid | FK → chat_sessions, on delete cascade |
-| role | text | 'user' / 'model' |
-| content | text | not null |
-| created_at | timestamptz | default now() |
-
----
-
-## Tickets y auditoría
-
-### technical_tickets
-| Columna | Tipo | Notas |
-|---------|------|-------|
-| id | uuid PK | gen_random_uuid() |
-| title | text | not null |
-| description | text | not null |
-| severity | text | low / medium / high / critical |
-| status | ticket_status | default OPEN |
-| opened_by_user_id | uuid | FK → auth.users |
-| assigned_to_user_id | uuid | FK → auth.users, null |
-| resolution_notes | text | null |
-| created_at | timestamptz | default now() |
-| updated_at | timestamptz | default now() |
-
-### audit_logs
-| Columna | Tipo | Notas |
-|---------|------|-------|
-| id | uuid PK | gen_random_uuid() |
-| entity_type | text | ej. 'business_request' |
-| entity_id | uuid | id de la entidad afectada |
-| action | text | ej. 'APPROVE', 'REJECT' |
-| actor_user_id | uuid | FK → auth.users, null |
-| before_data | jsonb | estado anterior, null |
-| after_data | jsonb | estado nuevo, null |
-| metadata | jsonb | default '{}' |
-| created_at | timestamptz | default now() |
-
----
-
 ## Transiciones de estado — solicitudes
 
 | Desde | Acción | Hacia | Quién |
@@ -240,7 +188,6 @@
 | Fecha | Quién | Qué |
 |-------|-------|-----|
 | 2026-04-06 | Fidel | v1.0 — visualización en tablas de todo SCHEMA.md |
-| 2026-04-07 | Fidel | v1.1 — tablas chat_sessions y chat_messages |
 ### directory_events
 | Columna | Tipo | Notas |
 |---|---|---|

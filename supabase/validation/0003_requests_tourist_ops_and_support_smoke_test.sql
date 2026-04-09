@@ -15,10 +15,7 @@ SELECT to_regclass('public.itinerary_stops') AS itinerary_stops_table;
 SELECT to_regclass('public.itinerary_daily_routes') AS itinerary_daily_routes_table;
 SELECT to_regclass('public.visits') AS visits_table;
 SELECT to_regclass('public.daily_business_saturation') AS daily_business_saturation_table;
-SELECT to_regclass('public.chat_sessions') AS chat_sessions_table;
-SELECT to_regclass('public.chat_messages') AS chat_messages_table;
-SELECT to_regclass('public.technical_tickets') AS technical_tickets_table;
-SELECT to_regclass('public.audit_logs') AS audit_logs_table;
+
 
 -- 2) Enum checks
 SELECT EXISTS (
