@@ -175,7 +175,7 @@ export default function ProfilePage() {
             {/* Content below banner */}
             <div className="px-6 pb-6">
               {/* Avatar + Edit */}
-              <div className="flex items-end justify-between -mt-14 mb-4">
+              <div className="flex items-start justify-between -mt-14 mb-4">
                 <div className="relative">
                   <div className="w-24 h-24 rounded-full border-4 border-white bg-gradient-to-br from-[var(--coppel-yellow)] to-[var(--secondary)] flex items-center justify-center shadow-xl">
                     <span className="text-4xl font-black text-[var(--dark-blue)]">
@@ -187,17 +187,19 @@ export default function ProfilePage() {
                   </button>
                 </div>
 
-                <button
-                  onClick={handleEditClick}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-                    isEditing
-                      ? 'bg-[var(--green)] text-white shadow-lg shadow-[var(--green)]/30'
-                      : 'border-2 border-[var(--coppel-blue)] text-[var(--coppel-blue)] hover:bg-[var(--coppel-blue)]/5'
-                  }`}
-                >
-                  <EditIcon sx={{ fontSize: 16 }} />
-                  {isEditing ? 'Guardar' : 'Editar'}
-                </button>
+                <div className="mt-[72px]">
+                  <button
+                    onClick={handleEditClick}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                      isEditing
+                        ? 'bg-[var(--green)] text-white shadow-lg shadow-[var(--green)]/30'
+                        : 'border-2 border-[var(--coppel-blue)] text-[var(--coppel-blue)] hover:bg-[var(--coppel-blue)]/5'
+                    }`}
+                  >
+                    <EditIcon sx={{ fontSize: 16 }} />
+                    {isEditing ? 'Guardar' : 'Editar'}
+                  </button>
+                </div>
               </div>
 
               {/* Name & Origin */}
