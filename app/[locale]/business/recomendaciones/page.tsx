@@ -6,6 +6,7 @@ import Footer from '@/components/tourist/Footer';
 import BusinessChat from '@/components/business/BusinessChat';
 import { getStoredAccessToken } from '@/lib/client-auth';
 import type { BusinessInsight, CourseRecommendation } from '@/types/types';
+import { CourseCard, type Course, type Category } from '@/components/business/CourseCard';
 import { DEMO_INSIGHT, DEMO_BUSINESS_ID } from '@/constants/demo-data';
 import {
   People as PeopleIcon,
@@ -14,18 +15,35 @@ import {
   Warning as AlertIcon,
   Lightbulb as OpIcon,
   School as SchoolIcon,
-  EmojiEvents as BadgeIcon,
   SmartToy as AIIcon,
   AccessibilityNew as AccessIcon,
 } from '@mui/icons-material';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const PRIORIDAD_COLOR: Record<CourseRecommendation['prioridad'], string> = {
-  alta:  'bg-red-100 text-red-600',
-  media: 'bg-orange-100 text-orange-600',
-  baja:  'bg-gray-100 text-gray-500',
+const PRIORIDAD_CATEGORY: Record<CourseRecommendation['prioridad'], Category> = {
+  alta:  { id: 'alta',  title: 'Prioridad alta',  color: '#ef4444' },
+  media: { id: 'media', title: 'Prioridad media', color: '#f97316' },
+  baja:  { id: 'baja',  title: 'Prioridad baja',  color: '#9ca3af' },
 };
+
+const BLOB_BY_PRIORIDAD: Record<CourseRecommendation['prioridad'], string> = {
+  alta:  '#ef4444',
+  media: '#f97316',
+  baja:  '#9ca3af',
+};
+
+function recToCourse(rec: CourseRecommendation, index: number): Course {
+  return {
+    id: index,
+    categoryId: rec.prioridad,
+    title: rec.titulo,
+    imageUrl: '',
+    progress: 0,
+    blobColor: BLOB_BY_PRIORIDAD[rec.prioridad],
+    subtitle: rec.razon,
+  };
+}
 
 function SkeletonCard() {
   return (
@@ -283,29 +301,13 @@ export default function RecomendacionesPage() {
                       <SchoolIcon sx={{ fontSize: 16 }} className="text-[var(--accent)]" />
                       Cursos recomendados para ti
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {insight.cursos_recomendados.map((rec) => (
-                        <div
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {insight.cursos_recomendados.map((rec, i) => (
+                        <CourseCard
                           key={rec.slug}
-                          className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3 hover:shadow-md transition-shadow"
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${PRIORIDAD_COLOR[rec.prioridad]}`}>
-                              Prioridad {rec.prioridad}
-                            </span>
-                            {rec.impacto_insignia && (
-                              <span className="flex items-center gap-1 text-[10px] font-bold text-[var(--secondary)] bg-[var(--secondary)]/10 px-2 py-0.5 rounded-full shrink-0">
-                                <BadgeIcon sx={{ fontSize: 11 }} />
-                                {rec.impacto_insignia}
-                              </span>
-                            )}
-                          </div>
-                          <h4 className="font-black text-gray-900 text-sm leading-snug">{rec.titulo}</h4>
-                          <p className="text-xs text-gray-500 leading-relaxed">{rec.razon}</p>
-                          <button className="w-full py-2 bg-[var(--accent)] hover:bg-[var(--dark-green)] text-white text-xs font-black rounded-xl transition-colors">
-                            Empezar módulo
-                          </button>
-                        </div>
+                          course={recToCourse(rec, i)}
+                          category={PRIORIDAD_CATEGORY[rec.prioridad]}
+                        />
                       ))}
                     </div>
                   </div>
